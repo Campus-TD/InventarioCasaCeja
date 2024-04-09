@@ -1,0 +1,392 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B7AEC869-FFD9-43B7-9597-0A4F39F02120}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>InventarioCasaCeja</RootNamespace>
+    <AssemblyName>InventarioCasaCeja</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Firebase, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FirebaseDatabase.net.4.0.7\lib\netstandard2.0\Firebase.dll</HintPath>
+    </Reference>
+    <Reference Include="LiteDB, Version=4.1.4.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiteDB.4.1.4\lib\net40\LiteDB.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.TimeProvider, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.TimeProvider.8.0.0\lib\net462\Microsoft.Bcl.TimeProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="NetBarcode, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NetBarcode.1.4.5\lib\netstandard2.0\NetBarcode.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Polly, Version=8.0.0.0, Culture=neutral, PublicKeyToken=c8a3ffc3f8f825cc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Polly.8.3.0\lib\net472\Polly.dll</HintPath>
+    </Reference>
+    <Reference Include="Polly.Core, Version=8.0.0.0, Culture=neutral, PublicKeyToken=c8a3ffc3f8f825cc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Polly.Core.8.3.0\lib\net472\Polly.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.3.1\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Annotations.4.5.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.115.5, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\lib\net46\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.EF6, Version=1.0.115.5, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.EF6.1.0.115.5\lib\net46\System.Data.SQLite.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq, Version=1.0.115.5, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.115.5\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing.Common, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Common.4.5.0\lib\net461\System.Drawing.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.2\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive, Version=4.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.4.0.0\lib\net46\System.Reactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Uno, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Uno.UI.4.1.8\lib\netstandard2.0\Uno.dll</HintPath>
+    </Reference>
+    <Reference Include="Uno.Diagnostics.Eventing, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Uno.Diagnostics.Eventing.2.0.1\lib\netstandard2.0\Uno.Diagnostics.Eventing.dll</HintPath>
+    </Reference>
+    <Reference Include="Uno.Foundation, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Uno.UI.4.1.8\lib\netstandard2.0\Uno.Foundation.dll</HintPath>
+    </Reference>
+    <Reference Include="Uno.Foundation.Logging, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Uno.UI.4.1.8\lib\netstandard2.0\Uno.Foundation.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Uno.UI, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Uno.UI.4.1.8\lib\netstandard2.0\Uno.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Uno.UI.Composition, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Uno.UI.4.1.8\lib\netstandard2.0\Uno.UI.Composition.dll</HintPath>
+    </Reference>
+    <Reference Include="Uno.UI.Dispatching, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Uno.UI.4.1.8\lib\netstandard2.0\Uno.UI.Dispatching.dll</HintPath>
+    </Reference>
+    <Reference Include="Uno.UI.FluentTheme, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Uno.UI.4.1.8\lib\netstandard2.0\Uno.UI.FluentTheme.dll</HintPath>
+    </Reference>
+    <Reference Include="Uno.UI.FluentTheme.v1, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Uno.UI.4.1.8\lib\netstandard2.0\Uno.UI.FluentTheme.v1.dll</HintPath>
+    </Reference>
+    <Reference Include="Uno.UI.FluentTheme.v2, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Uno.UI.4.1.8\lib\netstandard2.0\Uno.UI.FluentTheme.v2.dll</HintPath>
+    </Reference>
+    <Reference Include="Uno.UI.Toolkit, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Uno.UI.4.1.8\lib\netstandard2.0\Uno.UI.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="Uno.Xaml, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Uno.UI.4.1.8\lib\netstandard2.0\Uno.Xaml.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="zxing, Version=0.16.9.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.9\lib\net47\zxing.dll</HintPath>
+    </Reference>
+    <Reference Include="zxing.presentation, Version=0.16.9.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.9\lib\net47\zxing.presentation.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BuscarExistencia.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BuscarExistencia.designer.cs">
+      <DependentUpon>BuscarExistencia.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Categoria.cs" />
+    <Compile Include="CatMedCreator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CatMedCreator.designer.cs">
+      <DependentUpon>CatMedCreator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CompletarEntrada.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CompletarEntrada.designer.cs">
+      <DependentUpon>CompletarEntrada.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ConfigWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConfigWindow.designer.cs">
+      <DependentUpon>ConfigWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CrearEntrada.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CrearEntrada.designer.cs">
+      <DependentUpon>CrearEntrada.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CrearProducto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CrearProducto.designer.cs">
+      <DependentUpon>CrearProducto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CrearProveedor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CrearProveedor.designer.cs">
+      <DependentUpon>CrearProveedor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CreaTicket.cs" />
+    <Compile Include="CurrentData.cs" />
+    <Compile Include="Dropcustom.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dropcustom.designer.cs">
+      <DependentUpon>Dropcustom.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ElegirSucursal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ElegirSucursal.designer.cs">
+      <DependentUpon>ElegirSucursal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Existencia.cs" />
+    <Compile Include="Inicio.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Inicio.Designer.cs">
+      <DependentUpon>Inicio.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LoadWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoadWindow.designer.cs">
+      <DependentUpon>LoadWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LocaldataManager.cs" />
+    <Compile Include="Medida.cs" />
+    <Compile Include="ModCatMed.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModCatMed.designer.cs">
+      <DependentUpon>ModCatMed.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ModificarProducto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModificarProducto.designer.cs">
+      <DependentUpon>ModificarProducto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ModificarProveedor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModificarProveedor.designer.cs">
+      <DependentUpon>ModificarProveedor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NCatMed.cs" />
+    <Compile Include="NuevoProducto.cs" />
+    <Compile Include="PrintingDocument.cs" />
+    <Compile Include="Producto.cs" />
+    <Compile Include="ProductoEntrada.cs" />
+    <Compile Include="ProductoExistencia.cs" />
+    <Compile Include="ProductoSalida.cs" />
+    <Compile Include="ProductoVenta.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Proveedor.cs" />
+    <Compile Include="RawPrinterHelper.cs" />
+    <Compile Include="Salida.cs" />
+    <Compile Include="Salidas.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Salidas.Designer.cs">
+      <DependentUpon>Salidas.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sucursal.cs" />
+    <Compile Include="UserLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserLogin.designer.cs">
+      <DependentUpon>UserLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Usuario.cs" />
+    <Compile Include="Vercatalogo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vercatalogo.designer.cs">
+      <DependentUpon>Vercatalogo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Visor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Visor.designer.cs">
+      <DependentUpon>Visor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WebDataManager.cs" />
+    <EmbeddedResource Include="BuscarExistencia.resx">
+      <DependentUpon>BuscarExistencia.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CatMedCreator.resx">
+      <DependentUpon>CatMedCreator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CompletarEntrada.resx">
+      <DependentUpon>CompletarEntrada.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConfigWindow.resx">
+      <DependentUpon>ConfigWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CrearEntrada.resx">
+      <DependentUpon>CrearEntrada.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CrearProducto.resx">
+      <DependentUpon>CrearProducto.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CrearProveedor.resx">
+      <DependentUpon>CrearProveedor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dropcustom.resx">
+      <DependentUpon>Dropcustom.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ElegirSucursal.resx">
+      <DependentUpon>ElegirSucursal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Inicio.resx">
+      <DependentUpon>Inicio.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LoadWindow.resx">
+      <DependentUpon>LoadWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModCatMed.resx">
+      <DependentUpon>ModCatMed.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModificarProducto.resx">
+      <DependentUpon>ModificarProducto.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModificarProveedor.resx">
+      <DependentUpon>ModificarProveedor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="Salidas.resx">
+      <DependentUpon>Salidas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserLogin.resx">
+      <DependentUpon>UserLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Vercatalogo.resx">
+      <DependentUpon>Vercatalogo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Visor.resx">
+      <DependentUpon>Visor.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Use la restauración de paquetes NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
+    <Error Condition="!Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
+    <Error Condition="!Exists('..\packages\Uno.SourceGenerationTasks.4.0.0\build\netstandard1.0\Uno.SourceGenerationTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Uno.SourceGenerationTasks.4.0.0\build\netstandard1.0\Uno.SourceGenerationTasks.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
+  <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
+  <Import Project="..\packages\Uno.SourceGenerationTasks.4.0.0\build\netstandard1.0\Uno.SourceGenerationTasks.targets" Condition="Exists('..\packages\Uno.SourceGenerationTasks.4.0.0\build\netstandard1.0\Uno.SourceGenerationTasks.targets')" />
+</Project>
