@@ -110,7 +110,7 @@ namespace InventarioCasaCeja
             MessageBox.Show("Producto Agregado ✔", "Éxito");
 
         }
-        private void button2_Click(object sender, EventArgs e)
+        private void add_Click(object sender, EventArgs e)
         {
             if (txtbarras.Text.Equals("") || txtnombre.Text.Equals("") || txtunidad.Text.Equals("") || txtcategoria.Text.Equals(""))
             {
@@ -188,9 +188,12 @@ namespace InventarioCasaCeja
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Bsalir_Click(object sender, EventArgs e)
         {
-            this.Close();
+            if (DialogResult.Yes == MessageBox.Show("Esta seguro que desea salir?", "Advertencia",MessageBoxButtons.YesNo))
+            {
+                this.Close();
+            }
         }
         protected override bool ProcessDialogKey(Keys keyData)
         {
@@ -199,12 +202,7 @@ namespace InventarioCasaCeja
                 switch (keyData)
                 {
                     case Keys.Escape:
-                        this.Close();
-                        break;
-                    case Keys.Enter:
-                        if (add.Focused || upload.Focused || button1.Focused)
-                            return base.ProcessDialogKey(keyData);
-                        SendKeys.Send("{TAB}");
+                        Bsalir.PerformClick();
                         break;
                     case Keys.F5:
                         add.PerformClick();

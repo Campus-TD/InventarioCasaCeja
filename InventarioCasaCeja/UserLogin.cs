@@ -41,7 +41,11 @@ namespace InventarioCasaCeja
                 Usuario usuarioActivo = localDM.getLoginUser(usr, pass);
                 if (usuarioActivo != null)
                 {
-                    if (admin && usuarioActivo.es_raiz>1)
+                    if (admin && usuarioActivo.es_raiz <= 1)
+                    {
+                        MessageBox.Show("Esta cuenta no tiene permisos administrativos para realizar esta acción", "Advertencia");
+                    }
+                    else if (!admin && usuarioActivo.es_raiz > 1)
                     {
                         MessageBox.Show("Esta cuenta no tiene permisos administrativos para realizar esta acción", "Advertencia");
                     }
@@ -111,11 +115,13 @@ namespace InventarioCasaCeja
                 this.Text = "Autenticación de Administrador";
                 groupBox1.Text = "AUTENTICACIÓN DE ADMINISTRADOR";
             }
+            /*
             else
             {
                 this.Text = "Autenticación de Cajero";
                 groupBox1.Text = "AUTENTICACIÓN DE CAJERO";
             }
+            */
         }
     }
 }
