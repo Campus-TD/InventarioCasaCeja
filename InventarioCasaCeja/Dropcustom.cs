@@ -65,5 +65,22 @@ namespace InventarioCasaCeja
                 listBox1.SelectedIndex -= 0 <= listBox1.SelectedIndex - 1 ? 1 : 0;
             }
         }
+
+        protected override bool ProcessDialogKey(Keys keyData)
+        {
+            if (Form.ModifierKeys == Keys.None)
+            {
+                switch (keyData)
+                {
+                    case Keys.Escape:
+                        this.Close();
+                        break;
+                    default:
+                        return base.ProcessDialogKey(keyData);
+                }
+                return true;
+            }
+            return base.ProcessDialogKey(keyData);
+        }
     }
 }

@@ -37,7 +37,7 @@ namespace InventarioCasaCeja
             currentmed = 0;
             currentPage = 1;
             maxPages = 1;
-            rowsPerPage = 10;
+            rowsPerPage = 21;
             urls = new Dictionary<string, string>();
             this.addProd = addProd;
             this.idsucursal = idsucursal;
@@ -221,6 +221,7 @@ namespace InventarioCasaCeja
                         break;
                     case Keys.F1:
                         txtbuscar.Focus();
+                        txtbuscar.Clear();
                         break;
                     case Keys.F2:
                         boxcategoria.DroppedDown = true;

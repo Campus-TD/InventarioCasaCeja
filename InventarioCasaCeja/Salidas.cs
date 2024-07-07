@@ -35,7 +35,7 @@ namespace InventarioCasaCeja
         int idSalida;
         double total;
         string folio;
-
+        int sucursal;
         private void Salidas_Load(object sender, EventArgs e)
         {
             DateTime localDate = DateTime.Now;
@@ -45,14 +45,18 @@ namespace InventarioCasaCeja
             folio = data.sucursal.id.ToString().PadLeft(2, '0') + localDate.Day.ToString().PadLeft(2, '0') + localDate.Month.ToString().PadLeft(2, '0') + localDate.Year + "5" + (idSalida%1000).ToString().PadLeft(3, '0');
             txtfolio.Text = folio;
             txtfecha.Text = localDate.ToString("dd/MM/yyyy");
+            txtSucOrig.Text = data.sucursal.razon_social;
         }
 
         private PrintDocument docToPrint = new PrintDocument();
         PrintPreviewDialog previewDialog = new PrintPreviewDialog();
+
         public Salidas(CurrentData data)
-        {            InitializeComponent();
+        {          
+            InitializeComponent();
+            this.ProductoSeleccionado += AgregarProductoDirectamente;
             printPreviewControl1 = new PrintPreviewControl();
-            
+            this.sucursal = data.sucursal.id;
             this.data = data;
             this.webDM = data.webDM;
             this.localDM = data.webDM.localDM;
@@ -66,9 +70,64 @@ namespace InventarioCasaCeja
             tabla.DataSource = tablasource;
             total = 0;
             (previewDialog as Form).WindowState = FormWindowState.Maximized;
-            //tabla.KeyDown += tabla_KeyDown;
+            tabla.KeyDown += tabla_KeyDown;
 
         }
+
+        private void AgregarProductoDirectamente(Producto producto)
+        {
+            tabla.EndEdit(); //EndEdit se encarga de verificar si hay cambios en la celda y los guarda antes de agregar un nuevo producto.
+            if (producto != null)
+            {
+                if (producto.id == 0)
+                {
+                    hasTemporal = true;
+                }
+                // Verifica si el producto ya existe en la lista productosImprimir
+                var productoExistente = productosImprimir.FirstOrDefault(p => p.idproducto == producto.id);
+                if (productoExistente != null)
+                {
+                    MessageBox.Show("El producto ya se agregó previamente", "Advertencia");
+                    txtcodigo.Text = "";
+                    return;
+                }
+                else
+                {
+                    // Encuentra la fila en la tabla que corresponde al producto que se está agregando
+                    var filaCorrespondiente = tabla.Rows.Cast<DataGridViewRow>().FirstOrDefault(r => Convert.ToInt32(r.Cells["idproducto"].Value) == producto.id);
+
+                    // Obtiene la cantidad de la fila correspondiente
+                    int c = filaCorrespondiente != null ? Convert.ToInt32(filaCorrespondiente.Cells["cantidad"].Value) : 1; // Usa 1 como valor predeterminado si no se encuentra la fila
+
+                    // Agrega el producto a la lista productosImprimir
+                    productosImprimir.Insert(0, new ProductoSalida
+                    {
+                        idproducto = producto.id,
+                        codigo = producto.codigo,
+                        nombre = producto.nombre,
+                        cantidad = c,
+                        precio = producto.menudeo,
+                        unidad = data.mapamedidasinv[producto.medida_id]
+                    });
+
+                    // Agrega el producto a la lista productosEnvio
+                    Dictionary<string, object> prod = new Dictionary<string, object>();
+                    prod["idproducto"] = producto.id;
+                    prod["cantidad"] = c;
+                    prod["precio"] = Math.Round(producto.menudeo, 2);
+
+                    productosEnvio.Add(prod);
+
+                    // Actualiza el BindingSource
+                    tablasource.ResetBindings(false);
+
+                    // Limpia txtcodigo y currentProd para el próximo producto
+                    txtcodigo.Text = "";
+                    currentProd = null;
+                }
+            }
+        }
+
         private void cargarTicketCarta( string fechaSalida)
         {
             titulo = "CASA CEJA S.A. DE C.V.";
@@ -80,7 +139,6 @@ namespace InventarioCasaCeja
             
             createdoc();
         }
-
 
         private void createdoc()
         {
@@ -116,26 +174,11 @@ namespace InventarioCasaCeja
         {
             currentProd = producto;
             txtcodigo.Text = producto.codigo;
+            ProductoSeleccionado?.Invoke(producto);
         }
 
-        private void txtcodigo_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyData == Keys.Enter)
-            {
-                if (!txtcodigo.Text.Equals(""))
-                    currentProd = localDM.GetProductByCode(txtcodigo.Text);
-                if (currentProd == null)
-                {
-                    BuscarExistencia bs = new BuscarExistencia(webDM, agregarProd, data.sucursal.id, txtcodigo.Text);
-                    bs.ShowDialog();
-                }
-                txtcantidad.Focus();
-            }
-            else
-            {
-                currentProd = null;
-            }
-        }
+        public delegate void ProductoSeleccionadoHandler(Producto producto);
+        public event ProductoSeleccionadoHandler ProductoSeleccionado;
 
         private void docToPrint_PrintPage(
     object sender, System.Drawing.Printing.PrintPageEventArgs e)
@@ -359,8 +402,10 @@ namespace InventarioCasaCeja
 
             return new Bitmap(barcodeWriter.Write(texto));
         }
+        /*
         private void AgregarProductoTabla(object sender, EventArgs e)
         {
+
             if (txtcodigo.Text.Equals(""))
             {
                 MessageBox.Show("Debes ingresar todos los datos de producto", "Advertencia");
@@ -371,7 +416,9 @@ namespace InventarioCasaCeja
                     currentProd = localDM.GetProductByCode(txtcodigo.Text);
                 if (currentProd == null)
                 {
-                    MessageBox.Show("Producto no encontrado, favor de dar de alta", "Advertencia");
+                    BuscarExistencia bs = new BuscarExistencia(webDM, agregarProd, sucursal, txtcodigo.Text);
+                    bs.ShowDialog();
+                    txtcodigo.Focus();
                 }
                 else
                 {
@@ -389,7 +436,7 @@ namespace InventarioCasaCeja
                     }
                     else
                     {
-                        productosImprimir.Add(new ProductoSalida
+                        productosImprimir.Insert(0, new ProductoSalida
                         {
                             idproducto = currentProd.id,
                             codigo = currentProd.codigo,
@@ -407,13 +454,12 @@ namespace InventarioCasaCeja
                     productosEnvio.Add(prod);
                     tablasource.ResetBindings(false);
                     total += Math.Round(c * currentProd.menudeo, 2);
-                    txtcantidad.Text = "";
                     txtcodigo.Text = "";
                     currentProd = null;
                 }
             }
         }
-
+        */
         private void finish_Click(object sender, EventArgs e)
         {
             if (boxsucursales.SelectedIndex < 0)
@@ -428,6 +474,15 @@ namespace InventarioCasaCeja
                 }
                 else
                 {
+                    // Reinicia el total a 0 antes de calcularlo
+                    total = 0;
+
+                    // Recorre la lista de productosImprimir para calcular el total
+                    foreach (var producto in productosImprimir)
+                    {
+                        total += producto.cantidad * producto.precio;
+                    }
+
                     DateTime localDate = DateTime.Now;
                     destino = boxsucursales.SelectedItem.ToString();
                     Salida salida = new Salida
@@ -472,13 +527,21 @@ namespace InventarioCasaCeja
             {
                 e.Handled = true;
             }
-
             // only allow one decimal point
             if ((e.KeyChar == '.') && ((sender as TextBox).Text.IndexOf('.') > -1))
             {
                 e.Handled = true;
             }
         }
+
+        private void exit_button_Click(object sender, EventArgs e)
+        {
+            if (DialogResult.Yes == MessageBox.Show("Esta seguro que desea salir?", "Advertencia", MessageBoxButtons.YesNo))
+            {
+                this.Close();
+            }
+        }
+
         private void integerInput_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
@@ -493,25 +556,25 @@ namespace InventarioCasaCeja
                 switch (keyData)
                 {
                     case Keys.Escape:
-                        this.Close();
-                        break;
-                    case Keys.Enter:
-                        if (v.Focused || finish.Focused || txtcodigo.Focused)
-                            return base.ProcessDialogKey(keyData);
-                        SendKeys.Send("{TAB}");
+                        exit_button.PerformClick();
                         break;
                     case Keys.F1:
+                        BuscarExistencia bs = new BuscarExistencia(webDM, agregarProd, sucursal, txtcodigo.Text);
+                        bs.ShowDialog();
+                        txtcodigo.Focus();
+                        break;
+                    case Keys.F2:
                         boxsucursales.Focus();
                         boxsucursales.DroppedDown = true;
                         break;
-                    case Keys.F2:
-                        txtcodigo.Focus();
-                        break;
-                    case Keys.F5:
-                        v.PerformClick();
-                        break;
                     case Keys.F6:
                         finish.PerformClick();
+                        break;
+                    case Keys.Down:
+                        tabla.Focus();
+                        break;
+                    case Keys.Delete:
+                        quitarProdButton_Click(this, new EventArgs());
                         break;
                     default:
                         return base.ProcessDialogKey(keyData);
@@ -520,6 +583,73 @@ namespace InventarioCasaCeja
             }
             return base.ProcessDialogKey(keyData);
         }
+        private void txtcodigo_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Down || e.KeyCode == Keys.Up)
+            {
+                tabla.Focus();
+            }
+            else
+            {
+                currentProd = null;
+            }
+        }
+        private void tabla_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F2)
+            {
+                boxsucursales.Focus();
+                boxsucursales.DroppedDown = true;
+            }
+            //if (e.KeyCode == Keys.Enter){
+            if (e.KeyCode == Keys.Down || e.KeyCode == Keys.Up) {
+                if (tabla.CurrentCell != null && tabla.RowCount > 0)
+                { 
+                int rowIndex = tabla.CurrentCell.RowIndex;
+                tabla.CurrentCell = tabla.Rows[rowIndex].Cells[3];
+                tabla.BeginEdit(true);
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                }
+            }
+            if (e.KeyCode == Keys.Delete)
+            {
+                if (e.KeyCode == Keys.Delete)
+                {
+                    quitarProdButton_Click(sender, e);
+                }
+            }
+        }
+
+        private void boxsucursales_keydown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                tabla.Focus();
+            }
+        }
+
+        private void quitarProdButton_Click(object sender, EventArgs e)
+        {
+            ProductoSalida productoSeleccionado = (ProductoSalida)tabla.CurrentRow.DataBoundItem;
+            if (productoSeleccionado != null)
+            {
+                // Elimina el producto de productosImprimir
+                productosImprimir.Remove(productoSeleccionado);
+
+                // Encuentra y elimina el producto correspondiente de productosEnvio
+                var productoAQuitar = productosEnvio.FirstOrDefault(p => Convert.ToInt32(p["idproducto"]) == productoSeleccionado.idproducto);
+                if (productoAQuitar != null)
+                {
+                    productosEnvio.Remove(productoAQuitar);
+                }
+
+                // Actualiza el BindingSource
+                tablasource.ResetBindings(false);
+                Console.WriteLine("producto cosa", productoSeleccionado.cantidad);
+            }
+        }
+
+
     }
 }
-

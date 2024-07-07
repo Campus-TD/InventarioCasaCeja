@@ -278,8 +278,8 @@ namespace InventarioCasaCeja
             DataTable dt = new DataTable();
             SQLiteCommand command = connection.CreateCommand();
             command.CommandText= "SELECT productos.id AS ID, productos.codigo AS CODIGO, productos.nombre AS NOMBRE, categorias.nombre AS CATEGORIA, medidas.nombre AS MEDIDA, productos.presentacion AS PRESENTACION, productos.iva AS IVA," +
-                " productos.menudeo AS MENUDEO, productos.mayoreo AS MAYOREO, productos.cantidad_mayoreo AS CANTIDAD_MAYOREO, productos.especial AS ESPECIAL, productos.vendedor AS VENDEDOR, productos.imagen AS IMAGEN" +
-                " FROM productos INNER JOIN categorias ON productos.categoria_id = categorias.id INNER JOIN medidas ON productos.medida_id = medidas.id WHERE productos.activo=1 LIMIT 10 OFFSET @setOffset";
+                " productos.menudeo AS MENUDEO, productos.mayoreo AS MAYOREO, productos.cantidad_mayoreo AS 'CANTIDAD MAYOREO', productos.especial AS ESPECIAL, productos.vendedor AS VENDEDOR" +
+                " FROM productos INNER JOIN categorias ON productos.categoria_id = categorias.id INNER JOIN medidas ON productos.medida_id = medidas.id WHERE productos.activo=1 LIMIT 21 OFFSET @setOffset";
             command.Parameters.AddWithValue("setOffset", offset);
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dt);
@@ -290,8 +290,8 @@ namespace InventarioCasaCeja
             DataTable dt = new DataTable();
             SQLiteCommand command = connection.CreateCommand();
             command.CommandText = "SELECT productos.id AS ID, productos.codigo AS CODIGO, productos.nombre AS NOMBRE, categorias.nombre AS CATEGORIA, medidas.nombre AS MEDIDA, productos.presentacion AS PRESENTACION, productos.iva AS IVA," +
-                " productos.menudeo AS MENUDEO, productos.mayoreo AS MAYOREO, productos.cantidad_mayoreo AS CANTIDAD_MAYOREO, productos.especial AS ESPECIAL, productos.vendedor AS VENDEDOR, productos.imagen AS IMAGEN" +
-                " FROM productos INNER JOIN categorias ON productos.categoria_id = categorias.id INNER JOIN medidas ON productos.medida_id = medidas.id WHERE productos.activo=1 "+arg+" LIMIT 10 OFFSET @setOffset";
+                " productos.menudeo AS MENUDEO, productos.mayoreo AS MAYOREO, productos.cantidad_mayoreo AS 'CANTIDAD MAYOREO', productos.especial AS ESPECIAL, productos.vendedor AS VENDEDOR" +
+                " FROM productos INNER JOIN categorias ON productos.categoria_id = categorias.id INNER JOIN medidas ON productos.medida_id = medidas.id WHERE productos.activo=1 "+arg+" LIMIT 21 OFFSET @setOffset";
             command.Parameters.AddWithValue("setOffset", offset);
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dt);
@@ -328,8 +328,8 @@ namespace InventarioCasaCeja
             DataTable dt = new DataTable();
             SQLiteCommand command = connection.CreateCommand();
             command.CommandText = "SELECT productos.id AS ID, productos.codigo AS CODIGO, productos.nombre AS NOMBRE, categorias.nombre AS CATEGORIA, medidas.nombre AS MEDIDA, productos.presentacion AS PRESENTACION, productos.iva AS IVA," +
-                " productos.menudeo AS MENUDEO, productos.mayoreo AS MAYOREO, productos.cantidad_mayoreo AS CANTIDAD_MAYOREO, productos.especial AS ESPECIAL, productos.vendedor AS VENDEDOR, productos.imagen AS IMAGEN" +
-                " FROM productos INNER JOIN categorias ON productos.categoria_id = categorias.id INNER JOIN medidas ON productos.medida_id = medidas.id WHERE productos.activo=1 AND (productos.codigo LIKE @setCodigo OR productos.nombre LIKE @setNombre) " + arg + " LIMIT 10 OFFSET @setOffset";
+                " productos.menudeo AS MENUDEO, productos.mayoreo AS MAYOREO, productos.cantidad_mayoreo AS 'CANTIDAD MAYOREO', productos.especial AS ESPECIAL, productos.vendedor AS VENDEDOR" +
+                " FROM productos INNER JOIN categorias ON productos.categoria_id = categorias.id INNER JOIN medidas ON productos.medida_id = medidas.id WHERE productos.activo=1 AND (productos.codigo LIKE @setCodigo OR productos.nombre LIKE @setNombre) " + arg + " LIMIT 21 OFFSET @setOffset";
             command.Parameters.AddWithValue("setOffset", offset);
             command.Parameters.AddWithValue("setCodigo", "%"+arg2+"%");
             command.Parameters.AddWithValue("setNombre", "%" + arg2 + "%");

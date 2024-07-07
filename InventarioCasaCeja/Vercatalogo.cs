@@ -32,7 +32,7 @@ namespace InventarioCasaCeja
             currentmed = 0;
             currentPage = 1;
             maxPages = 1;
-            rowsPerPage = 10;
+            rowsPerPage = 21;
             urls = new Dictionary<string, string>();
         }
 
@@ -70,7 +70,7 @@ namespace InventarioCasaCeja
         private void Vercatalago_Load(object sender, EventArgs e)
         {
             active = true;
-            generateImgRow();
+            //generateImgRow();
         }
 
         private void Vercatalago_FormClosed(object sender, FormClosedEventArgs e)
@@ -151,8 +151,9 @@ namespace InventarioCasaCeja
                 
             }            
             catalogo.DataSource = tablacatalogo;
-            generateImgRow();
+            //generateImgRow();
         }
+        /*
         private void generateImgRow()
         {
             urls.Clear();
@@ -166,6 +167,7 @@ namespace InventarioCasaCeja
             cell_style.Font= new Font("Segoe UI", 12, FontStyle.Underline);
             catalogo.Columns[12].DefaultCellStyle = cell_style;
         }
+        
         private void catalogo_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex == catalogo.Columns["IMAGEN"].Index)
@@ -175,6 +177,7 @@ namespace InventarioCasaCeja
 
             }
         }
+        */
         private void calculateMaxPages( int rowCount)
         {
             maxPages = ((rowCount % rowsPerPage) == 0) ? rowCount / rowsPerPage : rowCount / rowsPerPage + 1;
@@ -304,7 +307,7 @@ namespace InventarioCasaCeja
         {
             this.Close();
         }
-
+        /*
         private void catalogo_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex == catalogo.Columns["IMAGEN"].Index)
@@ -318,7 +321,7 @@ namespace InventarioCasaCeja
                 catalogo.Cursor = Cursors.Default;
             }
         }
-
+        */
         private void catalogo_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
         {
             catalogo.Cursor = Cursors.Default;
