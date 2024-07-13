@@ -22,6 +22,7 @@
         {
             this.operacionesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.Beliminar = new System.Windows.Forms.Button();
             this.Bsalir = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -76,6 +77,7 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.Beliminar);
             this.groupBox1.Controls.Add(this.Bsalir);
             this.groupBox1.Controls.Add(this.tableLayoutPanel1);
             this.groupBox1.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold);
@@ -86,15 +88,27 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "ALTA DE PRODUCTO";
             // 
+            // Beliminar
+            // 
+            this.Beliminar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.Beliminar.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold);
+            this.Beliminar.Location = new System.Drawing.Point(721, -7);
+            this.Beliminar.Name = "Beliminar";
+            this.Beliminar.Size = new System.Drawing.Size(212, 48);
+            this.Beliminar.TabIndex = 26;
+            this.Beliminar.Text = "ELIMINAR (supr)";
+            this.Beliminar.UseVisualStyleBackColor = true;
+            this.Beliminar.Click += new System.EventHandler(this.Beliminar_Click);
+            // 
             // Bsalir
             // 
             this.Bsalir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.Bsalir.Font = new System.Drawing.Font("Segoe UI Semibold", 20F, System.Drawing.FontStyle.Bold);
-            this.Bsalir.Location = new System.Drawing.Point(965, -7);
+            this.Bsalir.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold);
+            this.Bsalir.Location = new System.Drawing.Point(939, -7);
             this.Bsalir.Name = "Bsalir";
-            this.Bsalir.Size = new System.Drawing.Size(192, 48);
+            this.Bsalir.Size = new System.Drawing.Size(218, 48);
             this.Bsalir.TabIndex = 25;
-            this.Bsalir.Text = "SALIR (Esc)";
+            this.Bsalir.Text = "SALIR (ALT+F5)";
             this.Bsalir.UseVisualStyleBackColor = true;
             this.Bsalir.Click += new System.EventHandler(this.Bsalir_Click);
             // 
@@ -242,6 +256,7 @@
             this.txtbarras.ShortcutsEnabled = false;
             this.txtbarras.Size = new System.Drawing.Size(438, 61);
             this.txtbarras.TabIndex = 1;
+            this.txtbarras.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NoSpaces_KeyPress);
             // 
             // txtnombre
             // 
@@ -555,6 +570,9 @@
             this.tabla.Size = new System.Drawing.Size(725, 708);
             this.tabla.StandardTab = true;
             this.tabla.TabIndex = 27;
+            this.tabla.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.tabla_CellClick);
+            this.tabla.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.tabla_RowEnter);
+            this.tabla.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabla_KeyDown);
             // 
             // CrearProducto
             // 
@@ -639,6 +657,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.DataGridView tabla;
+        private System.Windows.Forms.Button Beliminar;
     }
 }
 
