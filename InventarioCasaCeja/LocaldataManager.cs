@@ -83,6 +83,36 @@ namespace InventarioCasaCeja
                 connection.Open();
             }
         }
+
+        // verifica si un producto ya existe en la bd antes de agregarlo a la lista de alta productos.
+        public (bool, string) ProductoExiste(string codigoBarras)
+        {
+            string query = "SELECT Nombre FROM Productos WHERE codigo = @codigo";
+            using (SQLiteCommand cmd = new SQLiteCommand(query, connection))
+            {
+                cmd.Parameters.AddWithValue("@codigo", codigoBarras);
+                if (connection.State != ConnectionState.Open)
+                {
+                    connection.Open();
+                }
+
+                using (SQLiteDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        string producto = reader.GetString(0);
+                        connection.Close();
+                        return (true, producto);
+                    }
+                    else
+                    {
+                        connection.Close();
+                        return (false, null);
+                    }
+                }
+            }
+        }
+
         public void setImpresora(string impresora)
         {
             this.impresora = impresora;
@@ -855,6 +885,10 @@ namespace InventarioCasaCeja
         {
             foreach (NuevoProducto producto in productos)
             {
+                if (connection.State != ConnectionState.Open)
+                {
+                    connection.Open();
+                }
                 SQLiteCommand command = connection.CreateCommand();
                 command.CommandText = "INSERT OR REPLACE INTO alta_temporal (codigo, nombre, presentacion, menudeo, mayoreo, cantidad_mayoreo, especial, vendedor, medida_id, categoria_id, estado, detalles) " +
                 "VALUES(@setCodigo, @setNombre, @setPresentacion, @setMenudeo, @setMayoreo, @setCantidad_mayoreo, @setEspecial, @setVendedor, @setMedida_id, @setCategoria_id, @setEstado, @setDetalles) ";
