@@ -41,16 +41,19 @@ namespace InventarioCasaCeja
             this.tabla = new System.Windows.Forms.DataGridView();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.txtcodigo = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.finish = new System.Windows.Forms.Button();
             this.quitarProdButton = new System.Windows.Forms.Button();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.exit_button = new System.Windows.Forms.Button();
             this.tableLayoutPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tabla)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -95,6 +98,9 @@ namespace InventarioCasaCeja
             this.tabla.Size = new System.Drawing.Size(1497, 556);
             this.tabla.StandardTab = true;
             this.tabla.TabIndex = 5;
+            this.tabla.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.tabla_CellDoubleClick);
+            this.tabla.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.tabla_EditingControlShowing);
+            this.tabla.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabla_KeyDown);
             // 
             // tableLayoutPanel2
             // 
@@ -105,11 +111,11 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.Controls.Add(this.txtcodigo, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.label4, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.label1, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.button1, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.finish, 1, 3);
             this.tableLayoutPanel2.Controls.Add(this.quitarProdButton, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel1, 0, 0);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(4, 4);
             this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -128,24 +134,13 @@ namespace InventarioCasaCeja
             this.txtcodigo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtcodigo.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
-            this.txtcodigo.Location = new System.Drawing.Point(4, 41);
+            this.txtcodigo.Location = new System.Drawing.Point(4, 55);
             this.txtcodigo.Margin = new System.Windows.Forms.Padding(4);
             this.txtcodigo.MaxLength = 255;
             this.txtcodigo.Name = "txtcodigo";
             this.txtcodigo.Size = new System.Drawing.Size(740, 61);
             this.txtcodigo.TabIndex = 0;
             this.txtcodigo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtcodigo_KeyDown);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
-            this.label4.Location = new System.Drawing.Point(4, 0);
-            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(317, 37);
-            this.label4.TabIndex = 10;
-            this.label4.Text = "CÓDIGO DE BARRAS (F1)";
             // 
             // label1
             // 
@@ -162,12 +157,12 @@ namespace InventarioCasaCeja
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(752, 41);
+            this.button1.Location = new System.Drawing.Point(752, 55);
             this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(741, 62);
             this.button1.TabIndex = 14;
-            this.button1.Text = "SELECCIONAR IMAGEN (F2)";
+            this.button1.Text = "SELECCIONAR IMAGEN (F5)";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.SeleccionarImagen);
             // 
@@ -175,7 +170,7 @@ namespace InventarioCasaCeja
             // 
             this.finish.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.finish.Location = new System.Drawing.Point(752, 139);
+            this.finish.Location = new System.Drawing.Point(752, 146);
             this.finish.Margin = new System.Windows.Forms.Padding(4);
             this.finish.Name = "finish";
             this.finish.Size = new System.Drawing.Size(741, 78);
@@ -188,7 +183,7 @@ namespace InventarioCasaCeja
             // 
             this.quitarProdButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.quitarProdButton.Location = new System.Drawing.Point(4, 139);
+            this.quitarProdButton.Location = new System.Drawing.Point(4, 146);
             this.quitarProdButton.Margin = new System.Windows.Forms.Padding(4);
             this.quitarProdButton.Name = "quitarProdButton";
             this.quitarProdButton.Size = new System.Drawing.Size(740, 78);
@@ -196,6 +191,46 @@ namespace InventarioCasaCeja
             this.quitarProdButton.Text = "QUITAR PRODUCTO (SUPR)";
             this.quitarProdButton.UseVisualStyleBackColor = true;
             this.quitarProdButton.Click += new System.EventHandler(this.quitarProdButton_Click);
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 46.7655F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 53.2345F));
+            this.tableLayoutPanel1.Controls.Add(this.label2, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(742, 45);
+            this.tableLayoutPanel1.TabIndex = 16;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
+            this.label2.Location = new System.Drawing.Point(351, 0);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(206, 37);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "CATALOGO (F2)";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
+            this.label4.Location = new System.Drawing.Point(4, 0);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(317, 37);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "CÓDIGO DE BARRAS (F1)";
             // 
             // groupBox1
             // 
@@ -243,6 +278,8 @@ namespace InventarioCasaCeja
             ((System.ComponentModel.ISupportInitialize)(this.tabla)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -262,5 +299,7 @@ namespace InventarioCasaCeja
         private System.Windows.Forms.Button button1;
         private Button quitarProdButton;
         private Button exit_button;
+        private TableLayoutPanel tableLayoutPanel1;
+        private Label label2;
     }
 }

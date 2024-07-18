@@ -70,8 +70,6 @@ namespace InventarioCasaCeja
             tabla.DataSource = tablasource;
             total = 0;
             (previewDialog as Form).WindowState = FormWindowState.Maximized;
-            tabla.KeyDown += tabla_KeyDown;
-
         }
 
         private void AgregarProductoDirectamente(Producto producto)
@@ -124,6 +122,9 @@ namespace InventarioCasaCeja
                     // Limpia txtcodigo y currentProd para el próximo producto
                     txtcodigo.Text = "";
                     currentProd = null;
+                    tabla.Focus();
+                    tabla.CurrentCell = tabla.Rows[0].Cells[3];
+                    tabla.BeginEdit(true);
                 }
             }
         }
@@ -514,26 +515,35 @@ namespace InventarioCasaCeja
             {
                 localDM.confirmarSalidaTemporal(idSalida);
                 MessageBox.Show("Registro de salida enviado", "Éxito");
+                this.Close();
             }
             else
             {
                 MessageBox.Show("No se pudo contactar al servidor, el registro se ha almacenado localmente", "Advertencia");
-            }
-        }
-        private void numericInput_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) &&
-                (e.KeyChar != '.'))
-            {
-                e.Handled = true;
-            }
-            // only allow one decimal point
-            if ((e.KeyChar == '.') && ((sender as TextBox).Text.IndexOf('.') > -1))
-            {
-                e.Handled = true;
+                this.Close();
             }
         }
 
+        private void tabla_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            e.Control.KeyPress -= Control_KeyPress; // Remueve el manejador de eventos previo para evitar duplicados
+            if (tabla.CurrentCell.ColumnIndex == 3)
+            {
+                TextBox tb = e.Control as TextBox;
+                if (tb != null)
+                {
+                    tb.KeyPress += Control_KeyPress;
+                }
+            }
+        }
+
+        private void Control_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
         private void exit_button_Click(object sender, EventArgs e)
         {
             if (DialogResult.Yes == MessageBox.Show("Esta seguro que desea salir?", "Advertencia", MessageBoxButtons.YesNo))
@@ -559,11 +569,16 @@ namespace InventarioCasaCeja
                         exit_button.PerformClick();
                         break;
                     case Keys.F1:
-                        BuscarExistencia bs = new BuscarExistencia(webDM, agregarProd, sucursal, txtcodigo.Text);
-                        bs.ShowDialog();
                         txtcodigo.Focus();
                         break;
                     case Keys.F2:
+                        BuscarExistencia bs = new BuscarExistencia(webDM, agregarProd, sucursal, txtcodigo.Text);
+                        bs.ShowDialog();
+                        tabla.Focus();
+                        SendKeys.Send("{RIGHT}");
+                        SendKeys.Send("{DOWN}");
+                        break;
+                    case Keys.F5:
                         boxsucursales.Focus();
                         boxsucursales.DroppedDown = true;
                         break;
@@ -589,27 +604,45 @@ namespace InventarioCasaCeja
             {
                 tabla.Focus();
             }
-            else
+            if (e.KeyCode == Keys.Enter)
             {
-                currentProd = null;
+                e.SuppressKeyPress = true;
+                Producto producto = localDM.GetProductByCode(txtcodigo.Text);
+                if (producto != null)
+                {
+                    AgregarProductoDirectamente(producto);
+                }
+                else
+                {
+                    MessageBox.Show("El código ingresado no se encontro o no existe.", "Producto no encontrado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtcodigo.Focus();
+                }
             }
         }
         private void tabla_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.KeyCode == Keys.F1)
+            {
+                txtcodigo.Focus();
+            }
             if (e.KeyCode == Keys.F2)
             {
-                boxsucursales.Focus();
-                boxsucursales.DroppedDown = true;
+                BuscarExistencia bs = new BuscarExistencia(webDM, agregarProd, sucursal, txtcodigo.Text);
+                bs.ShowDialog();
+                tabla.Focus();
+                SendKeys.Send("{RIGHT}");
+                SendKeys.Send("{DOWN}");
             }
             //if (e.KeyCode == Keys.Enter){
-            if (e.KeyCode == Keys.Down || e.KeyCode == Keys.Up) {
+            if (e.KeyCode == Keys.Down || e.KeyCode == Keys.Up)
+            {
                 if (tabla.CurrentCell != null && tabla.RowCount > 0)
-                { 
-                int rowIndex = tabla.CurrentCell.RowIndex;
-                tabla.CurrentCell = tabla.Rows[rowIndex].Cells[3];
-                tabla.BeginEdit(true);
-                e.Handled = true;
-                e.SuppressKeyPress = true;
+                {
+                    int rowIndex = tabla.CurrentCell.RowIndex;
+                    tabla.CurrentCell = tabla.Rows[rowIndex].Cells[3];
+                    tabla.BeginEdit(true);
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
                 }
             }
             if (e.KeyCode == Keys.Delete)
@@ -643,13 +676,19 @@ namespace InventarioCasaCeja
                 {
                     productosEnvio.Remove(productoAQuitar);
                 }
-
                 // Actualiza el BindingSource
                 tablasource.ResetBindings(false);
                 Console.WriteLine("producto cosa", productoSeleccionado.cantidad);
             }
         }
-
-
+        private void tabla_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (tabla.CurrentCell != null && tabla.RowCount > 0)
+            {
+                int rowIndex = tabla.CurrentCell.RowIndex;
+                tabla.CurrentCell = tabla.Rows[rowIndex].Cells[3];
+                tabla.BeginEdit(true);
+            }
+        }
     }
 }

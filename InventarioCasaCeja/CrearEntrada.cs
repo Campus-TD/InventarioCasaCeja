@@ -33,55 +33,8 @@ namespace InventarioCasaCeja
             tablasource.DataSource = productos;
             tabla.DataSource = tablasource;
             this.sucursal = idsucursal;
-            tabla.KeyDown += tabla_KeyDown;
         }
 
-        /*
-        private void AgregarProductoTabla(object sender, EventArgs e)
-        {
-            if (txtcodigo.Text.Equals(""))
-            {
-                MessageBox.Show("Debes ingresar todos los datos de producto", "Advertencia");
-            }
-            else
-            {
-                if (currentProd == null)
-                    currentProd = localDM.GetProductByCode(txtcodigo.Text);
-                if (currentProd == null)
-                {
-                    BuscarExistencia bs = new BuscarExistencia(webDM, agregarProd, sucursal, txtcodigo.Text);
-                    bs.ShowDialog();
-                    txtcodigo.Focus();
-                }
-                else
-                {
-                    if (currentProd.id == 0)
-                    {
-                        hasTemporal = true;
-                    }
-                    // Buscar si el producto ya existe en la lista
-                    var productoExistente = productos.FirstOrDefault(p => p.id == currentProd.id);
-                    if (productoExistente != null)
-                    {
-                        MessageBox.Show("El producto ya se agrego previamente", "Advertencia");
-                        return;
-                    }
-                    else
-                    {
-                        productos.Insert(0, new ProductoEntrada
-                        {
-                            id = currentProd.id,
-                            codigo = currentProd.codigo,
-                            nombre = currentProd.nombre,
-                        });
-                    }
-                    tablasource.ResetBindings(false);
-                    txtcodigo.Text = "";
-                    currentProd = null;
-                }
-            }
-        }
-        */
         private void agregarProd(Producto producto)
         {
             currentProd = producto;
@@ -112,15 +65,16 @@ namespace InventarioCasaCeja
                         id = producto.id,
                         codigo = producto.codigo,
                         nombre = producto.nombre,
-                        // Aquí puedes agregar más propiedades según sea necesario
                     });
                     tablasource.ResetBindings(false);
                     txtcodigo.Text = "";
                     currentProd = null;
+                    tabla.Focus();
+                    tabla.CurrentCell = tabla.Rows[0].Cells[3];
+                    tabla.BeginEdit(true);
                 }
             }
         }
-
 
         private void finish_Click(object sender, EventArgs e)
         {
@@ -138,27 +92,27 @@ namespace InventarioCasaCeja
                 }
             }
         }
-        private void numericInput_KeyPress(object sender, KeyPressEventArgs e)
+        private void tabla_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) &&
-                (e.KeyChar != '.'))
+            e.Control.KeyPress -= Control_KeyPress; // Remueve el manejador de eventos previo para evitar duplicados
+            if (tabla.CurrentCell.ColumnIndex == 3)
             {
-                e.Handled = true;
-            }
-
-            // only allow one decimal point
-            if ((e.KeyChar == '.') && ((sender as TextBox).Text.IndexOf('.') > -1))
-            {
-                e.Handled = true;
+                TextBox tb = e.Control as TextBox;
+                if (tb != null)
+                {
+                    tb.KeyPress += Control_KeyPress;
+                }
             }
         }
-        private void integerInput_KeyPress(object sender, KeyPressEventArgs e)
+
+        private void Control_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
             {
                 e.Handled = true;
             }
         }
+
         protected override bool ProcessDialogKey(Keys keyData)
         {
             if (Form.ModifierKeys == Keys.None)
@@ -169,11 +123,16 @@ namespace InventarioCasaCeja
                         exit_button.PerformClick();
                         break;
                     case Keys.F1:
-                        BuscarExistencia bs = new BuscarExistencia(webDM, agregarProd, sucursal, txtcodigo.Text);
-                        bs.ShowDialog();
                         txtcodigo.Focus();
                         break;
                     case Keys.F2:
+                        BuscarExistencia bs = new BuscarExistencia(webDM, agregarProd, sucursal, txtcodigo.Text);
+                        bs.ShowDialog();
+                        tabla.Focus();
+                        SendKeys.Send("{RIGHT}");
+                        SendKeys.Send("{DOWN}");
+                        break;
+                    case Keys.F5:
                         SeleccionarImagen(this, new EventArgs());
                         break;
                     case Keys.F6:
@@ -205,7 +164,6 @@ namespace InventarioCasaCeja
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string filePath = openFileDialog.FileName;
-
                 // Configura el lector de códigos QR.
                 BarcodeReader barcodeReader = new BarcodeReader();
 
@@ -290,11 +248,37 @@ namespace InventarioCasaCeja
             {
                 tabla.Focus();
             }
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true; 
+                Producto producto = localDM.GetProductByCode(txtcodigo.Text);
+                if (producto != null)
+                {
+                    AgregarProductoDirectamente(producto);
+                }
+                else
+                {
+                    MessageBox.Show("El código ingresado no se encontro o no existe.", "Producto no encontrado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtcodigo.Focus();
+                }
+            }
         }
 
         private void tabla_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.KeyCode == Keys.F1)
+            {
+                txtcodigo.Focus();
+            }
             if (e.KeyCode == Keys.F2)
+            {
+                BuscarExistencia bs = new BuscarExistencia(webDM, agregarProd, sucursal, txtcodigo.Text);
+                bs.ShowDialog();
+                tabla.Focus();
+                SendKeys.Send("{RIGHT}");
+                SendKeys.Send("{DOWN}");
+            }
+            if (e.KeyCode == Keys.F5)
             {
                 SeleccionarImagen(sender, e);
             }
@@ -330,6 +314,16 @@ namespace InventarioCasaCeja
             if (DialogResult.Yes == MessageBox.Show("Esta seguro que desea salir?", "Advertencia", MessageBoxButtons.YesNo))
             {
                 this.Close();
+            }
+        }
+
+        private void tabla_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (tabla.CurrentCell != null && tabla.RowCount > 0)
+            {
+                int rowIndex = tabla.CurrentCell.RowIndex;
+                tabla.CurrentCell = tabla.Rows[rowIndex].Cells[3];
+                tabla.BeginEdit(true);
             }
         }
     }
