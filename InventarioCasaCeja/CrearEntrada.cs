@@ -33,6 +33,25 @@ namespace InventarioCasaCeja
             tablasource.DataSource = productos;
             tabla.DataSource = tablasource;
             this.sucursal = idsucursal;
+            mostrarSucursal();
+        }
+
+        private void CrearEntrada_Load(object sender, EventArgs e)
+        {
+            txtcodigo.Focus();
+        }
+
+        private void mostrarSucursal()
+        {
+            Sucursal sucursaltxt = localDM.getSucursal(sucursal);
+            if (sucursaltxt != null)
+            {
+                txtSucOrig.Text = sucursaltxt.razon_social;
+            }
+            else
+            {
+                txtSucOrig.Text = "suc. no encontrada";
+            }
         }
 
         private void agregarProd(Producto producto)
@@ -92,6 +111,7 @@ namespace InventarioCasaCeja
                 }
             }
         }
+
         private void tabla_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
             e.Control.KeyPress -= Control_KeyPress; // Remueve el manejador de eventos previo para evitar duplicados
@@ -107,6 +127,7 @@ namespace InventarioCasaCeja
 
         private void Control_KeyPress(object sender, KeyPressEventArgs e)
         {
+            // Permite solo números y controlar el ingreso de caracteres
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
             {
                 e.Handled = true;
@@ -150,10 +171,6 @@ namespace InventarioCasaCeja
                 return true;
             }
             return base.ProcessDialogKey(keyData);
-        }
-        private void CrearEntrada_Load(object sender, EventArgs e)
-        {
-            txtcodigo.Focus();
         }
 
         private void SeleccionarImagen(object sender, EventArgs e)

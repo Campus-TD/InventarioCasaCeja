@@ -47,7 +47,7 @@
             this.listBox1.Size = new System.Drawing.Size(656, 418);
             this.listBox1.TabIndex = 1;
             this.listBox1.DoubleClick += new System.EventHandler(this.listBox1_DoubleClick);
-            this.listBox1.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.querySelector_PreviewKeyDown);
+            this.listBox1.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.querySelectorEnter_PreviewKeyDown);
             // 
             // querySelector
             // 

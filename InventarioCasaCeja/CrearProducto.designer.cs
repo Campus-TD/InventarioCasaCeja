@@ -219,6 +219,7 @@
             this.txtcategoria.ReadOnly = true;
             this.txtcategoria.Size = new System.Drawing.Size(213, 61);
             this.txtcategoria.TabIndex = 11;
+            this.txtcategoria.Click += new System.EventHandler(this.mostrar_categorias_Click);
             this.txtcategoria.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.txtcategoria_PreviewKeyDown);
             // 
             // label6
@@ -302,6 +303,7 @@
             this.txtunidad.ShortcutsEnabled = false;
             this.txtunidad.Size = new System.Drawing.Size(213, 61);
             this.txtunidad.TabIndex = 0;
+            this.txtunidad.Click += new System.EventHandler(this.mostrar_medidas_Click);
             this.txtunidad.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.txtunidad_PreviewKeyDown);
             // 
             // txtpresentacion

@@ -49,20 +49,34 @@ namespace InventarioCasaCeja
 
         private void querySelector_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            /*
             if(e.KeyCode == Keys.Enter)
             {
                 string value = listBox1.SelectedItem?.ToString();
                 refresh(value);
                 Dispose();
-            }else if(e.KeyCode == Keys.Down)
+            }else 
+            */
+            if(e.KeyCode == Keys.Down)
             {
                 listBox1.Focus();
                 listBox1.SelectedIndex += listBox1.Items.Count > listBox1.SelectedIndex+1 ? 1 : 0;
             }
-            else if (e.KeyCode == Keys.Up)
+            //else 
+            if (e.KeyCode == Keys.Up)
             {
                 listBox1.Focus();
                 listBox1.SelectedIndex -= 0 <= listBox1.SelectedIndex - 1 ? 1 : 0;
+            }
+        }
+
+        private void querySelectorEnter_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                string value = listBox1.SelectedItem?.ToString();
+                refresh(value);
+                Dispose();
             }
         }
 
