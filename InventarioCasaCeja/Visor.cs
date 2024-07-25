@@ -243,10 +243,6 @@ namespace InventarioCasaCeja
             {
                 modify();
             }
-            if(e.KeyCode == Keys.F5)
-            {
-                crear.PerformClick();
-            }
         }
 
         private void tabla_CellDoubleClick(object sender, DataGridViewCellEventArgs e)

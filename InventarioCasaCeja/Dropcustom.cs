@@ -14,17 +14,23 @@ namespace InventarioCasaCeja
         string[] arr;
         Action<string> refresh;
 
-        
-
         public Dropcustom()
         {
             InitializeComponent();
-            listBox1.Focus();
+        }
+        private void Dropcustom_Shown(object sender, EventArgs e)
+        {
+            if (listBox1.Items.Count > 0)
+            {
+                listBox1.SelectedIndex = 0; // Selecciona el primer elemento
+            }
+            listBox1.Focus(); // Establece el foco en el ListBox
         }
 
         public void setLabelText(string text)
         {
             groupBox1.Text = text;
+            listBox1.Focus();
         }
 
         public void setItems(string[] items, Action<string> refreshvalue)
