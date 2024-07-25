@@ -194,15 +194,12 @@ namespace InventarioCasaCeja
                         this.Close();
                         break;
                     case Keys.Enter:
-                        if (cancel.Focused || save.Focused || remove.Focused)
+                        if (cancel.Focused || save.Focused)
                             return base.ProcessDialogKey(keyData);
                         SendKeys.Send("{TAB}");
                         break;
                     case Keys.F5:
                         save.PerformClick();
-                        break;
-                    case Keys.F6:
-                        remove.PerformClick();
                         break;
                     default:
                         return base.ProcessDialogKey(keyData);

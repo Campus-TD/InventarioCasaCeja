@@ -19,6 +19,7 @@ namespace InventarioCasaCeja
         public Dropcustom()
         {
             InitializeComponent();
+            listBox1.Focus();
         }
 
         public void setLabelText(string text)
