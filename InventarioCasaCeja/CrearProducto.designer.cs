@@ -108,7 +108,7 @@
             this.Bsalir.Name = "Bsalir";
             this.Bsalir.Size = new System.Drawing.Size(218, 48);
             this.Bsalir.TabIndex = 25;
-            this.Bsalir.Text = "SALIR (ALT+F5)";
+            this.Bsalir.Text = "SALIR (Shift+F5)";
             this.Bsalir.UseVisualStyleBackColor = true;
             this.Bsalir.Click += new System.EventHandler(this.Bsalir_Click);
             // 
