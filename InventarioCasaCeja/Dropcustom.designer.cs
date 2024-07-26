@@ -44,7 +44,7 @@
             this.listBox1.Margin = new System.Windows.Forms.Padding(4);
             this.listBox1.Name = "listBox1";
             this.listBox1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.listBox1.Size = new System.Drawing.Size(656, 418);
+            this.listBox1.Size = new System.Drawing.Size(622, 418);
             this.listBox1.TabIndex = 1;
             this.listBox1.DoubleClick += new System.EventHandler(this.listBox1_DoubleClick);
             this.listBox1.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.querySelectorEnter_PreviewKeyDown);
@@ -58,7 +58,7 @@
             this.querySelector.Location = new System.Drawing.Point(17, 79);
             this.querySelector.Margin = new System.Windows.Forms.Padding(4);
             this.querySelector.Name = "querySelector";
-            this.querySelector.Size = new System.Drawing.Size(656, 61);
+            this.querySelector.Size = new System.Drawing.Size(622, 61);
             this.querySelector.TabIndex = 0;
             this.querySelector.TextChanged += new System.EventHandler(this.querySelector_TextChanged);
             this.querySelector.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.querySelector_PreviewKeyDown);
@@ -72,7 +72,7 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Size = new System.Drawing.Size(720, 594);
+            this.groupBox1.Size = new System.Drawing.Size(686, 594);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "groupBox1";
@@ -89,6 +89,7 @@
             this.MinimumSize = new System.Drawing.Size(730, 655);
             this.Name = "Dropcustom";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Shown += new System.EventHandler(this.Dropcustom_Shown);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

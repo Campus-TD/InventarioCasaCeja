@@ -102,7 +102,7 @@ namespace InventarioCasaCeja
                         this.Close();
                         break;
                     case Keys.Enter:
-                        if (upload.Focused || button1.Focused || cancel.Focused)
+                        if (upload.Focused || cancel.Focused)
                             return base.ProcessDialogKey(keyData);
                         SendKeys.Send("{TAB}");
                         break;
@@ -111,9 +111,6 @@ namespace InventarioCasaCeja
                         break;
                     case Keys.F5:
                         upload.PerformClick();
-                        break;
-                    case Keys.F6:
-                        button1.PerformClick();
                         break;
                     default:
                         return base.ProcessDialogKey(keyData);

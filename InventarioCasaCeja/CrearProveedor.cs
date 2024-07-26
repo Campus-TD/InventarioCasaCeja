@@ -21,9 +21,9 @@ namespace InventarioCasaCeja
 
         private void accept_Click(object sender, EventArgs e)
         {
-             if(txtnombre.Text.Equals("") || txtcorreo.Text.Equals("") || txttelefono.Text.Equals("") || txtdescripcion.Text.Equals(""))
+             if(txtnombre.Text.Equals("") || txtcorreo.Text.Equals("") || txttelefono.Text.Equals(""))
             {
-                MessageBox.Show("Favor de completar todos los campos", "Advertencia");
+                MessageBox.Show("Favor de completar todos los campos obligatorios", "Advertencia");
             }
             else
             {
@@ -82,6 +82,13 @@ namespace InventarioCasaCeja
         private void cancel_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+        private void integerInput_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
         }
     }
 }

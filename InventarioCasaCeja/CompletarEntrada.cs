@@ -121,7 +121,7 @@ namespace InventarioCasaCeja
                         this.Close();
                         break;
                     case Keys.Enter:
-                        if (complete.Focused || crarprov.Focused || exit.Focused)
+                        if (complete.Focused || exit.Focused)
                             return base.ProcessDialogKey(keyData);
                         SendKeys.Send("{TAB}");
                         break;
@@ -130,9 +130,6 @@ namespace InventarioCasaCeja
                         break;
                     case Keys.F5:
                         complete.PerformClick();
-                        break;
-                    case Keys.F6:
-                        crarprov.PerformClick();
                         break;
                     default:
                         return base.ProcessDialogKey(keyData);

@@ -56,9 +56,9 @@ namespace InventarioCasaCeja
         }
         private void accept_Click(object sender, EventArgs e)
         {
-            if (txtnombre.Text.Equals("") || txtcorreo.Text.Equals("") || txttelefono.Text.Equals("") || txtdescripcion.Text.Equals(""))
+            if (txtnombre.Text.Equals("") || txtcorreo.Text.Equals("") || txttelefono.Text.Equals(""))
             {
-                MessageBox.Show("Favor de completar todos los campos", "Advertencia");
+                MessageBox.Show("Favor de completar todos los campos obligatorios", "Advertencia");
             }
             else
             {
@@ -82,7 +82,7 @@ namespace InventarioCasaCeja
                         this.Close();
                         break;
                     case Keys.Enter:
-                        if (cancel.Focused || accept.Focused || delete.Focused)
+                        if (cancel.Focused || accept.Focused)
                             return base.ProcessDialogKey(keyData);
                         SendKeys.Send("{TAB}");
                         break;
@@ -92,15 +92,19 @@ namespace InventarioCasaCeja
                     case Keys.F5:
                         accept.PerformClick();
                         break;
-                    case Keys.F6:
-                        delete.PerformClick();
-                        break;
                     default:
                         return base.ProcessDialogKey(keyData);
                 }
                 return true;
             }
             return base.ProcessDialogKey(keyData);
+        }
+        private void integerInput_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
         }
     }
 }

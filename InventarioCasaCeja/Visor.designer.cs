@@ -39,6 +39,7 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.lbl = new System.Windows.Forms.Label();
+            this.Bmodificar = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tabla)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
@@ -50,22 +51,24 @@ namespace InventarioCasaCeja
             this.crear.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.crear.Font = new System.Drawing.Font("Segoe UI Semibold", 14F, System.Drawing.FontStyle.Bold);
-            this.crear.Location = new System.Drawing.Point(398, 4);
-            this.crear.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.crear.Location = new System.Drawing.Point(489, 4);
+            this.crear.Margin = new System.Windows.Forms.Padding(4);
             this.crear.Name = "crear";
-            this.crear.Size = new System.Drawing.Size(235, 84);
+            this.crear.Size = new System.Drawing.Size(259, 84);
             this.crear.TabIndex = 2;
-            this.crear.Text = "CREAR";
+            this.crear.Text = "CREAR (F2)";
             this.crear.UseVisualStyleBackColor = true;
             this.crear.Click += new System.EventHandler(this.crearToolStripMenuItem_Click);
             // 
             // salir
             // 
+            this.salir.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.salir.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
-            this.salir.Location = new System.Drawing.Point(641, 4);
-            this.salir.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.salir.Location = new System.Drawing.Point(999, 4);
+            this.salir.Margin = new System.Windows.Forms.Padding(4);
             this.salir.Name = "salir";
-            this.salir.Size = new System.Drawing.Size(200, 84);
+            this.salir.Size = new System.Drawing.Size(203, 84);
             this.salir.TabIndex = 3;
             this.salir.Text = "SALIR (Esc)";
             this.salir.UseVisualStyleBackColor = true;
@@ -78,9 +81,9 @@ namespace InventarioCasaCeja
             this.txtbuscar.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.txtbuscar.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
             this.txtbuscar.Location = new System.Drawing.Point(4, 41);
-            this.txtbuscar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtbuscar.Margin = new System.Windows.Forms.Padding(4);
             this.txtbuscar.Name = "txtbuscar";
-            this.txtbuscar.Size = new System.Drawing.Size(378, 42);
+            this.txtbuscar.Size = new System.Drawing.Size(469, 42);
             this.txtbuscar.TabIndex = 1;
             this.txtbuscar.TextChanged += new System.EventHandler(this.txtbuscar_TextChanged);
             this.txtbuscar.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtbuscar_KeyDown);
@@ -95,12 +98,12 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel1.Controls.Add(this.tabla, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(16, 15);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(853, 582);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1214, 653);
             this.tableLayoutPanel1.TabIndex = 10;
             // 
             // tabla
@@ -133,13 +136,13 @@ namespace InventarioCasaCeja
             this.tabla.DefaultCellStyle = dataGridViewCellStyle4;
             this.tabla.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.tabla.Location = new System.Drawing.Point(4, 115);
-            this.tabla.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabla.Margin = new System.Windows.Forms.Padding(4);
             this.tabla.MultiSelect = false;
             this.tabla.Name = "tabla";
             this.tabla.RowHeadersVisible = false;
             this.tabla.RowHeadersWidth = 51;
             this.tabla.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.tabla.Size = new System.Drawing.Size(845, 463);
+            this.tabla.Size = new System.Drawing.Size(1206, 534);
             this.tabla.StandardTab = true;
             this.tabla.TabIndex = 0;
             this.tabla.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.tabla_CellDoubleClick);
@@ -150,19 +153,21 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel2.ColumnCount = 3;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 46.79245F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 28.87574F));
+            this.tableLayoutPanel2.ColumnCount = 4;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.74372F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 26.83417F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 24.49704F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 210F));
             this.tableLayoutPanel2.Controls.Add(this.crear, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.salir, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.salir, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.Bmodificar, 2, 0);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(4, 4);
-            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(845, 103);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1206, 103);
             this.tableLayoutPanel2.TabIndex = 11;
             // 
             // tableLayoutPanel3
@@ -174,12 +179,12 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel3.Controls.Add(this.lbl, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.txtbuscar, 0, 1);
             this.tableLayoutPanel3.Location = new System.Drawing.Point(4, 4);
-            this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(386, 100);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(477, 100);
             this.tableLayoutPanel3.TabIndex = 12;
             // 
             // lbl
@@ -193,15 +198,29 @@ namespace InventarioCasaCeja
             this.lbl.TabIndex = 6;
             this.lbl.Text = "BUSCAR (F1)";
             // 
+            // Bmodificar
+            // 
+            this.Bmodificar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.Bmodificar.Font = new System.Drawing.Font("Segoe UI Semibold", 14F, System.Drawing.FontStyle.Bold);
+            this.Bmodificar.Location = new System.Drawing.Point(756, 4);
+            this.Bmodificar.Margin = new System.Windows.Forms.Padding(4);
+            this.Bmodificar.Name = "Bmodificar";
+            this.Bmodificar.Size = new System.Drawing.Size(235, 84);
+            this.Bmodificar.TabIndex = 13;
+            this.Bmodificar.Text = "MODIFICAR (F3)";
+            this.Bmodificar.UseVisualStyleBackColor = true;
+            this.Bmodificar.Click += new System.EventHandler(this.Bmodificar_Click);
+            // 
             // Visor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(882, 610);
+            this.ClientSize = new System.Drawing.Size(1243, 681);
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.Name = "Visor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -226,5 +245,6 @@ namespace InventarioCasaCeja
         private System.Windows.Forms.Label lbl;
         private System.Windows.Forms.DataGridView tabla;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.Button Bmodificar;
     }
 }

@@ -20,11 +20,11 @@ namespace InventarioCasaCeja
             {
                 case 0:
                     this.Text = "Categorías";
-                    crear.Text = "NUEVA CATEGORÍA (F5)";
+                    crear.Text = "NUEVA CATEGORÍA (F2)";
                     break;
                 case 1:
                     this.Text = "Unidades de medida";
-                    crear.Text = "NUEVA MEDIDA (F5)";
+                    crear.Text = "NUEVA MEDIDA (F2)";
                     break;
                 case 2:
                     this.Text = "Operaciones";
@@ -32,11 +32,11 @@ namespace InventarioCasaCeja
                     break;
                 case 3:
                     this.Text = "Usuarios";
-                    crear.Text = "NUEVO USUARIO (F5)";
+                    crear.Text = "NUEVO USUARIO (F2)";
                     break;
                 case 4:
                     this.Text = "Sucursales";
-                    crear.Text = "NUEVA SUCURSAL (F5)";
+                    crear.Text = "NUEVA SUCURSAL (F2)";
                     break;
                 case 5:
                     this.Text = "Historial de ventas";
@@ -52,7 +52,7 @@ namespace InventarioCasaCeja
                     break;
                 case 8:
                     this.Text = "Proveedores registrados";
-                    crear.Text = "NUEVO PROVEEDOR (F5)";
+                    crear.Text = "NUEVO PROVEEDOR (F2)";
                     break;
             }
         }
@@ -235,13 +235,13 @@ namespace InventarioCasaCeja
 
         private void tabla_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
-            {
-                modify();
-            }
-            if(e.KeyCode == Keys.F5)
+            if (e.KeyCode == Keys.F2)
             {
                 crear.PerformClick();
+            }
+            if (e.KeyCode == Keys.F3)
+            {
+                modify();
             }
         }
 
@@ -266,8 +266,11 @@ namespace InventarioCasaCeja
                     case Keys.F1:
                         txtbuscar.Focus();
                         break;
-                    case Keys.F5:
+                    case Keys.F2:
                         crear.PerformClick();
+                        break;
+                    case Keys.F3:
+                        modify();
                         break;
                     case Keys.Down:
                         tabla.Focus();
@@ -298,15 +301,16 @@ namespace InventarioCasaCeja
                 SendKeys.Send("{UP}");
                 tabla.Focus();
             }
-            if(e.KeyData == Keys.Enter)
-            {
-                modify();
-            }
         }
 
         private void txtbuscar_TextChanged(object sender, EventArgs e)
         {
             loadData();
+        }
+
+        private void Bmodificar_Click(object sender, EventArgs e)
+        {
+            modify();
         }
     }
 
