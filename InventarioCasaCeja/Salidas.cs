@@ -511,10 +511,31 @@ namespace InventarioCasaCeja
         }
         async void enviarSalida(Salida salida)
         {
-            if(await webDM.SendSalidaAsync(salida))
+            if (await webDM.SendSalidaAsync(salida))
             {
                 localDM.confirmarSalidaTemporal(idSalida);
                 MessageBox.Show("Registro de salida enviado", "Éxito");
+
+                // Restar existencias de los productos en la sucursal de origen
+                foreach (var producto in productosImprimir)
+                {
+                    bool resultado = await webDM.restarExistencia(salida.id_sucursal_origen, producto.idproducto, producto.cantidad);
+                    if (!resultado)
+                    {
+                        MessageBox.Show($"No se pudo restar la existencia para el producto ID: {producto.idproducto}", "Error");
+                    }
+                }
+
+                // Sumar existencias de los productos en la sucursal destino
+                /*foreach (var producto in productosImprimir)
+                {
+                    bool resultado = await webDM.sumarExistencia(salida.id_sucursal_destino, producto.idproducto, producto.cantidad);
+                    if (!resultado)
+                    {
+                        MessageBox.Show($"No se pudo sumar la existencia para el producto ID: {producto.idproducto} en la sucursal destino", "Error");
+                    }
+                }*/
+
                 this.Close();
             }
             else
@@ -523,6 +544,8 @@ namespace InventarioCasaCeja
                 this.Close();
             }
         }
+
+
 
         private void tabla_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {

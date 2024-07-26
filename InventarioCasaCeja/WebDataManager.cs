@@ -1317,5 +1317,74 @@ namespace InventarioCasaCeja
             }
             return null;
         }
+        public async Task<bool> sumarExistencia(int sucursalId, int productoId, double cantidad)
+        {
+            string apiUrl = $"{url}api/sucursales/{sucursalId}/productos/{productoId}/add"; // Asegúrate de que esta ruta coincida con la que definiste en Laravel
+            Console.WriteLine($"Making request to: {apiUrl}");
+            var requestData = new
+            {
+                cantidad = cantidad
+            };
+
+            try
+            {
+                HttpResponseMessage response = await client.PutAsJsonAsync(apiUrl, requestData);
+                string res = await response.Content.ReadAsStringAsync();
+
+                Console.WriteLine($"Response status code: {response.StatusCode}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("Producto actualizado con éxito.");
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("Error al actualizar el producto.");
+                    Console.WriteLine(res);
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> restarExistencia(int sucursalId, int productoId, double cantidad)
+        {
+            string apiUrl = $"{url}api/sucursales/{sucursalId}/productos/{productoId}";
+            //Console.WriteLine($"Making request to: {apiUrl}");
+            var requestData = new
+            {
+                cantidad = cantidad
+            };
+
+            try
+            {
+                HttpResponseMessage response = await client.PutAsJsonAsync(apiUrl, requestData);
+                string res = await response.Content.ReadAsStringAsync();
+
+                //Console.WriteLine($"Response status code: {response.StatusCode}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    //Console.WriteLine("Producto actualizado con éxito.");
+                    return true;
+                }
+                else
+                {
+                    //Console.WriteLine("Error al actualizar el producto.");
+                    //Console.WriteLine(res);
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
     }
 }
