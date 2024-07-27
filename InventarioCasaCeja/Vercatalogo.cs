@@ -62,9 +62,7 @@ namespace InventarioCasaCeja
             {
                 catalogo.DataSource = tablacatalogo;
                 
-            }
-            
-
+            }            
         }
 
         private void Vercatalago_Load(object sender, EventArgs e)
@@ -238,6 +236,9 @@ namespace InventarioCasaCeja
                     case Keys.F5:
                         alta();
                         break;
+                    case Keys.F6:
+                        modify();
+                        break;
                     case Keys.Down:
                         catalogo.Focus();
                         SendKeys.Send("{DOWN}");
@@ -273,10 +274,6 @@ namespace InventarioCasaCeja
             }
         }
 
-        private void button2_KeyPress(object sender, KeyPressEventArgs e)
-        {
-        }
-
         private void button1_KeyDown(object sender, KeyEventArgs e)
         {
             if(e.KeyData == Keys.Enter)
@@ -303,36 +300,24 @@ namespace InventarioCasaCeja
             loadData();
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void Bsalir_Click(object sender, EventArgs e)
         {
             this.Close();
         }
-        /*
-        private void catalogo_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.ColumnIndex == catalogo.Columns["IMAGEN"].Index)
-            {
-                //Do something with your button.
 
-                catalogo.Cursor = Cursors.Hand;
-            }
-            else
-            {
-                catalogo.Cursor = Cursors.Default;
-            }
-        }
-        */
         private void catalogo_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
         {
             catalogo.Cursor = Cursors.Default;
         }
 
-        private void button4_KeyDown(object sender, KeyEventArgs e)
+        private void Bmodificar_Click(object sender, EventArgs e)
         {
-            if (e.KeyData == Keys.Enter)
-            {
-                altaDeProducto_Click(sender, e);
-            }
+            modify();
+        }
+
+        private void BaltaProducto_Click(object sender, EventArgs e)
+        {
+            alta();
         }
     }
 }

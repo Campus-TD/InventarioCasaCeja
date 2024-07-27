@@ -344,5 +344,10 @@ namespace InventarioCasaCeja
             base.Dispose(disposing);            
         }
 
+        private void historialDeEntradasYSalidasToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HistEntradasSalidas hes = new HistEntradasSalidas();
+            hes.ShowDialog();
+        }
     }
 }

@@ -282,19 +282,39 @@ namespace InventarioCasaCeja
 
         public void guardarSalidaTemporal(Salida salida, int idsalida)
         {
-            SQLiteCommand command = connection.CreateCommand();
-            command.CommandText = "UPDATE salidas_temporal SET id_sucursal_origen = @setOrigen, id_sucursal_destino = @setDestino, productos = @setProductos, folio = @setFolio," +
-                " fecha_salida = @setFecha, usuario_id = @setUsuario, total_importe = @setTotal, estado = @setEstado WHERE id = @setId";
-            command.Parameters.AddWithValue("setOrigen", salida.id_sucursal_origen);
-            command.Parameters.AddWithValue("setDestino", salida.id_sucursal_destino);
-            command.Parameters.AddWithValue("setProductos", salida.productos);
-            command.Parameters.AddWithValue("setFolio", salida.folio);
-            command.Parameters.AddWithValue("setFecha", salida.fecha_salida);
-            command.Parameters.AddWithValue("setUsuario", salida.usuario_id);
-            command.Parameters.AddWithValue("setTotal", salida.total_importe);
-            command.Parameters.AddWithValue("setEstado", 1);
-            command.Parameters.AddWithValue("setId", idsalida);
-            command.ExecuteNonQuery();
+            int maxRetries = 3;
+            int retryDelayMilliseconds = 100;
+
+            for (int retryCount = 0; retryCount < maxRetries; retryCount++)
+            {
+                try
+                {
+                    SQLiteCommand command = connection.CreateCommand();
+                    command.CommandText = "UPDATE salidas_temporal SET id_sucursal_origen = @setOrigen, id_sucursal_destino = @setDestino, productos = @setProductos, folio = @setFolio," +
+                        " fecha_salida = @setFecha, usuario_id = @setUsuario, total_importe = @setTotal, estado = @setEstado WHERE id = @setId";
+                    command.Parameters.AddWithValue("setOrigen", salida.id_sucursal_origen);
+                    command.Parameters.AddWithValue("setDestino", salida.id_sucursal_destino);
+                    command.Parameters.AddWithValue("setProductos", salida.productos);
+                    command.Parameters.AddWithValue("setFolio", salida.folio);
+                    command.Parameters.AddWithValue("setFecha", salida.fecha_salida);
+                    command.Parameters.AddWithValue("setUsuario", salida.usuario_id);
+                    command.Parameters.AddWithValue("setTotal", salida.total_importe);
+                    command.Parameters.AddWithValue("setEstado", 1);
+                    command.Parameters.AddWithValue("setId", idsalida);
+                    command.ExecuteNonQuery();
+
+                    // If the update operation succeeds, exit the retry loop
+                    return;
+                }
+                catch (SQLiteException ex) when (ex.Message.Contains("database is locked"))
+                {
+                    // If the database is still locked, wait for a short period before retrying
+                    System.Threading.Thread.Sleep(retryDelayMilliseconds);
+                }
+            }
+
+            // If the maximum number of retries is reached and the update operation still fails, you can handle the error or throw an exception
+            throw new Exception("Error al actualizar la tabla salidas_temporal debido a un bloqueo en la base de datos.");
         }
         public void confirmarSalidaTemporal(int idsalida)
         {

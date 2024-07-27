@@ -226,6 +226,12 @@
       <DependentUpon>ElegirSucursal.cs</DependentUpon>
     </Compile>
     <Compile Include="Existencia.cs" />
+    <Compile Include="HistEntradasSalidas.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HistEntradasSalidas.Designer.cs">
+      <DependentUpon>HistEntradasSalidas.cs</DependentUpon>
+    </Compile>
     <Compile Include="Inicio.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -324,6 +330,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ElegirSucursal.resx">
       <DependentUpon>ElegirSucursal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HistEntradasSalidas.resx">
+      <DependentUpon>HistEntradasSalidas.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Inicio.resx">
       <DependentUpon>Inicio.cs</DependentUpon>

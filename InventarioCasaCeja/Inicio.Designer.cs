@@ -34,6 +34,7 @@ namespace InventarioCasaCeja
             this.opcionesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configuraciónToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sincronizarBaseDeDatosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.historialDeEntradasYSalidasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -178,6 +179,7 @@ namespace InventarioCasaCeja
             // 
             this.opcionesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.configuraciónToolStripMenuItem,
+            this.historialDeEntradasYSalidasToolStripMenuItem,
             this.sincronizarBaseDeDatosToolStripMenuItem});
             this.opcionesToolStripMenuItem.Name = "opcionesToolStripMenuItem";
             this.opcionesToolStripMenuItem.Size = new System.Drawing.Size(85, 24);
@@ -186,16 +188,23 @@ namespace InventarioCasaCeja
             // configuraciónToolStripMenuItem
             // 
             this.configuraciónToolStripMenuItem.Name = "configuraciónToolStripMenuItem";
-            this.configuraciónToolStripMenuItem.Size = new System.Drawing.Size(262, 26);
+            this.configuraciónToolStripMenuItem.Size = new System.Drawing.Size(292, 26);
             this.configuraciónToolStripMenuItem.Text = "Configuración";
             this.configuraciónToolStripMenuItem.Click += new System.EventHandler(this.configuraciónToolStripMenuItem_Click);
             // 
             // sincronizarBaseDeDatosToolStripMenuItem
             // 
             this.sincronizarBaseDeDatosToolStripMenuItem.Name = "sincronizarBaseDeDatosToolStripMenuItem";
-            this.sincronizarBaseDeDatosToolStripMenuItem.Size = new System.Drawing.Size(262, 26);
+            this.sincronizarBaseDeDatosToolStripMenuItem.Size = new System.Drawing.Size(292, 26);
             this.sincronizarBaseDeDatosToolStripMenuItem.Text = "Sincronizar base de datos";
             this.sincronizarBaseDeDatosToolStripMenuItem.Click += new System.EventHandler(this.sincronizarBaseDeDatosToolStripMenuItem_Click);
+            // 
+            // historialDeEntradasYSalidasToolStripMenuItem
+            // 
+            this.historialDeEntradasYSalidasToolStripMenuItem.Name = "historialDeEntradasYSalidasToolStripMenuItem";
+            this.historialDeEntradasYSalidasToolStripMenuItem.Size = new System.Drawing.Size(292, 26);
+            this.historialDeEntradasYSalidasToolStripMenuItem.Text = "Historial de Entradas y Salidas";
+            this.historialDeEntradasYSalidasToolStripMenuItem.Click += new System.EventHandler(this.historialDeEntradasYSalidasToolStripMenuItem_Click);
             // 
             // Inicio
             // 
@@ -235,6 +244,7 @@ namespace InventarioCasaCeja
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ToolStripMenuItem sincronizarBaseDeDatosToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem historialDeEntradasYSalidasToolStripMenuItem;
     }
 }
 
