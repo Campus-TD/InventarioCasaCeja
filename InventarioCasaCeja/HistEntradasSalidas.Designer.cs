@@ -226,7 +226,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.01623F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.98377F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 104F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 105F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 376F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 56F));
             this.tableLayoutPanel1.Controls.Add(this.label2, 1, 0);
@@ -249,7 +249,7 @@
             this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 13F, System.Drawing.FontStyle.Bold);
             this.label2.Location = new System.Drawing.Point(220, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(270, 33);
+            this.label2.Size = new System.Drawing.Size(269, 33);
             this.label2.TabIndex = 7;
             this.label2.Text = "TIPO (F1)";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -258,11 +258,12 @@
             // 
             this.BoxTipo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.BoxTipo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.BoxTipo.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold);
             this.BoxTipo.FormattingEnabled = true;
             this.BoxTipo.Location = new System.Drawing.Point(220, 36);
             this.BoxTipo.Name = "BoxTipo";
-            this.BoxTipo.Size = new System.Drawing.Size(270, 49);
+            this.BoxTipo.Size = new System.Drawing.Size(269, 49);
             this.BoxTipo.TabIndex = 2;
             // 
             // label1
