@@ -84,7 +84,9 @@ namespace InventarioCasaCeja
                         id = producto.id,
                         codigo = producto.codigo,
                         nombre = producto.nombre,
+                        costo = producto.menudeo,
                     });
+
                     tablasource.ResetBindings(false);
                     txtcodigo.Text = "";
                     currentProd = null;
@@ -95,6 +97,16 @@ namespace InventarioCasaCeja
             }
         }
 
+        private double CalcularTotal()
+        {
+            double total = 0;
+            foreach (var producto in productos)
+            {
+                total += producto.costo * producto.cantidad; // Asumiendo que tienes una propiedad 'cantidad' en ProductoEntrada
+            }
+            return total;
+        }
+
         private void finish_Click(object sender, EventArgs e)
         {
             if (productos.Count == 0)
@@ -103,7 +115,8 @@ namespace InventarioCasaCeja
             }
             else
             {
-                CompletarEntrada ce = new CompletarEntrada(webDM, productos, hasTemporal, sucursal);
+                double total = CalcularTotal();
+                CompletarEntrada ce = new CompletarEntrada(webDM, productos, hasTemporal, sucursal, total);
                 DialogResult res = ce.ShowDialog();
                 if (res == DialogResult.Yes)
                 {

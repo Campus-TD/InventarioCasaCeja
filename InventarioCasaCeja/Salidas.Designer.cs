@@ -119,6 +119,7 @@ namespace InventarioCasaCeja
             this.tabla.StandardTab = true;
             this.tabla.TabIndex = 5;
             this.tabla.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.tabla_CellDoubleClick);
+            this.tabla.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.tabla_CellEndEdit);
             this.tabla.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.tabla_EditingControlShowing);
             this.tabla.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabla_KeyDown);
             // 
@@ -267,7 +268,7 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 67.38281F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 32.61719F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 516F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 482F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 483F));
             this.tableLayoutPanel4.Controls.Add(this.label3, 1, 0);
             this.tableLayoutPanel4.Controls.Add(this.txtfolio, 0, 1);
             this.tableLayoutPanel4.Controls.Add(this.label5, 0, 0);
@@ -336,14 +337,14 @@ namespace InventarioCasaCeja
             this.txtfecha.Margin = new System.Windows.Forms.Padding(4);
             this.txtfecha.Name = "txtfecha";
             this.txtfecha.ShortcutsEnabled = false;
-            this.txtfecha.Size = new System.Drawing.Size(141, 61);
+            this.txtfecha.Size = new System.Drawing.Size(140, 61);
             this.txtfecha.TabIndex = 2;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
-            this.label6.Location = new System.Drawing.Point(464, 4);
+            this.label6.Location = new System.Drawing.Point(463, 4);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(323, 37);
@@ -357,7 +358,7 @@ namespace InventarioCasaCeja
             | System.Windows.Forms.AnchorStyles.Right)));
             this.boxsucursales.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.boxsucursales.FormattingEnabled = true;
-            this.boxsucursales.Location = new System.Drawing.Point(464, 45);
+            this.boxsucursales.Location = new System.Drawing.Point(463, 45);
             this.boxsucursales.Margin = new System.Windows.Forms.Padding(4);
             this.boxsucursales.Name = "boxsucursales";
             this.boxsucursales.Size = new System.Drawing.Size(508, 62);
@@ -368,7 +369,7 @@ namespace InventarioCasaCeja
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(980, 4);
+            this.label1.Location = new System.Drawing.Point(979, 4);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(296, 37);
@@ -383,11 +384,11 @@ namespace InventarioCasaCeja
             this.txtSucOrig.BackColor = System.Drawing.SystemColors.Window;
             this.txtSucOrig.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.txtSucOrig.Enabled = false;
-            this.txtSucOrig.Location = new System.Drawing.Point(980, 45);
+            this.txtSucOrig.Location = new System.Drawing.Point(979, 45);
             this.txtSucOrig.Margin = new System.Windows.Forms.Padding(4);
             this.txtSucOrig.Name = "txtSucOrig";
             this.txtSucOrig.ShortcutsEnabled = false;
-            this.txtSucOrig.Size = new System.Drawing.Size(475, 61);
+            this.txtSucOrig.Size = new System.Drawing.Size(476, 61);
             this.txtSucOrig.TabIndex = 27;
             // 
             // tableLayoutPanel1
