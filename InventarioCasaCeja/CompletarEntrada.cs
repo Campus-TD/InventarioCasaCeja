@@ -17,13 +17,16 @@ namespace InventarioCasaCeja
         bool hasTemporal;
         Dictionary<string, int> proveedores;
         int sucursal = 0;
-        public CompletarEntrada(WebDataManager webDataManager, List<ProductoEntrada>productos, bool hasT, int idsucursal)
+        double total;
+
+        public CompletarEntrada(WebDataManager webDataManager, List<ProductoEntrada>productos, bool hasT, int idsucursal, double total)
         {
             InitializeComponent();
             this.webDM = webDataManager;
             this.productos = productos;
             this.hasTemporal = hasT;
             this.sucursal = idsucursal;
+            this.total = total;
         }
         public void setSucursal(int s)
         {
@@ -131,6 +134,9 @@ namespace InventarioCasaCeja
                     case Keys.F5:
                         complete.PerformClick();
                         break;
+                    case Keys.F6:
+                        Bcalcular.PerformClick();
+                        break;
                     default:
                         return base.ProcessDialogKey(keyData);
                 }
@@ -142,6 +148,12 @@ namespace InventarioCasaCeja
         private void exit_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void Bcalcular_Click(object sender, EventArgs e)
+        {
+            string totaltxt = total.ToString("0.00");
+            txttotal.Text = totaltxt;
         }
     }
 }

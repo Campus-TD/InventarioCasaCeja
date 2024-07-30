@@ -36,6 +36,7 @@ namespace InventarioCasaCeja
         double total;
         string folio;
         int sucursal;
+
         private void Salidas_Load(object sender, EventArgs e)
         {
             DateTime localDate = DateTime.Now;
@@ -72,6 +73,8 @@ namespace InventarioCasaCeja
             (previewDialog as Form).WindowState = FormWindowState.Maximized;
         }
 
+        /*
+         Codigo Original de agregar producto, productoimprimir y productoenvio.
         private void AgregarProductoDirectamente(Producto producto)
         {
             tabla.EndEdit(); //EndEdit se encarga de verificar si hay cambios en la celda y los guarda antes de agregar un nuevo producto.
@@ -95,8 +98,8 @@ namespace InventarioCasaCeja
                     var filaCorrespondiente = tabla.Rows.Cast<DataGridViewRow>().FirstOrDefault(r => Convert.ToInt32(r.Cells["idproducto"].Value) == producto.id);
 
                     // Obtiene la cantidad de la fila correspondiente
-                    int c = filaCorrespondiente != null ? Convert.ToInt32(filaCorrespondiente.Cells["cantidad"].Value) : 1; // Usa 1 como valor predeterminado si no se encuentra la fila
-
+                    //int c = filaCorrespondiente != null ? Convert.ToInt32(filaCorrespondiente.Cells["cantidad"].Value) : 5; // Usa 1 como valor predeterminado si no se encuentra la fila
+                    int c = 1;
                     // Agrega el producto a la lista productosImprimir
                     productosImprimir.Insert(0, new ProductoSalida
                     {
@@ -107,7 +110,6 @@ namespace InventarioCasaCeja
                         precio = producto.menudeo,
                         unidad = data.mapamedidasinv[producto.medida_id]
                     });
-
                     // Agrega el producto a la lista productosEnvio
                     Dictionary<string, object> prod = new Dictionary<string, object>();
                     prod["idproducto"] = producto.id;
@@ -115,7 +117,6 @@ namespace InventarioCasaCeja
                     prod["precio"] = Math.Round(producto.menudeo, 2);
 
                     productosEnvio.Add(prod);
-
                     // Actualiza el BindingSource
                     tablasource.ResetBindings(false);
 
@@ -129,9 +130,148 @@ namespace InventarioCasaCeja
             }
         }
 
+        // Evento que maneja el final de la edición de una celda en la tabla
+        private void tabla_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == tabla.Columns["cantidad"].Index)
+            {
+                // Obtiene la fila y el producto actualizados
+                var fila = tabla.Rows[e.RowIndex];
+                int idProducto = Convert.ToInt32(fila.Cells["idproducto"].Value);
+                int cantidadActualizada = Convert.ToInt32(fila.Cells["cantidad"].Value);
+                string codigo = fila.Cells["codigo"].Value.ToString();
+                string nombre = fila.Cells["nombre"].Value.ToString();
+                double precio = Convert.ToDouble(fila.Cells["precio"].Value);
+                string unidad = fila.Cells["unidad"].Value.ToString();
+
+                // Actualiza la cantidad en productosImprimir
+                var productoImprimir = productosImprimir.FirstOrDefault(p => p.idproducto == idProducto);
+                if (productoImprimir != null)
+                {
+                    productoImprimir.cantidad = cantidadActualizada;
+                }
+                else
+                {
+                    productosImprimir.Insert(0, new ProductoSalida
+                    {
+                        idproducto = idProducto,
+                        codigo = codigo,
+                        nombre = nombre,
+                        cantidad = cantidadActualizada,
+                        precio = precio,
+                        unidad = unidad
+                    });
+                }
+
+                // Actualiza la cantidad en productosEnvio
+                var productoEnvio = productosEnvio.FirstOrDefault(p => Convert.ToInt32(p["idproducto"]) == idProducto);
+                if (productoEnvio != null)
+                {
+                    productoEnvio["cantidad"] = cantidadActualizada;
+                }
+                else
+                {
+                    Dictionary<string, object> prod = new Dictionary<string, object>();
+                    prod["idproducto"] = idProducto;
+                    prod["cantidad"] = cantidadActualizada;
+                    prod["precio"] = Math.Round(precio, 2);
+                    productosEnvio.Add(prod);
+                }
+            }
+        }
+        */
+        private void AgregarProductoDirectamente(Producto producto)
+        {
+            tabla.EndEdit(); // Verificar y guardar cambios en la celda antes de agregar un nuevo producto.
+            if (producto == null) return;
+
+            if (producto.id == 0)
+            {
+                hasTemporal = true;
+            }
+
+            if (productosImprimir.Any(p => p.idproducto == producto.id))
+            {
+                MessageBox.Show("El producto ya se agregó previamente", "Advertencia");
+                LimpiarEntrada();
+                return;
+            }
+
+            int cantidad = 1; // Usar 1 como valor predeterminado.
+
+            // Agregar a productosImprimir y productosEnvio
+            AgregarOActualizarProducto(producto.id, producto.codigo, producto.nombre, cantidad, producto.menudeo, data.mapamedidasinv[producto.medida_id]);
+
+            LimpiarEntrada();
+        }
+
+        private void tabla_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex != tabla.Columns["cantidad"].Index) return;
+
+            var fila = tabla.Rows[e.RowIndex];
+            int idProducto = Convert.ToInt32(fila.Cells["idproducto"].Value);
+            int cantidad = Convert.ToInt32(fila.Cells["cantidad"].Value);
+            string codigo = fila.Cells["codigo"].Value.ToString();
+            string nombre = fila.Cells["nombre"].Value.ToString();
+            double precio = Convert.ToDouble(fila.Cells["precio"].Value);
+            string unidad = fila.Cells["unidad"].Value.ToString();
+
+            AgregarOActualizarProducto(idProducto, codigo, nombre, cantidad, precio, unidad);
+        }
+
+        private void AgregarOActualizarProducto(int id, string codigo, string nombre, int cantidad, double precio, string unidad)
+        {
+            var productoImprimir = productosImprimir.FirstOrDefault(p => p.idproducto == id);
+            if (productoImprimir != null)
+            {
+                productoImprimir.cantidad = cantidad;
+            }
+            else
+            {
+                productosImprimir.Insert(0, new ProductoSalida
+                {
+                    idproducto = id,
+                    codigo = codigo,
+                    nombre = nombre,
+                    cantidad = cantidad,
+                    precio = precio,
+                    unidad = unidad
+                });
+            }
+
+            var productoEnvio = productosEnvio.FirstOrDefault(p => Convert.ToInt32(p["idproducto"]) == id);
+            if (productoEnvio != null)
+            {
+                productoEnvio["cantidad"] = cantidad;
+            }
+            else
+            {
+                productosEnvio.Add(new Dictionary<string, object>
+                {
+                    { "idproducto", id },
+                    { "cantidad", cantidad },
+                    { "precio", Math.Round(precio, 2) }
+                });
+            }
+
+            tablasource.ResetBindings(false);
+        }
+
+        private void LimpiarEntrada()
+        {
+            txtcodigo.Text = "";
+            currentProd = null;
+            tabla.Focus();
+            tabla.CurrentCell = tabla.Rows[0].Cells[3];
+            tabla.BeginEdit(true);
+        }
+
+
         private void cargarTicketCarta( string fechaSalida)
         {
-            titulo = "CASA CEJA S.A. DE C.V.";
+            //titulo = "CASA CEJA S.A. DE C.V.";
+            titulo = "CASA CEJA";
             direccion = data.sucursal.razon_social + " " + data.sucursal.direccion;
             vendedor = "DESTINO:\n" + destino;
             fecha = "FECHA:\n" + fechaSalida;
@@ -544,8 +684,6 @@ namespace InventarioCasaCeja
                 this.Close();
             }
         }
-
-
 
         private void tabla_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
