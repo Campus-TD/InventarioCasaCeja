@@ -297,6 +297,12 @@
     <Compile Include="Vercatalogo.designer.cs">
       <DependentUpon>Vercatalogo.cs</DependentUpon>
     </Compile>
+    <Compile Include="VerEntradaSalida.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VerEntradaSalida.Designer.cs">
+      <DependentUpon>VerEntradaSalida.cs</DependentUpon>
+    </Compile>
     <Compile Include="Visor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -367,6 +373,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Vercatalogo.resx">
       <DependentUpon>Vercatalogo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VerEntradaSalida.resx">
+      <DependentUpon>VerEntradaSalida.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Visor.resx">
       <DependentUpon>Visor.cs</DependentUpon>

@@ -12,12 +12,16 @@ namespace InventarioCasaCeja
 {
     public partial class HistEntradasSalidas : Form
     {
-        string[] tipo = { "Todos", "Entradas", "Salidas" };
+        int type;
+        List<string> tipo = new List<string>();
+        string[] range = { "Entradas", "Salidas" };
 
         public HistEntradasSalidas()
         {
             InitializeComponent();
-            BoxTipo.Items.AddRange(tipo);
+            this.type = 0;
+            tipo.AddRange(range);
+            BoxTipo.DataSource = tipo;
             BoxTipo.SelectedIndex = 0;
         }
 
@@ -64,7 +68,8 @@ namespace InventarioCasaCeja
 
         private void BSelRegistro_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Mostrando Registro");
+            VerEntradaSalida verEntradaSalida = new VerEntradaSalida(type);
+            verEntradaSalida.ShowDialog();
         }
 
         private void tablaEntradasySalidas_KeyDown(object sender, KeyEventArgs e)
@@ -84,6 +89,18 @@ namespace InventarioCasaCeja
                 BoxTipo.DroppedDown = true;
                 BoxTipo.Focus();
                 return;
+            }
+        }
+
+        private void BoxTipo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (BoxTipo.SelectedIndex == 0)
+            {
+                type = 0;
+            }
+            else
+            {
+                type = 1;
             }
         }
     }

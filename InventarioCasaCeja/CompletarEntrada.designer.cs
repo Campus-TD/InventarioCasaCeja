@@ -35,15 +35,15 @@ namespace InventarioCasaCeja
             this.exit = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.complete = new System.Windows.Forms.Button();
-            this.txttotal = new System.Windows.Forms.TextBox();
             this.txtfolio = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.fechafactura = new System.Windows.Forms.DateTimePicker();
             this.comboproveedores = new System.Windows.Forms.ComboBox();
-            this.Bcalcular = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.Bcalcular = new System.Windows.Forms.Button();
+            this.txttotal = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -152,21 +152,6 @@ namespace InventarioCasaCeja
             this.complete.UseVisualStyleBackColor = true;
             this.complete.Click += new System.EventHandler(this.v_Click);
             // 
-            // txttotal
-            // 
-            this.txttotal.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txttotal.BackColor = System.Drawing.SystemColors.Window;
-            this.txttotal.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
-            this.txttotal.Location = new System.Drawing.Point(4, 4);
-            this.txttotal.Margin = new System.Windows.Forms.Padding(4);
-            this.txttotal.Name = "txttotal";
-            this.txttotal.ShortcutsEnabled = false;
-            this.txttotal.Size = new System.Drawing.Size(494, 61);
-            this.txttotal.TabIndex = 1;
-            this.txttotal.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.numericInput_KeyPress);
-            // 
             // txtfolio
             // 
             this.txtfolio.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -237,21 +222,6 @@ namespace InventarioCasaCeja
             this.comboproveedores.Size = new System.Drawing.Size(754, 62);
             this.comboproveedores.TabIndex = 4;
             // 
-            // Bcalcular
-            // 
-            this.Bcalcular.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.Bcalcular.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Bold);
-            this.Bcalcular.Location = new System.Drawing.Point(506, 4);
-            this.Bcalcular.Margin = new System.Windows.Forms.Padding(4);
-            this.Bcalcular.Name = "Bcalcular";
-            this.Bcalcular.Size = new System.Drawing.Size(246, 52);
-            this.Bcalcular.TabIndex = 2;
-            this.Bcalcular.Text = "CALCULAR (F6)";
-            this.Bcalcular.UseVisualStyleBackColor = true;
-            this.Bcalcular.Click += new System.EventHandler(this.Bcalcular_Click);
-            // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -269,6 +239,36 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 48.27586F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(756, 116);
             this.tableLayoutPanel1.TabIndex = 2;
+            // 
+            // Bcalcular
+            // 
+            this.Bcalcular.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.Bcalcular.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Bold);
+            this.Bcalcular.Location = new System.Drawing.Point(505, 4);
+            this.Bcalcular.Margin = new System.Windows.Forms.Padding(4);
+            this.Bcalcular.Name = "Bcalcular";
+            this.Bcalcular.Size = new System.Drawing.Size(247, 52);
+            this.Bcalcular.TabIndex = 2;
+            this.Bcalcular.Text = "CALCULAR (F6)";
+            this.Bcalcular.UseVisualStyleBackColor = true;
+            this.Bcalcular.Click += new System.EventHandler(this.Bcalcular_Click);
+            // 
+            // txttotal
+            // 
+            this.txttotal.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txttotal.BackColor = System.Drawing.SystemColors.Window;
+            this.txttotal.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.txttotal.Location = new System.Drawing.Point(4, 4);
+            this.txttotal.Margin = new System.Windows.Forms.Padding(4);
+            this.txttotal.Name = "txttotal";
+            this.txttotal.ShortcutsEnabled = false;
+            this.txttotal.Size = new System.Drawing.Size(493, 61);
+            this.txttotal.TabIndex = 1;
+            this.txttotal.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.numericInput_KeyPress);
             // 
             // CompletarEntrada
             // 
