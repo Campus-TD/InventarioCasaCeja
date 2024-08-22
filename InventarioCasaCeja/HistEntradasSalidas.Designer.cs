@@ -226,7 +226,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.01623F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.98377F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 106F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 107F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 376F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 56F));
             this.tableLayoutPanel1.Controls.Add(this.label2, 1, 0);
@@ -249,7 +249,7 @@
             this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 13F, System.Drawing.FontStyle.Bold);
             this.label2.Location = new System.Drawing.Point(219, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(269, 33);
+            this.label2.Size = new System.Drawing.Size(268, 33);
             this.label2.TabIndex = 7;
             this.label2.Text = "TIPO (F1)";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -263,7 +263,7 @@
             this.BoxTipo.FormattingEnabled = true;
             this.BoxTipo.Location = new System.Drawing.Point(219, 36);
             this.BoxTipo.Name = "BoxTipo";
-            this.BoxTipo.Size = new System.Drawing.Size(269, 49);
+            this.BoxTipo.Size = new System.Drawing.Size(268, 49);
             this.BoxTipo.TabIndex = 2;
             this.BoxTipo.SelectedIndexChanged += new System.EventHandler(this.BoxTipo_SelectedIndexChanged);
             // 
@@ -280,6 +280,7 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "FILTRAR POR";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // HistEntradasSalidas
             // 
