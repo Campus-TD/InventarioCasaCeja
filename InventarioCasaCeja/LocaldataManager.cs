@@ -768,13 +768,10 @@ WHERE
                     {
                         string productosJson = reader.GetString(0);
 
-                        // Deserializar el JSON en una lista de objetos dinámicos
                         var productos = JsonConvert.DeserializeObject<List<dynamic>>(productosJson);
 
-                        // Llenar el DataTable con los productos deserializados
                         foreach (var producto in productos)
                         {
-                            // Obtener nombre y categoría del producto
                             string nombreProducto = "";
                             string categoriaProducto = "";
 
