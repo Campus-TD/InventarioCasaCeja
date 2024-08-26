@@ -7,6 +7,7 @@ namespace InventarioCasaCeja
 {
     public partial class HistEntradasSalidas : Form
     {
+        int rowCount, maxPages, currentPage = 1, offset, rowsPerPage = 20;
         int type;
         List<string> tipo = new List<string>();
         string[] range = { "Entradas", "Salidas" };
@@ -28,18 +29,18 @@ namespace InventarioCasaCeja
 
         private void CargarEntradasEnDataGrid()
         {
-            tablaEntradas = localDM.getEntradasPorSucursal(idSucursal);
-
+            rowCount = localDM.getEntradasCountPorSucursal(idSucursal);
+            calculateMaxPages(rowCount);
+            tablaEntradas = localDM.getEntradasPorSucursal(idSucursal, offset, rowsPerPage);
             tablaEntradasySalidas.DataSource = tablaEntradas;
-
             tablaEntradasySalidas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
         }
         private void CargarSalidasEnDataGrid()
         {
-            tablaSalidas = localDM.getSalidasPorSucursal(idSucursal);
-
+            rowCount = localDM.getSalidasCountPorSucursal(idSucursal);
+            calculateMaxPages(rowCount);
+            tablaSalidas = localDM.getSalidasPorSucursal(idSucursal, offset, rowsPerPage);
             tablaEntradasySalidas.DataSource = tablaSalidas;
-
             tablaEntradasySalidas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
         }
 
@@ -132,6 +133,49 @@ namespace InventarioCasaCeja
                 type = 1;
                 CargarSalidasEnDataGrid();
                 
+            }
+        }
+
+        private void calculateMaxPages(int rowCount)
+        {
+            maxPages = (rowCount + rowsPerPage - 1) / rowsPerPage; // Divisón entera redondeando hacia arriba
+            if (maxPages == 0)
+                maxPages = 1;
+            if (maxPages < currentPage)
+            {
+                currentPage = maxPages;
+                offset = (currentPage - 1) * rowsPerPage;
+            }
+            pageLabel.Text = $"Página {currentPage}/{maxPages}";
+        }
+
+        private void prev_Click(object sender, EventArgs e)
+        {
+            if (currentPage > 1)
+            {
+                offset -= rowsPerPage;
+                currentPage--;
+                if (BoxTipo.SelectedIndex == 0)
+                {
+                    CargarEntradasEnDataGrid();
+                }
+                else
+                    CargarSalidasEnDataGrid();
+            }
+        }
+
+        private void next_Click(object sender, EventArgs e)
+        {
+            if (currentPage < maxPages)
+            {
+                offset += rowsPerPage;
+                currentPage++;
+                if (BoxTipo.SelectedIndex == 0)
+                {
+                    CargarEntradasEnDataGrid();
+                }
+                else
+                    CargarSalidasEnDataGrid();
             }
         }
     }

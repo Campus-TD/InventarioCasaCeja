@@ -677,7 +677,7 @@ JOIN usuarios ON entradas.usuario_id = usuarios.id
 JOIN sucursales ON entradas.sucursal_id = sucursales.id
 JOIN proveedores ON entradas.proveedor_id = proveedores.id
 WHERE sucursales.id = @sucursalId
-ORDER BY entradas.id ASC";
+ORDER BY entradas.id DESC";
 
             command.Parameters.AddWithValue("@sucursalId", sucursalId);
 
@@ -686,7 +686,7 @@ ORDER BY entradas.id ASC";
 
             return dtEntradas;
         }
-        public DataTable getSalidasPorSucursal(int sucursalId)
+        public DataTable getSalidasPorSucursal(int sucursalId, int offset, int rowsPerPage)
         {
             DataTable dtSalidas = new DataTable();
             using (SQLiteCommand command = connection.CreateCommand())
@@ -705,9 +705,12 @@ ORDER BY entradas.id ASC";
         JOIN sucursales AS destino ON salidas_temporal.id_sucursal_destino = destino.id
         WHERE (salidas_temporal.id_sucursal_origen = @sucursalId
            OR salidas_temporal.id_sucursal_destino = @sucursalId)
-        ORDER BY salidas_temporal.fecha_salida ASC";
+        ORDER BY salidas_temporal.fecha_salida DESC
+                LIMIT @rowsPerPage OFFSET @offset";
 
                 command.Parameters.AddWithValue("@sucursalId", sucursalId);
+                command.Parameters.AddWithValue("@rowsPerPage", rowsPerPage);
+                command.Parameters.AddWithValue("@offset", offset);
 
                 using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(command))
                 {
@@ -1549,5 +1552,59 @@ WHERE
             connection.Close();
             connection.Dispose();
         }
+        public DataTable getEntradasPorSucursal(int sucursalId, int offset, int rowsPerPage)
+        {
+            DataTable dtEntradas = new DataTable();
+            SQLiteCommand command = connection.CreateCommand();
+            command.CommandText = @"
+        SELECT entradas.id AS ID,
+               entradas.folio_factura AS 'FOLIO FACTURA',
+               entradas.total_factura AS 'TOTAL FACTURA',
+               usuarios.nombre AS 'USUARIO',
+               sucursales.razon_social AS 'SUCURSAL',
+               proveedores.nombre AS 'PROVEEDOR',
+               entradas.fecha_factura AS 'FECHA FACTURA' 
+        FROM entradas
+        JOIN usuarios ON entradas.usuario_id = usuarios.id
+        JOIN sucursales ON entradas.sucursal_id = sucursales.id
+        JOIN proveedores ON entradas.proveedor_id = proveedores.id
+        WHERE sucursales.id = @sucursalId
+        ORDER BY entradas.id DESC
+        LIMIT @rowsPerPage OFFSET @offset";
+
+            command.Parameters.AddWithValue("@sucursalId", sucursalId);
+            command.Parameters.AddWithValue("@rowsPerPage", rowsPerPage);
+            command.Parameters.AddWithValue("@offset", offset);
+
+            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
+            adapter.Fill(dtEntradas);
+
+            return dtEntradas;
+        }
+
+        public int getEntradasCountPorSucursal(int sucursalId)
+        {
+            int count = 0;
+            string query = "SELECT COUNT(*) FROM entradas WHERE sucursal_id = @sucursalId";
+            using (SQLiteCommand command = new SQLiteCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@sucursalId", sucursalId);
+                count = Convert.ToInt32(command.ExecuteScalar());
+            }
+            return count;
+        }
+
+        public int getSalidasCountPorSucursal(int sucursalId)
+        {
+            int count = 0;
+            string query = "SELECT COUNT(*) FROM salidas_temporal WHERE id_sucursal_origen = @id_sucursal_origen";
+            using (SQLiteCommand command = new SQLiteCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id_sucursal_origen", sucursalId);
+                count = Convert.ToInt32(command.ExecuteScalar());
+            }
+            return count;
+        }
+
     }
 }

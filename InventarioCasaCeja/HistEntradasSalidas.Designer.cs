@@ -28,15 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle37 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle38 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle39 = new System.Windows.Forms.DataGridViewCellStyle();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.exitButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.BSelRegistro = new System.Windows.Forms.Button();
             this.BelimHistorial = new System.Windows.Forms.Button();
+            this.next = new System.Windows.Forms.Button();
+            this.pageLabel = new System.Windows.Forms.Label();
+            this.prev = new System.Windows.Forms.Button();
             this.clientinfo = new System.Windows.Forms.TableLayoutPanel();
             this.tablaEntradasySalidas = new System.Windows.Forms.DataGridView();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -105,12 +108,17 @@
             this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 46.95652F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 53.04348F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 528F));
+            this.tableLayoutPanel2.ColumnCount = 5;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 87.55981F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.44019F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 148F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 65F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 708F));
+            this.tableLayoutPanel2.Controls.Add(this.next, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.prev, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.BSelRegistro, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.BelimHistorial, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.BelimHistorial, 4, 0);
+            this.tableLayoutPanel2.Controls.Add(this.pageLabel, 2, 0);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(4, 645);
             this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -128,7 +136,7 @@
             this.BSelRegistro.Location = new System.Drawing.Point(4, 4);
             this.BSelRegistro.Margin = new System.Windows.Forms.Padding(4);
             this.BSelRegistro.Name = "BSelRegistro";
-            this.BSelRegistro.Size = new System.Drawing.Size(665, 63);
+            this.BSelRegistro.Size = new System.Drawing.Size(442, 63);
             this.BSelRegistro.TabIndex = 7;
             this.BSelRegistro.Text = "SEL. REGISTRO (ENTER)";
             this.BSelRegistro.UseVisualStyleBackColor = true;
@@ -140,14 +148,56 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.BelimHistorial.Font = new System.Drawing.Font("Segoe UI Semibold", 20F, System.Drawing.FontStyle.Bold);
-            this.BelimHistorial.Location = new System.Drawing.Point(677, 4);
+            this.BelimHistorial.Location = new System.Drawing.Point(730, 4);
             this.BelimHistorial.Margin = new System.Windows.Forms.Padding(4);
             this.BelimHistorial.Name = "BelimHistorial";
-            this.BelimHistorial.Size = new System.Drawing.Size(754, 63);
+            this.BelimHistorial.Size = new System.Drawing.Size(701, 63);
             this.BelimHistorial.TabIndex = 9;
             this.BelimHistorial.Text = "ELIM. HISTORIAL (F5)";
             this.BelimHistorial.UseVisualStyleBackColor = true;
             this.BelimHistorial.Click += new System.EventHandler(this.BelimHistorial_Click);
+            // 
+            // next
+            // 
+            this.next.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.next.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.next.Location = new System.Drawing.Point(665, 4);
+            this.next.Margin = new System.Windows.Forms.Padding(4);
+            this.next.Name = "next";
+            this.next.Size = new System.Drawing.Size(57, 63);
+            this.next.TabIndex = 9;
+            this.next.Text = ">";
+            this.next.UseVisualStyleBackColor = true;
+            this.next.Click += new System.EventHandler(this.next_Click);
+            // 
+            // pageLabel
+            // 
+            this.pageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.pageLabel.AutoSize = true;
+            this.pageLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold);
+            this.pageLabel.Location = new System.Drawing.Point(517, 0);
+            this.pageLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.pageLabel.Name = "pageLabel";
+            this.pageLabel.Size = new System.Drawing.Size(124, 71);
+            this.pageLabel.TabIndex = 8;
+            this.pageLabel.Text = "Página 1/1";
+            this.pageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // prev
+            // 
+            this.prev.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.prev.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.prev.Location = new System.Drawing.Point(454, 4);
+            this.prev.Margin = new System.Windows.Forms.Padding(4);
+            this.prev.Name = "prev";
+            this.prev.Size = new System.Drawing.Size(55, 63);
+            this.prev.TabIndex = 7;
+            this.prev.Text = "<";
+            this.prev.UseVisualStyleBackColor = true;
+            this.prev.Click += new System.EventHandler(this.prev_Click);
             // 
             // clientinfo
             // 
@@ -188,23 +238,23 @@
             this.tablaEntradasySalidas.AllowUserToAddRows = false;
             this.tablaEntradasySalidas.AllowUserToDeleteRows = false;
             this.tablaEntradasySalidas.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.tablaEntradasySalidas.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle37.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle37.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle37.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle37.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle37.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle37.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle37.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.tablaEntradasySalidas.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle37;
             this.tablaEntradasySalidas.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.tablaEntradasySalidas.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle38.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle38.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle38.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle38.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle38.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle38.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle38.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.tablaEntradasySalidas.DefaultCellStyle = dataGridViewCellStyle38;
             this.tablaEntradasySalidas.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tablaEntradasySalidas.Location = new System.Drawing.Point(3, 3);
             this.tablaEntradasySalidas.MultiSelect = false;
@@ -212,8 +262,8 @@
             this.tablaEntradasySalidas.ReadOnly = true;
             this.tablaEntradasySalidas.RowHeadersVisible = false;
             this.tablaEntradasySalidas.RowHeadersWidth = 51;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold);
-            this.tablaEntradasySalidas.RowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle39.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold);
+            this.tablaEntradasySalidas.RowsDefaultCellStyle = dataGridViewCellStyle39;
             this.tablaEntradasySalidas.RowTemplate.Height = 24;
             this.tablaEntradasySalidas.RowTemplate.ReadOnly = true;
             this.tablaEntradasySalidas.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
@@ -228,7 +278,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.01623F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.98377F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 109F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 112F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 376F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 56F));
             this.tableLayoutPanel1.Controls.Add(this.label2, 1, 0);
@@ -249,9 +299,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 13F, System.Drawing.FontStyle.Bold);
-            this.label2.Location = new System.Drawing.Point(218, 0);
+            this.label2.Location = new System.Drawing.Point(216, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(267, 33);
+            this.label2.Size = new System.Drawing.Size(266, 33);
             this.label2.TabIndex = 7;
             this.label2.Text = "TIPO (F1)";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -263,9 +313,9 @@
             this.BoxTipo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.BoxTipo.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold);
             this.BoxTipo.FormattingEnabled = true;
-            this.BoxTipo.Location = new System.Drawing.Point(218, 36);
+            this.BoxTipo.Location = new System.Drawing.Point(216, 36);
             this.BoxTipo.Name = "BoxTipo";
-            this.BoxTipo.Size = new System.Drawing.Size(267, 49);
+            this.BoxTipo.Size = new System.Drawing.Size(266, 49);
             this.BoxTipo.TabIndex = 2;
             this.BoxTipo.SelectedIndexChanged += new System.EventHandler(this.BoxTipo_SelectedIndexChanged);
             // 
@@ -278,7 +328,7 @@
             this.label1.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Bold);
             this.label1.Location = new System.Drawing.Point(3, 33);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(209, 57);
+            this.label1.Size = new System.Drawing.Size(207, 57);
             this.label1.TabIndex = 0;
             this.label1.Text = "FILTRAR POR";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -297,6 +347,7 @@
             this.groupBox1.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.clientinfo.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.tablaEntradasySalidas)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -319,5 +370,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox BoxTipo;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label pageLabel;
+        private System.Windows.Forms.Button prev;
+        private System.Windows.Forms.Button next;
     }
 }
