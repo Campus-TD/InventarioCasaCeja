@@ -207,6 +207,7 @@
             this.tablaEntradasySalidas.DefaultCellStyle = dataGridViewCellStyle2;
             this.tablaEntradasySalidas.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tablaEntradasySalidas.Location = new System.Drawing.Point(3, 3);
+            this.tablaEntradasySalidas.MultiSelect = false;
             this.tablaEntradasySalidas.Name = "tablaEntradasySalidas";
             this.tablaEntradasySalidas.ReadOnly = true;
             this.tablaEntradasySalidas.RowHeadersVisible = false;
@@ -216,6 +217,7 @@
             this.tablaEntradasySalidas.RowTemplate.Height = 24;
             this.tablaEntradasySalidas.RowTemplate.ReadOnly = true;
             this.tablaEntradasySalidas.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.tablaEntradasySalidas.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.tablaEntradasySalidas.Size = new System.Drawing.Size(1429, 652);
             this.tablaEntradasySalidas.TabIndex = 0;
             this.tablaEntradasySalidas.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tablaEntradasySalidas_KeyDown);
@@ -226,7 +228,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.01623F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.98377F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 108F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 109F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 376F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 56F));
             this.tableLayoutPanel1.Controls.Add(this.label2, 1, 0);
@@ -249,7 +251,7 @@
             this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 13F, System.Drawing.FontStyle.Bold);
             this.label2.Location = new System.Drawing.Point(218, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(268, 33);
+            this.label2.Size = new System.Drawing.Size(267, 33);
             this.label2.TabIndex = 7;
             this.label2.Text = "TIPO (F1)";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -263,7 +265,7 @@
             this.BoxTipo.FormattingEnabled = true;
             this.BoxTipo.Location = new System.Drawing.Point(218, 36);
             this.BoxTipo.Name = "BoxTipo";
-            this.BoxTipo.Size = new System.Drawing.Size(268, 49);
+            this.BoxTipo.Size = new System.Drawing.Size(267, 49);
             this.BoxTipo.TabIndex = 2;
             this.BoxTipo.SelectedIndexChanged += new System.EventHandler(this.BoxTipo_SelectedIndexChanged);
             // 
