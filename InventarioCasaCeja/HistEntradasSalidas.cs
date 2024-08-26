@@ -11,28 +11,35 @@ namespace InventarioCasaCeja
         List<string> tipo = new List<string>();
         string[] range = { "Entradas", "Salidas" };
         LocaldataManager localDM = new LocaldataManager();
+        int idSucursal;
+        DataTable tablaEntradas = new DataTable();
+        DataTable tablaSalidas = new DataTable();
 
-        public HistEntradasSalidas()
+        public HistEntradasSalidas(int idSucursal)
         {
             InitializeComponent();
             this.type = 0;
             tipo.AddRange(range);
             BoxTipo.DataSource = tipo;
             BoxTipo.SelectedIndex = 0;
-
-            // Cargar las entradas en el DataGridView
+            this.idSucursal = idSucursal;
             CargarEntradasEnDataGrid();
         }
 
         private void CargarEntradasEnDataGrid()
         {
-            // Obtener los datos de las entradas
-            DataTable tablaEntradas = localDM.getEntradas();
+            tablaEntradas = localDM.getEntradasPorSucursal(idSucursal);
 
-            // Enlazar el DataTable con el DataGridView
             tablaEntradasySalidas.DataSource = tablaEntradas;
 
-            // Opcional: Ajustar el tamaño de las columnas para que se adapten al contenido
+            tablaEntradasySalidas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+        }
+        private void CargarSalidasEnDataGrid()
+        {
+            tablaSalidas = localDM.getSalidasPorSucursal(idSucursal);
+
+            tablaEntradasySalidas.DataSource = tablaSalidas;
+
             tablaEntradasySalidas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
         }
 
@@ -79,9 +86,22 @@ namespace InventarioCasaCeja
 
         private void BSelRegistro_Click(object sender, EventArgs e)
         {
-            VerEntradaSalida verEntradaSalida = new VerEntradaSalida(type);
-            verEntradaSalida.ShowDialog();
+            if (tablaEntradasySalidas.SelectedRows.Count > 0)
+            {
+                // Acceder al valor de la primera columna de la fila seleccionada
+                int id = Convert.ToInt32(tablaEntradasySalidas.SelectedRows[0].Cells[0].Value);
+                Console.WriteLine(id);
+                // Crear la instancia de la ventana de detalle
+                VerEntradaSalida verEntradaSalida = new VerEntradaSalida(type, id);
+                verEntradaSalida.ShowDialog();
+            }
+            else
+            {
+                // Mostrar un mensaje si no hay ninguna fila seleccionada
+                MessageBox.Show("No hay ninguna fila seleccionada.");
+            }
         }
+
 
         private void tablaEntradasySalidas_KeyDown(object sender, KeyEventArgs e)
         {
@@ -108,13 +128,13 @@ namespace InventarioCasaCeja
             if (BoxTipo.SelectedIndex == 0)
             {
                 type = 0;
-                // Aquí podrías cargar las entradas nuevamente si el tipo cambia
                 CargarEntradasEnDataGrid();
             }
             else
             {
                 type = 1;
-                // Aquí podrías cargar otro tipo de datos si es necesario
+                CargarSalidasEnDataGrid();
+                
             }
         }
     }

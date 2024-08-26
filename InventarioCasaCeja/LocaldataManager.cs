@@ -660,6 +660,65 @@ namespace InventarioCasaCeja
 
             return dtEntradas;
         }
+        public DataTable getEntradasPorSucursal(int sucursalId)
+        {
+            DataTable dtEntradas = new DataTable();
+            SQLiteCommand command = connection.CreateCommand();
+            command.CommandText = @"
+SELECT entradas.id AS ID,
+       entradas.folio_factura AS 'FOLIO FACTURA',
+       entradas.total_factura AS 'TOTAL FACTURA',
+       usuarios.nombre AS 'USUARIO',
+       sucursales.razon_social AS 'SUCURSAL',
+       proveedores.nombre AS 'PROVEEDOR',
+       entradas.fecha_factura AS 'FECHA FACTURA' 
+FROM entradas
+JOIN usuarios ON entradas.usuario_id = usuarios.id
+JOIN sucursales ON entradas.sucursal_id = sucursales.id
+JOIN proveedores ON entradas.proveedor_id = proveedores.id
+WHERE sucursales.id = @sucursalId
+ORDER BY entradas.id ASC";
+
+            command.Parameters.AddWithValue("@sucursalId", sucursalId);
+
+            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
+            adapter.Fill(dtEntradas);
+
+            return dtEntradas;
+        }
+        public DataTable getSalidasPorSucursal(int sucursalId)
+        {
+            DataTable dtSalidas = new DataTable();
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = @"
+        SELECT salidas_temporal.id AS ID,
+               origen.razon_social AS 'SUCURSAL ORIGEN',
+               destino.razon_social AS 'SUCURSAL DESTINO',
+               salidas_temporal.folio AS 'FOLIO',
+               salidas_temporal.fecha_salida AS 'FECHA SALIDA',
+               usuarios.nombre AS 'USUARIO',
+               salidas_temporal.total_importe AS 'TOTAL IMPORTE'
+        FROM salidas_temporal
+        JOIN usuarios ON salidas_temporal.usuario_id = usuarios.id
+        JOIN sucursales AS origen ON salidas_temporal.id_sucursal_origen = origen.id
+        JOIN sucursales AS destino ON salidas_temporal.id_sucursal_destino = destino.id
+        WHERE (salidas_temporal.id_sucursal_origen = @sucursalId
+           OR salidas_temporal.id_sucursal_destino = @sucursalId)
+        ORDER BY salidas_temporal.fecha_salida ASC";
+
+                command.Parameters.AddWithValue("@sucursalId", sucursalId);
+
+                using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(command))
+                {
+                    adapter.Fill(dtSalidas);
+                }
+            }
+            return dtSalidas;
+        }
+
+
+
         public void saveEntradaProductos(List<EntradaProducto> entradaProductos)
         {
             foreach (EntradaProducto entradaProducto in entradaProductos)

@@ -13,8 +13,8 @@ namespace InventarioCasaCeja
     public partial class VerEntradaSalida : Form
     {
         int type;
-
-        public VerEntradaSalida(int type)
+        int id;
+        public VerEntradaSalida(int type, int id)
         {
             InitializeComponent();
             this.type = type;
@@ -29,6 +29,7 @@ namespace InventarioCasaCeja
                     groupBox1.Text = "VER SALIDA";
                     break;
             }
+
         }
 
         protected override bool ProcessDialogKey(Keys keyData)

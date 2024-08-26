@@ -352,7 +352,7 @@ namespace InventarioCasaCeja
 
         private void historialDeEntradasYSalidasToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            HistEntradasSalidas hes = new HistEntradasSalidas();
+            HistEntradasSalidas hes = new HistEntradasSalidas(idsucursal);
             hes.ShowDialog();
         }
     }
