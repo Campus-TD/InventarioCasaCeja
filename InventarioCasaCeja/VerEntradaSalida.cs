@@ -14,6 +14,7 @@ namespace InventarioCasaCeja
     {
         int type;
         int id;
+        LocaldataManager localDM = new LocaldataManager();
         public VerEntradaSalida(int type, int id)
         {
             InitializeComponent();
@@ -23,10 +24,12 @@ namespace InventarioCasaCeja
                 case 0:
                     this.Text = "Ver Entrada";
                     groupBox1.Text = "VER ENTRADA";
+                    tablaInfo.DataSource = localDM.getProductoEntradaInfo(id);
                     break;
                 case 1:
                     this.Text = "Ver Salida";
                     groupBox1.Text = "VER SALIDA";
+                    tablaInfo.DataSource = localDM.getProductosFromSalida(id);
                     break;
             }
 

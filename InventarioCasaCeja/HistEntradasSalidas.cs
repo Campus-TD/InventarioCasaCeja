@@ -88,10 +88,7 @@ namespace InventarioCasaCeja
         {
             if (tablaEntradasySalidas.SelectedRows.Count > 0)
             {
-                // Acceder al valor de la primera columna de la fila seleccionada
                 int id = Convert.ToInt32(tablaEntradasySalidas.SelectedRows[0].Cells[0].Value);
-                Console.WriteLine(id);
-                // Crear la instancia de la ventana de detalle
                 VerEntradaSalida verEntradaSalida = new VerEntradaSalida(type, id);
                 verEntradaSalida.ShowDialog();
             }

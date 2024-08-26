@@ -716,7 +716,100 @@ ORDER BY entradas.id ASC";
             }
             return dtSalidas;
         }
+        public DataTable getProductoEntradaInfo(int entradaId)
+        {
+            DataTable dtProductoEntrada = new DataTable();
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = @"
+SELECT 
+    producto_entrada.entrada_id AS 'ENTRADA ID',
+    producto_entrada.producto_id AS 'PRODUCTO ID',
+    producto_entrada.cantidad AS 'CANTIDAD',
+    productos.codigo AS 'CÓDIGO',
+    productos.nombre AS 'NOMBRE',
+    categorias.nombre AS 'CATEGORÍA',
+    productos.presentacion AS 'PRESENTACIÓN'
+FROM 
+    producto_entrada
+JOIN 
+    productos ON producto_entrada.producto_id = productos.id
+JOIN 
+    categorias ON productos.categoria_id = categorias.id
+WHERE 
+    producto_entrada.entrada_id = @entradaId";
 
+                command.Parameters.AddWithValue("@entradaId", entradaId);
+
+                using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(command))
+                {
+                    adapter.Fill(dtProductoEntrada);
+                }
+            }
+            return dtProductoEntrada;
+        }
+        public DataTable getProductosFromSalida(int salidaId)
+        {
+            DataTable dtProductos = new DataTable();
+            dtProductos.Columns.Add("ID PRODUCTO", typeof(int));
+            dtProductos.Columns.Add("NOMBRE", typeof(string));
+            dtProductos.Columns.Add("CATEGORÍA", typeof(string));
+            dtProductos.Columns.Add("PRECIO", typeof(decimal));
+            dtProductos.Columns.Add("CANTIDAD", typeof(int));
+
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = "SELECT productos FROM salidas_temporal WHERE id = @salidaId";
+                command.Parameters.AddWithValue("@salidaId", salidaId);
+
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        string productosJson = reader.GetString(0);
+
+                        // Deserializar el JSON en una lista de objetos dinámicos
+                        var productos = JsonConvert.DeserializeObject<List<dynamic>>(productosJson);
+
+                        // Llenar el DataTable con los productos deserializados
+                        foreach (var producto in productos)
+                        {
+                            // Obtener nombre y categoría del producto
+                            string nombreProducto = "";
+                            string categoriaProducto = "";
+
+                            using (SQLiteCommand productCommand = connection.CreateCommand())
+                            {
+                                productCommand.CommandText = @"
+                        SELECT productos.nombre, categorias.nombre 
+                        FROM productos 
+                        JOIN categorias ON productos.categoria_id = categorias.id 
+                        WHERE productos.id = @productoId";
+                                productCommand.Parameters.AddWithValue("@productoId", (int)producto.idproducto);
+
+                                using (SQLiteDataReader productReader = productCommand.ExecuteReader())
+                                {
+                                    if (productReader.Read())
+                                    {
+                                        nombreProducto = productReader.GetString(0);
+                                        categoriaProducto = productReader.GetString(1);
+                                    }
+                                }
+                            }
+                            DataRow row = dtProductos.NewRow();
+                            row["ID PRODUCTO"] = (int)producto.idproducto;
+                            row["NOMBRE"] = nombreProducto;
+                            row["CATEGORÍA"] = categoriaProducto;
+                            row["PRECIO"] = (decimal)producto.precio;
+                            row["CANTIDAD"] = (int)producto.cantidad;
+                            dtProductos.Rows.Add(row);
+                        }
+                    }
+                }
+            }
+
+            return dtProductos;
+        }
 
 
         public void saveEntradaProductos(List<EntradaProducto> entradaProductos)
