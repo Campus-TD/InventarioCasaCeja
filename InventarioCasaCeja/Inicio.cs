@@ -60,20 +60,22 @@ namespace InventarioCasaCeja
                 lw.Show(this);
                 if (await webDM.GetProductos())
                 {
-                    lw.setData(20, "Sincronizando datos desde el servidor...");
+                    lw.setData(10, "Sincronizando datos desde el servidor...");
                     await webDM.GetSucursales();
-                    lw.setData(40, "Sincronizando datos desde el servidor...");
+                    lw.setData(30, "Sincronizando datos desde el servidor...");
                     await webDM.GetMedidas();
-                    lw.setData(60, "Sincronizando datos desde el servidor...");
+                    lw.setData(50, "Sincronizando datos desde el servidor...");
                     await webDM.GetCategorias();
-                    lw.setData(80, "Sincronizando datos desde el servidor...");
+                    lw.setData(60, "Sincronizando datos desde el servidor...");
                     await webDM.GetUsuarios();
-                    lw.setData(100, "Sincronizando datos desde el servidor...");
+                    lw.setData(70, "Sincronizando datos desde el servidor...");
                     await webDM.GetProveedores();
-                    lw.setData(100, "Sincronizando datos desde el servidor...");
+                    lw.setData(80, "Sincronizando datos desde el servidor...");
                     await webDM.GetEntradas();
-                    lw.setData(100, "Sincronizando datos desde el servidor...");
+                    lw.setData(90, "Sincronizando datos desde el servidor...");
                     await webDM.GetEntradaProducto();
+                    lw.setData(100, "Sincronizando datos desde el servidor...");
+                    await webDM.GetSalidas();
                 }
                 else
                 {

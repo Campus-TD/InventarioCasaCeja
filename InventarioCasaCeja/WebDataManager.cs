@@ -25,7 +25,7 @@ namespace InventarioCasaCeja
         string sucursales_lastupdate;
         string entradas_lastupdate;
         string entrada_producto_lastupdate;
-        string salidas_temporal_lastupdate;
+        string salidas_lastupdate;
         public int sucursal_id;
         Action<int> refreshData;
         public Usuario activeUser;
@@ -49,7 +49,7 @@ namespace InventarioCasaCeja
             sucursales_lastupdate = localDM.getTableLastUpdate("sucursales");
             entradas_lastupdate = localDM.getTableLastUpdate("entradas");
             entrada_producto_lastupdate = localDM.getTableLastUpdate("entradas");
-            salidas_temporal_lastupdate = localDM.getTableLastUpdate("salidas_temporal");
+            salidas_lastupdate = localDM.getTableLastUpdate("salidas_temporal");
             
         }
         public void resetDates()
@@ -62,7 +62,7 @@ namespace InventarioCasaCeja
             sucursales_lastupdate = localDM.getTableLastUpdate("sucursales");
             entradas_lastupdate = localDM.getTableLastUpdate("entradas");
             entrada_producto_lastupdate = localDM.getTableLastUpdate("entradas");
-            salidas_temporal_lastupdate = localDM.getTableLastUpdate("salidas_temporal");
+            salidas_lastupdate = localDM.getTableLastUpdate("salidas_temporal");
         }
         //public async Task<bool> PingServerAsync()
         //{
@@ -166,22 +166,20 @@ namespace InventarioCasaCeja
                     var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
                     if (result["status"].ToString().Equals("success"))
                     {
-                        // Imprime todo el JSON recibido para verificar la estructura
-                        Console.WriteLine("Respuesta JSON completa: " + result["data"].ToString());
+                        //Console.WriteLine("Respuesta JSON completa: " + result["data"].ToString());
 
                         var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(result["data"].ToString());
 
                         try
                         {
-                            // Verifica si la clave es correcta
                             if (data.ContainsKey("Entrada"))
                             {
                                 var entradaProductos = JsonConvert.DeserializeObject<List<EntradaProducto>>(data["Entrada"].ToString());
-                                Console.WriteLine("Datos recibidos:");
-                                foreach (var entradaProducto in entradaProductos)
+                                //Console.WriteLine("Datos recibidos:");
+                                /*foreach (var entradaProducto in entradaProductos)
                                 {
                                     Console.WriteLine($"Entrada ID: {entradaProducto.entrada_id}, Producto ID: {entradaProducto.producto_id}, Cantidad: {entradaProducto.cantidad}, Costo: {entradaProducto.costo}");
-                                }
+                                }*/
 
                                 localDM.saveEntradaProductos(entradaProductos);
                                 entrada_producto_lastupdate = localDM.getTableLastUpdate("entradas");
@@ -189,34 +187,34 @@ namespace InventarioCasaCeja
                             }
                             else
                             {
-                                Console.WriteLine("Clave 'entradaProducto' no encontrada en el JSON.");
+                                //Console.WriteLine("Clave 'entradaProducto' no encontrada en el JSON.");
                             }
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("Error al deserializar o guardar los datos de EntradaProducto:");
-                            Console.WriteLine(e.Message);
-                            Console.WriteLine(e.StackTrace);
+                            //Console.WriteLine("Error al deserializar o guardar los datos de EntradaProducto:");
+                            //Console.WriteLine(e.Message);
+                            //Console.WriteLine(e.StackTrace);
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Error en la respuesta del servidor:");
-                        Console.WriteLine(result["status"].ToString());
+                        //Console.WriteLine("Error en la respuesta del servidor:");
+                        //Console.WriteLine(result["status"].ToString());
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Error en la conexión:");
-                    Console.WriteLine(response.StatusCode);
-                    Console.WriteLine(res);
+                    //Console.WriteLine("Error en la conexión:");
+                    //Console.WriteLine(response.StatusCode);
+                    //Console.WriteLine(res);
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("Excepción durante la solicitud HTTP:");
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
+                //Console.WriteLine("Excepción durante la solicitud HTTP:");
+                //Console.WriteLine(e.Message);
+                //Console.WriteLine(e.StackTrace);
             }
             return false;
         }
@@ -257,6 +255,55 @@ namespace InventarioCasaCeja
             }
             return false;
         }
+        public async Task<bool> GetSalidas()
+        {
+            string res = "";
+            Dictionary<string, string> date = new Dictionary<string, string>();
+            date["fecha_de_actualizacion"] = salidas_lastupdate;
+
+            try
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(url + "api/salidas/sincronizar", date);
+                res = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
+                    if (result["status"].ToString().Equals("success"))
+                    {
+                        var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(result["data"].ToString());
+                        var salidas = JsonConvert.DeserializeObject<List<Salida>>(data["Salida"].ToString());
+
+                        localDM.saveSalidas(salidas);
+                        salidas_lastupdate = localDM.getTableLastUpdate("salidas_temporal");
+                        return true;
+                    }
+                    else
+                    {
+                        // Manejo de error
+                        //Console.WriteLine("Error en la respuesta del servidor:");
+                        //Console.WriteLine(result["status"].ToString());
+                    }
+                }
+                else
+                {
+                    // Manejo de error en la conexión
+                    //Console.WriteLine("Error en la conexión:");
+                    //Console.WriteLine(response.StatusCode);
+                    //Console.WriteLine(res);
+
+                }
+            }
+            catch (Exception e)
+            {
+                // Manejo de excepción
+                //Console.WriteLine("Excepción durante la solicitud HTTP:");
+                //Console.WriteLine(e.Message);
+                //Console.WriteLine(e.StackTrace);
+            }
+            return false;
+        }
+
 
         public async Task<bool> GetProveedores()
         {

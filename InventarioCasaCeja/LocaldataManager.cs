@@ -682,7 +682,8 @@ namespace InventarioCasaCeja
             {
                 SQLiteCommand command = connection.CreateCommand();
                 command.CommandText = "INSERT OR REPLACE INTO entradas (id, folio_factura, total_factura, fecha_factura, usuario_id, sucursal_id, proveedor_id, created_at, updated_at) " +
-                "VALUES(@setId, @setFolioFactura, @setTotalFactura, @setFechaFactura, @setUsuarioId, @setSucursalId, @setProveedorId, @setCreated_at, @setUpdated_at) ";
+                "VALUES(@setId, @setFolioFactura, @setTotalFactura, @setFechaFactura, @setUsuarioId, @setSucursalId, @setProveedorId, @setCreatedAt, @setUpdatedAt)";
+
                 command.Parameters.AddWithValue("setId", entrada.id);
                 command.Parameters.AddWithValue("setFolioFactura", entrada.folio_factura);
                 command.Parameters.AddWithValue("setTotalFactura", entrada.total_factura);
@@ -690,11 +691,34 @@ namespace InventarioCasaCeja
                 command.Parameters.AddWithValue("setUsuarioId", entrada.usuario_id);
                 command.Parameters.AddWithValue("setSucursalId", entrada.sucursal_id);
                 command.Parameters.AddWithValue("setProveedorId", entrada.proveedor_id);
-                command.Parameters.AddWithValue("setCreated_at", entrada.created_at);
-                command.Parameters.AddWithValue("setUpdated_at", entrada.updated_at);
-                command.ExecuteScalar();
+                string currentDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                command.Parameters.AddWithValue("setCreatedAt", currentDateTime);
+                command.Parameters.AddWithValue("setUpdatedAt", currentDateTime);
+
+                command.ExecuteNonQuery();
             }
         }
+        public void saveSalidas(List<Salida> salidas)
+        {
+            foreach (Salida salida in salidas)
+            {
+                SQLiteCommand command = connection.CreateCommand();
+                command.CommandText = "INSERT OR REPLACE INTO salidas_temporal (id_sucursal_origen, id_sucursal_destino, productos, folio, fecha_salida, usuario_id, total_importe, created_at, updated_at) " +
+                "VALUES(@setIdSucursalOrigen, @setIdSucursalDestino, @setProductos, @setFolio, @setFechaSalida, @setUsuarioId, @setTotalImporte, @setCreatedAt, @setUpdatedAt)";
+                command.Parameters.AddWithValue("setIdSucursalOrigen", salida.id_sucursal_origen);
+                command.Parameters.AddWithValue("setIdSucursalDestino", salida.id_sucursal_destino);
+                command.Parameters.AddWithValue("setProductos", salida.productos);
+                command.Parameters.AddWithValue("setFolio", salida.folio);
+                command.Parameters.AddWithValue("setFechaSalida", salida.fecha_salida);
+                command.Parameters.AddWithValue("setUsuarioId", salida.usuario_id);
+                command.Parameters.AddWithValue("setTotalImporte", salida.total_importe);
+                command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.ExecuteNonQuery();
+            }
+        }
+
+
 
         public void saveProductos(List<Producto> productos)
         {
