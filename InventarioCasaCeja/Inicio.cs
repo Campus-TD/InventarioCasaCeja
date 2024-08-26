@@ -70,6 +70,10 @@ namespace InventarioCasaCeja
                     await webDM.GetUsuarios();
                     lw.setData(100, "Sincronizando datos desde el servidor...");
                     await webDM.GetProveedores();
+                    lw.setData(100, "Sincronizando datos desde el servidor...");
+                    await webDM.GetEntradas();
+                    lw.setData(100, "Sincronizando datos desde el servidor...");
+                    await webDM.GetEntradaProducto();
                 }
                 else
                 {

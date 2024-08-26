@@ -48,19 +48,19 @@ namespace InventarioCasaCeja
                 command.ExecuteNonQuery();
                 command.CommandText = "CREATE TABLE 'clientes_temporal' (    'id'    INTEGER,	'nombre'    TEXT,	'rfc'   TEXT,	'calle' TEXT,	'no_exterior'   TEXT,	'no_interior'   TEXT,	'cp'    TEXT,	'colonia'   TEXT,	'ciudad'    TEXT,	'telefono'  TEXT,	'correo'    TEXT,	PRIMARY KEY('id' AUTOINCREMENT))";
                 command.ExecuteNonQuery();
-                command.CommandText = "CREATE TABLE 'cortes' (    'id'    INTEGER NOT NULL UNIQUE,    'folio' TEXT,	'fondo_apertura'    REAL,	'total_efectivo'    REAL,	'total_debito'  REAL,	'total_credito' REAL,	'total_cheques' REAL,	'total_transferencias'  REAL,	'efectivo_apartados'    REAL,	'efectivo_creditos' REAL,	'gastos'    TEXT,	'ingresos'  TEXT,	'sobrante'  REAL,	'fecha_apertura'    TEXT,	'fecha_corte'   TEXT,	'sucursal_id'   INTEGER,	'usuario_id'    INTEGER,	'estado'    INTEGER,	'detalles'  TEXT,	FOREIGN KEY('sucursal_id') REFERENCES 'sucursales'('id'),	FOREIGN KEY('usuario_id') REFERENCES 'usuarios'('id'),	PRIMARY KEY('id' AUTOINCREMENT))";
+                command.CommandText = "CREATE TABLE 'cortes' (    'id'    INTEGER NOT NULL UNIQUE,    'folio_corte' TEXT,	'fondo_apertura'    REAL,	'total_efectivo'    REAL,	'total_tarjetas_debito'  REAL,	'total_tarjetas_credito' REAL,	'total_cheques' REAL,	'total_transferencias'  REAL,	'efectivo_apartados'    REAL,	'efectivo_creditos' REAL,	'gastos'    TEXT,	'ingresos'  TEXT,	'sobrante'  REAL,	'fecha_apertura_caja'    TEXT,	'fecha_corte_caja'   TEXT,	'sucursal_id'   INTEGER,	'usuario_id'    INTEGER,	'estado'    INTEGER, 'detalles'  TEXT, 'created_at'    TEXT, 'updated_at'	TEXT, FOREIGN KEY('sucursal_id') REFERENCES 'sucursales'('id'),	FOREIGN KEY('usuario_id') REFERENCES 'usuarios'('id'),	PRIMARY KEY('id' AUTOINCREMENT))";
                 command.ExecuteNonQuery();
                 command.CommandText = "CREATE TABLE 'creditos' (    'id'    INTEGER,	'productos' TEXT,	'total' REAL,	'total_pagado'  REAL,	'fecha_de_credito'  TEXT,	'folio' TEXT,	'estado'    INTEGER,	'cliente_creditos_id'   INTEGER,	'id_cajero_registro'    INTEGER,	'sucursal_id'   INTEGER,	'observaciones' TEXT,	'created_at'    TEXT,	'updated_at'    TEXT,	FOREIGN KEY('sucursal_id') REFERENCES 'sucursales'('id'),	FOREIGN KEY('id_cajero_registro') REFERENCES 'usuarios'('id'),	PRIMARY KEY('id'))";
                 command.ExecuteNonQuery();
                 command.CommandText = "CREATE TABLE 'creditos_temporal' (    'id'    INTEGER,	'productos' TEXT,	'total' REAL,	'total_pagado'  REAL,	'fecha_de_credito'  TEXT,	'folio' TEXT,	'estado'    INTEGER,	'cliente_creditos_id'   INTEGER,	'id_cajero_registro'    INTEGER,	'sucursal_id'   INTEGER,	'temporal'  INTEGER,	'observaciones' TEXT,	FOREIGN KEY('id_cajero_registro') REFERENCES 'usuarios'('id'),	FOREIGN KEY('sucursal_id') REFERENCES 'sucursales'('id'),	PRIMARY KEY('id' AUTOINCREMENT))";
                 command.ExecuteNonQuery();
-                command.CommandText = "CREATE TABLE 'entradas' (    'id'    INTEGER NOT NULL,	'fecha_factura' TEXT,	'total_factura' REAL,	'folio_factura' TEXT,	'usuario_id'    INTEGER,	'sucursal_id'   INTEGER,	'proveedor_id'  INTEGER,	'cancelacion'   INTEGER,	'estado'    INTEGER,	'detalles'  TEXT,	PRIMARY KEY('id' AUTOINCREMENT))";
+                command.CommandText = "CREATE TABLE 'entradas' (    'id'    INTEGER NOT NULL,	'fecha_factura' TEXT,	'total_factura' REAL,	'folio_factura' TEXT,	'usuario_id'    INTEGER,	'sucursal_id'   INTEGER,	'proveedor_id'  INTEGER,	'cancelacion'   INTEGER,	'estado'    INTEGER,	'detalles'  TEXT, 'created_at'    TEXT, 'updated_at'    TEXT,	PRIMARY KEY('id' AUTOINCREMENT))";
                 command.ExecuteNonQuery();
                 command.CommandText = "CREATE TABLE 'medidas' (    'id'    INTEGER NOT NULL,	'nombre'    TEXT,	'activo'    INTEGER,	'created_at'    TEXT,	'updated_at'    TEXT,	PRIMARY KEY('id'))";
                 command.ExecuteNonQuery();
                 command.CommandText = "CREATE TABLE 'operaciones' (    'id'    INTEGER NOT NULL,	'accion'    TEXT,	'confirmar' INTEGER,	'created_at'    TEXT,	'updated_at'    TEXT,	'producto_id'   INTEGER,	'usuario_id'    INTEGER,	PRIMARY KEY('id'))";
                 command.ExecuteNonQuery();
-                command.CommandText = "CREATE TABLE 'producto_entrada' (    'id'    INTEGER NOT NULL,	'entrada_id'    INTEGER,	'producto_id'   INTEGER,	'codigo'    INTEGER,	'cantidad'  INTEGER,	'costo' REAL,	'estado'    INTEGER,	'detalles'  TEXT,	PRIMARY KEY('id' AUTOINCREMENT))";
+                command.CommandText = "CREATE TABLE 'producto_entrada' (    'id'    INTEGER NOT NULL,	'entrada_id'    INTEGER,	'producto_id'   INTEGER,	'codigo'    INTEGER,	'cantidad'  INTEGER,	'costo' REAL,	'estado'    INTEGER,	'detalles'  TEXT, 'created_at'    TEXT, 'updated_at'    TEXT,	PRIMARY KEY('id' AUTOINCREMENT))";
                 command.ExecuteNonQuery();
                 command.CommandText = "CREATE TABLE 'producto_venta' (    'id'    INTEGER NOT NULL,	'venta_id'  INTEGER,	'producto_id'   INTEGER,	'codigo'    TEXT,	'cantidad'  INTEGER,	'precio_venta'  REAL,	'estado'    INTEGER,	'detalles'  TEXT,	PRIMARY KEY('id' AUTOINCREMENT),	FOREIGN KEY('producto_id') REFERENCES 'productos'('id'),	FOREIGN KEY('venta_id') REFERENCES 'ventas'('id'))";
                 command.ExecuteNonQuery();
@@ -68,7 +68,7 @@ namespace InventarioCasaCeja
                 command.ExecuteNonQuery();
                 command.CommandText = "CREATE TABLE 'proveedores' (    'id'    INTEGER NOT NULL,	'nombre'    TEXT,	'direccion' TEXT,	'correo'    TEXT,	'telefono'  TEXT,	'descripcion'   TEXT,	'activo'    INTEGER,	'created_at'    TEXT,	'updated_at'    TEXT,	PRIMARY KEY('id'))";
                 command.ExecuteNonQuery();
-                command.CommandText = "CREATE TABLE 'salidas_temporal' (    'id'    INTEGER NOT NULL,	'id_sucursal_origen'    INTEGER,	'id_sucursal_destino'   INTEGER,	'productos' TEXT,	'folio' TEXT,	'fecha_salida'  TEXT,	'usuario_id'    INTEGER,	'total_importe' REAL,	'estado'    INTEGER,	PRIMARY KEY('id' AUTOINCREMENT))";
+                command.CommandText = "CREATE TABLE 'salidas_temporal' (    'id'    INTEGER NOT NULL,	'id_sucursal_origen'    INTEGER,	'id_sucursal_destino'   INTEGER,	'productos' TEXT,	'folio' TEXT,	'fecha_salida'  TEXT,	'usuario_id'    INTEGER,	'total_importe' REAL,	'estado'    INTEGER, 'created_at'    TEXT, 'updated_at'    TEXT,	PRIMARY KEY('id' AUTOINCREMENT))";
                 command.ExecuteNonQuery();
                 command.CommandText = "CREATE TABLE 'sucursales' (    'id'    INTEGER NOT NULL,	'puerta_enlace1'    TEXT,	'puerta_enlace2'    TEXT,	'puerta_enlace3'    TEXT,	'puerta_enlace4'    TEXT,	'razon_social'  TEXT,	'direccion' TEXT,	'correo'    TEXT,	'activo'    INTEGER,	'created_at'    TEXT,	'updated_at'    TEXT,	PRIMARY KEY('id' AUTOINCREMENT))";
                 command.ExecuteNonQuery();
@@ -634,6 +634,64 @@ namespace InventarioCasaCeja
                 command.Parameters.AddWithValue("setActivo", proveedor.activo);
                 command.Parameters.AddWithValue("setCreated_at", proveedor.created_at);
                 command.Parameters.AddWithValue("setUpdated_at", proveedor.updated_at);
+                command.ExecuteScalar();
+            }
+        }
+        public DataTable getEntradas()
+        {
+            DataTable dtEntradas = new DataTable();
+            SQLiteCommand command = connection.CreateCommand();
+            command.CommandText = @"
+        SELECT entradas.id AS ID,
+               entradas.folio_factura AS 'FOLIO FACTURA',
+               entradas.total_factura AS 'TOTAL FACTURA',
+               usuarios.nombre AS 'USUARIO',
+               sucursales.razon_social AS 'SUCURSAL',
+               proveedores.nombre AS 'PROVEEDOR',
+               entradas.fecha_factura AS 'FECHA FACTURA' 
+        FROM entradas
+        JOIN usuarios ON entradas.usuario_id = usuarios.id
+        JOIN sucursales ON entradas.sucursal_id = sucursales.id
+        JOIN proveedores ON entradas.proveedor_id = proveedores.id
+        ORDER BY entradas.id ASC";
+
+            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
+            adapter.Fill(dtEntradas);
+
+            return dtEntradas;
+        }
+        public void saveEntradaProductos(List<EntradaProducto> entradaProductos)
+        {
+            foreach (EntradaProducto entradaProducto in entradaProductos)
+            {
+                SQLiteCommand command = connection.CreateCommand();
+                command.CommandText = "INSERT OR REPLACE INTO producto_entrada (entrada_id, producto_id, codigo, cantidad, costo, estado, detalles) " +
+                                      "VALUES(@setEntradaId, @setProductoId, 1, @setCantidad, @setCosto, 1, 'Enviado')";
+                command.Parameters.AddWithValue("setEntradaId", entradaProducto.entrada_id);
+                command.Parameters.AddWithValue("setProductoId", entradaProducto.producto_id);
+                command.Parameters.AddWithValue("setCantidad", entradaProducto.cantidad);
+                command.Parameters.AddWithValue("setCosto", entradaProducto.costo);
+                command.ExecuteNonQuery();
+            }
+        }
+
+
+        public void saveEntradas(List<Entrada> entradas)
+        {
+            foreach (Entrada entrada in entradas)
+            {
+                SQLiteCommand command = connection.CreateCommand();
+                command.CommandText = "INSERT OR REPLACE INTO entradas (id, folio_factura, total_factura, fecha_factura, usuario_id, sucursal_id, proveedor_id, created_at, updated_at) " +
+                "VALUES(@setId, @setFolioFactura, @setTotalFactura, @setFechaFactura, @setUsuarioId, @setSucursalId, @setProveedorId, @setCreated_at, @setUpdated_at) ";
+                command.Parameters.AddWithValue("setId", entrada.id);
+                command.Parameters.AddWithValue("setFolioFactura", entrada.folio_factura);
+                command.Parameters.AddWithValue("setTotalFactura", entrada.total_factura);
+                command.Parameters.AddWithValue("setFechaFactura", entrada.fecha_factura);
+                command.Parameters.AddWithValue("setUsuarioId", entrada.usuario_id);
+                command.Parameters.AddWithValue("setSucursalId", entrada.sucursal_id);
+                command.Parameters.AddWithValue("setProveedorId", entrada.proveedor_id);
+                command.Parameters.AddWithValue("setCreated_at", entrada.created_at);
+                command.Parameters.AddWithValue("setUpdated_at", entrada.updated_at);
                 command.ExecuteScalar();
             }
         }

@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace InventarioCasaCeja
@@ -15,6 +10,7 @@ namespace InventarioCasaCeja
         int type;
         List<string> tipo = new List<string>();
         string[] range = { "Entradas", "Salidas" };
+        LocaldataManager localDM = new LocaldataManager();
 
         public HistEntradasSalidas()
         {
@@ -23,6 +19,21 @@ namespace InventarioCasaCeja
             tipo.AddRange(range);
             BoxTipo.DataSource = tipo;
             BoxTipo.SelectedIndex = 0;
+
+            // Cargar las entradas en el DataGridView
+            CargarEntradasEnDataGrid();
+        }
+
+        private void CargarEntradasEnDataGrid()
+        {
+            // Obtener los datos de las entradas
+            DataTable tablaEntradas = localDM.getEntradas();
+
+            // Enlazar el DataTable con el DataGridView
+            tablaEntradasySalidas.DataSource = tablaEntradas;
+
+            // Opcional: Ajustar el tamaño de las columnas para que se adapten al contenido
+            tablaEntradasySalidas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
         }
 
         protected override bool ProcessDialogKey(Keys keyData)
@@ -97,16 +108,14 @@ namespace InventarioCasaCeja
             if (BoxTipo.SelectedIndex == 0)
             {
                 type = 0;
+                // Aquí podrías cargar las entradas nuevamente si el tipo cambia
+                CargarEntradasEnDataGrid();
             }
             else
             {
                 type = 1;
+                // Aquí podrías cargar otro tipo de datos si es necesario
             }
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

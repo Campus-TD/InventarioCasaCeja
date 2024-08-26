@@ -15,5 +15,7 @@ namespace InventarioCasaCeja
         public string fecha_salida { get; set; }
         public int usuario_id { get; set; }
         public double total_importe { get; set; }
+        public string created_at { get; set; }
+        public string updated_at { get; set; }
     }
 }

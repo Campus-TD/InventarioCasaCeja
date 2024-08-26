@@ -225,6 +225,8 @@
     <Compile Include="ElegirSucursal.designer.cs">
       <DependentUpon>ElegirSucursal.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entrada.cs" />
+    <Compile Include="EntradaProducto.cs" />
     <Compile Include="Existencia.cs" />
     <Compile Include="HistEntradasSalidas.cs">
       <SubType>Form</SubType>
