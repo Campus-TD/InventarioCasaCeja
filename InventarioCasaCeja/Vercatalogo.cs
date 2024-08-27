@@ -94,7 +94,7 @@ namespace InventarioCasaCeja
             switch (e.KeyData)
             {
                 case Keys.Enter:
-                    modify();
+                    //modify();
                     break;
                 case Keys.F1:
                     txtbuscar.Focus();
