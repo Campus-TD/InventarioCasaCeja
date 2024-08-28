@@ -703,8 +703,7 @@ ORDER BY entradas.id DESC";
         JOIN usuarios ON salidas_temporal.usuario_id = usuarios.id
         JOIN sucursales AS origen ON salidas_temporal.id_sucursal_origen = origen.id
         JOIN sucursales AS destino ON salidas_temporal.id_sucursal_destino = destino.id
-        WHERE (salidas_temporal.id_sucursal_origen = @sucursalId
-           OR salidas_temporal.id_sucursal_destino = @sucursalId)
+        WHERE salidas_temporal.id_sucursal_origen = @sucursalId
         ORDER BY salidas_temporal.fecha_salida DESC
                 LIMIT @rowsPerPage OFFSET @offset";
 
