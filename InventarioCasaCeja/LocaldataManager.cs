@@ -699,6 +699,7 @@ ORDER BY entradas.id DESC";
                salidas_temporal.fecha_salida AS 'FECHA SALIDA',
                usuarios.nombre AS 'USUARIO',
                salidas_temporal.total_importe AS 'TOTAL IMPORTE'
+
         FROM salidas_temporal
         JOIN usuarios ON salidas_temporal.usuario_id = usuarios.id
         JOIN sucursales AS origen ON salidas_temporal.id_sucursal_origen = origen.id
