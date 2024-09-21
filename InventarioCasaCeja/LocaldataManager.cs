@@ -203,7 +203,7 @@ namespace InventarioCasaCeja
         {
             Dictionary<string, int> map = new Dictionary<string, int>();
 
-            string query = "SELECT * FROM sucursales WHERE activo=1";
+            string query = "SELECT * FROM sucursales WHERE activo = 1";
             SQLiteCommand command = new SQLiteCommand(query, connection);
             SQLiteDataReader result = command.ExecuteReader();
             while (result.Read())
@@ -481,7 +481,7 @@ namespace InventarioCasaCeja
         public DataTable getCategorias()
         {
             DataTable dt = new DataTable();
-            string query = "SELECT id AS ID, nombre AS CATEGORIA FROM categorias WHERE activo=1";
+            string query = "SELECT id AS ID, nombre AS CATEGORIA FROM categorias WHERE activo = 1";
             SQLiteCommand command = new SQLiteCommand(query, connection);
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dt);
@@ -521,7 +521,7 @@ namespace InventarioCasaCeja
         {
             DataTable dt = new DataTable();
             SQLiteCommand command = connection.CreateCommand();
-            command.CommandText = "SELECT * FROM proveedores";
+            command.CommandText = "SELECT * FROM proveedores WHERE activo = 1";
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dt);
             return dt;
