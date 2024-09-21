@@ -156,7 +156,6 @@ namespace InventarioCasaCeja
                 SQLiteDataReader result = command.ExecuteReader();
                 if (result.Read())
                 {
-                    last_update = result.GetString(0);
                 }
             }
             return last_update;
@@ -234,7 +233,7 @@ namespace InventarioCasaCeja
         {
             Dictionary<string, int> map = new Dictionary<string, int>();
 
-            string query = "SELECT * FROM proveedores";
+            string query = "SELECT * FROM proveedores WHERE activo = 1";
             SQLiteCommand command = new SQLiteCommand(query, connection);
             SQLiteDataReader result = command.ExecuteReader();
             while (result.Read())
