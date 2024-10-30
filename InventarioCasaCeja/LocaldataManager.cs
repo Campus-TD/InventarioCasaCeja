@@ -74,7 +74,7 @@ namespace InventarioCasaCeja
                 command.ExecuteNonQuery();
                 command.CommandText = "CREATE TABLE 'usuarios' (    'id'    INTEGER NOT NULL,	'nombre'    TEXT,	'correo'    TEXT,	'confirmacion'  INTEGER,	'telefono'  TEXT,	'imagen'    TEXT,	'usuario'   TEXT,	'clave' TEXT,	'is_root'   INTEGER,	'activo'    INTEGER,	'created_at'    TEXT,	'updated_at'    TEXT,	PRIMARY KEY('id'))";
                 command.ExecuteNonQuery();
-                command.CommandText = "CREATE TABLE 'ventas' (    'id'    INTEGER NOT NULL,	'total' REAL,	'folio' TEXT,	'folio_corte'   TEXT,	'fecha_venta'   TEXT,	'metodo_pago'   TEXT,	'tipo'  INTEGER,	'sucursal_id'   INTEGER,	'usuario_id'    INTEGER,	'cancelacion'   TEXT,	'estado'    INTEGER,	'detalles'  TEXT,	FOREIGN KEY('usuario_id') REFERENCES 'usuarios'('id'),	FOREIGN KEY('sucursal_id') REFERENCES 'sucursales'('id'),	PRIMARY KEY('id' AUTOINCREMENT))";
+                command.CommandText = "CREATE TABLE 'ventas' (    'id'    INTEGER NOT NULL,	'total' REAL, 'descuento' REAL,	'folio' TEXT,	'folio_corte'   TEXT,	'fecha_venta'   TEXT,	'metodo_pago'   TEXT,	'tipo'  INTEGER,	'sucursal_id'   INTEGER,	'usuario_id'    INTEGER,	'cancelacion'   TEXT,	'estado'    INTEGER,	'detalles'  TEXT,	FOREIGN KEY('usuario_id') REFERENCES 'usuarios'('id'),	FOREIGN KEY('sucursal_id') REFERENCES 'sucursales'('id'),	PRIMARY KEY('id' AUTOINCREMENT))";
                 command.ExecuteNonQuery();
             }
             else
