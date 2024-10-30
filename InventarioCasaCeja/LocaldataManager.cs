@@ -156,6 +156,7 @@ namespace InventarioCasaCeja
                 SQLiteDataReader result = command.ExecuteReader();
                 if (result.Read())
                 {
+                    last_update = result.GetString(0);
                 }
             }
             return last_update;

@@ -50,7 +50,6 @@ namespace InventarioCasaCeja
             entradas_lastupdate = localDM.getTableLastUpdate("entradas");
             entrada_producto_lastupdate = localDM.getTableLastUpdate("entradas");
             salidas_lastupdate = localDM.getTableLastUpdate("salidas_temporal");
-            
         }
         public void resetDates()
         {
