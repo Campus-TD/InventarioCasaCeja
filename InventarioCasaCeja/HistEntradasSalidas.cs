@@ -36,7 +36,7 @@ namespace InventarioCasaCeja
             tablaEntradasySalidas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
         }
         private void CargarSalidasEnDataGrid()
-        {
+        {            
             rowCount = localDM.getSalidasCountPorSucursal(idSucursal);
             calculateMaxPages(rowCount);
             tablaSalidas = localDM.getSalidasPorSucursal(idSucursal, offset, rowsPerPage);

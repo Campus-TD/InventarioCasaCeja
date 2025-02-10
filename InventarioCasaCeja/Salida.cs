@@ -8,6 +8,7 @@ namespace InventarioCasaCeja
 {
     public class Salida
     {
+        public int id { get; set; }
         public int id_sucursal_origen { get; set; }
         public int id_sucursal_destino { get; set; }
         public string productos { get; set; }

@@ -26,6 +26,8 @@ namespace InventarioCasaCeja
         string entradas_lastupdate;
         string entrada_producto_lastupdate;
         string salidas_lastupdate;
+        string salidasGral_lastupdate;
+
         public int sucursal_id;
         Action<int> refreshData;
         public Usuario activeUser;
@@ -49,7 +51,10 @@ namespace InventarioCasaCeja
             sucursales_lastupdate = localDM.getTableLastUpdate("sucursales");
             entradas_lastupdate = localDM.getTableLastUpdate("entradas");
             entrada_producto_lastupdate = localDM.getTableLastUpdate("entradas");
-            salidas_lastupdate = localDM.getTableLastUpdate("salidas_temporal");
+            
+            salidasGral_lastupdate = localDM.getTableLastUpdate("salidas");
+
+            //salidas_lastupdate = localDM.getTableLastUpdate("salidas_temporal");
         }
         public void resetDates()
         {
@@ -61,6 +66,10 @@ namespace InventarioCasaCeja
             sucursales_lastupdate = localDM.getTableLastUpdate("sucursales");
             entradas_lastupdate = localDM.getTableLastUpdate("entradas");
             entrada_producto_lastupdate = localDM.getTableLastUpdate("entradas");
+
+            salidasGral_lastupdate = localDM.getTableLastUpdate("salidas");
+
+
             salidas_lastupdate = localDM.getTableLastUpdate("salidas_temporal");
         }
         //public async Task<bool> PingServerAsync()
@@ -254,6 +263,56 @@ namespace InventarioCasaCeja
             }
             return false;
         }
+
+        public async Task<bool> GetSalidasGral()
+        {
+            string res = "";
+            Dictionary<string, string> date = new Dictionary<string, string>();
+            date["fecha_de_actualizacion"] = salidasGral_lastupdate;
+
+            try
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(url + "api/salidas/sincronizar", date);
+                res = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
+                    if (result["status"].ToString().Equals("success"))
+                    {
+                        var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(result["data"].ToString());
+                        var salidas = JsonConvert.DeserializeObject<List<Salida>>(data["Salida"].ToString());
+
+                        localDM.saveSalidasGral(salidas);
+                        salidasGral_lastupdate = localDM.getTableLastUpdate("salidas");
+                        return true;
+                    }
+                    else
+                    {
+                        // Manejo de error
+                        //Console.WriteLine("Error en la respuesta del servidor:");
+                        //Console.WriteLine(result["status"].ToString());
+                    }
+                }
+                else
+                {
+                    // Manejo de error en la conexión
+                    //Console.WriteLine("Error en la conexión:");
+                    //Console.WriteLine(response.StatusCode);
+                    //Console.WriteLine(res);
+
+                }
+            }
+            catch (Exception e)
+            {
+                // Manejo de excepción
+                //Console.WriteLine("Excepción durante la solicitud HTTP:");
+                //Console.WriteLine(e.Message);
+                //Console.WriteLine(e.StackTrace);
+            }
+            return false;
+        }
+
         public async Task<bool> GetSalidas()
         {
             string res = "";
