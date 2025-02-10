@@ -322,14 +322,14 @@ namespace InventarioCasaCeja
             if (runningProcessByName.Length == 0)
             {
                 //DialogResult response = MessageBox.Show("¿Desea eliminar la informacion del catálogo antes de sincronizar?\n\nEsta acción puede tomar unos minutos.", "Advertencia", MessageBoxButtons.YesNoCancel);
-                DialogResult response = MessageBox.Show("Al sincronizar, reemplazará la informacion local con la mas reciente en el servidor y se eliminara la informacion no enviada. \n\nEsta acción puede tomar unos minutos. ¿Desea continuar?", "Advertencia", MessageBoxButtons.YesNoCancel);
+                DialogResult response = MessageBox.Show("Al sincronizar, reemplazará la informacion local con la mas reciente en el servidor y se eliminara la informacion no enviada. \n\nEsta acción puede tomar unos minutos. ¿Desea continuar?", "Advertencia", MessageBoxButtons.YesNo);
                 if (response == DialogResult.Yes)
                 {
                     localDM.clearTabble("productos");
                     webDM.resetDates();
                 }
 
-                if (response != DialogResult.Cancel)
+                if (response != DialogResult.No)
                 {
                     loadData();
                 }

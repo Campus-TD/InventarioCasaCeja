@@ -70,7 +70,7 @@ namespace InventarioCasaCeja
             salidasGral_lastupdate = localDM.getTableLastUpdate("salidas");
 
 
-            salidas_lastupdate = localDM.getTableLastUpdate("salidas_temporal");
+            //salidas_lastupdate = localDM.getTableLastUpdate("salidas_temporal");
         }
         //public async Task<bool> PingServerAsync()
         //{

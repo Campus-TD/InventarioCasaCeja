@@ -153,7 +153,8 @@ namespace InventarioCasaCeja
         public string getTableLastUpdate(string table)
         {
             string last_update = "2000-01-01T00:00:00Z";
-            if(!IsTableEmpty(table))
+            Console.WriteLine("Llamanado tabla: " + table);
+            if (!IsTableEmpty(table))
             {
                 string query = "SELECT updated_at FROM " + table+" ORDER BY updated_at DESC LIMIT 1";
                 SQLiteCommand command = new SQLiteCommand(query, connection);
@@ -481,6 +482,8 @@ namespace InventarioCasaCeja
             command.CommandText = "DELETE FROM cortes";
             command.ExecuteScalar();
             command.CommandText = "DELETE FROM salidas_temporal";
+            command.ExecuteScalar();
+            command.CommandText = "DELETE FROM salidas";
             command.ExecuteScalar();
         }
         public DataTable getCategorias()
