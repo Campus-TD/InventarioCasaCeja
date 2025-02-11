@@ -8,6 +8,7 @@ namespace InventarioCasaCeja
 {
     public class ProductoSalida
     {
+        internal double importe;
         public string codigo { get; set; }
         public string nombre { get; set; }
         public string unidad { get; set; }
