@@ -153,7 +153,7 @@ namespace InventarioCasaCeja
         public string getTableLastUpdate(string table)
         {
             string last_update = "2000-01-01T00:00:00Z";
-            Console.WriteLine("Llamanado tabla: " + table);
+            Console.WriteLine("Llamando tabla: " + table);
             if (!IsTableEmpty(table))
             {
                 string query = "SELECT updated_at FROM " + table+" ORDER BY updated_at DESC LIMIT 1";
