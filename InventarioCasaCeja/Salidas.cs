@@ -53,7 +53,7 @@ namespace InventarioCasaCeja
         PrintPreviewDialog previewDialog = new PrintPreviewDialog();
 
         public Salidas(CurrentData data)
-        {          
+        {
             InitializeComponent();
             this.ProductoSeleccionado += AgregarProductoDirectamente;
             printPreviewControl1 = new PrintPreviewControl();
@@ -71,6 +71,35 @@ namespace InventarioCasaCeja
             tabla.DataSource = tablasource;
             total = 0;
             (previewDialog as Form).WindowState = FormWindowState.Maximized;
+
+            // Modificación para cambiar el encabezado de la columna y formatear visualmente
+            tabla.Columns["idproducto"].HeaderText = "Importe"; // Cambiar el encabezado a "Importe"
+
+            // Suscribir al evento CellFormatting para mostrar el importe calculado
+            tabla.CellFormatting += Tabla_CellFormatting;
+        }
+        private void Tabla_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            // Verificar si la celda actual es de la columna "idproducto" (ahora visualmente "Importe")
+            if (tabla.Columns[e.ColumnIndex].Name == "idproducto")
+            {
+                // Obtener la fila actual
+                DataGridViewRow fila = tabla.Rows[e.RowIndex];
+
+                // Asegurarse de que la fila no sea la fila de encabezado y tenga datos
+                if (fila.DataBoundItem != null)
+                {
+                    // Obtener el objeto ProductoSalida de la fila
+                    ProductoSalida producto = (ProductoSalida)fila.DataBoundItem;
+
+                    // Calcular el importe (cantidad * precio)
+                    double importe = producto.cantidad * producto.precio;
+
+                    // Formatear el valor para mostrarlo en la celda (opcional: formato moneda)
+                    e.Value = importe.ToString("N2"); // "N2" formatea a número con 2 decimales
+                    e.FormattingApplied = true; // Indicar que hemos aplicado el formato
+                }
+            }
         }
 
         /*
