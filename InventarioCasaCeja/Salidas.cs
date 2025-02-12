@@ -672,7 +672,7 @@ namespace InventarioCasaCeja
                     //List<ProductoSalida> listaProductos = productosImprimir;
                     //string json = JsonConvert.SerializeObject(listaProductos);
 
-                    previewDialog.ShowDialog();
+                     previewDialog.ShowDialog();
                     productosImprimir.Clear();
                     tablasource.ResetBindings(false);
                 }                
