@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using InventarioCasaCeja.Properties;
 using System.Drawing.Text;
+using Windows.UI.Xaml;
 
 namespace InventarioCasaCeja
 {
@@ -48,6 +49,18 @@ namespace InventarioCasaCeja
                 MessageBox.Show("No se ha establecido el tamaño de texto", "Advertencia");
                 return;
             }
+            if (fuentes.SelectedIndex == -1)
+            {
+                MessageBox.Show("No se ha establecido la fuente de texto", "Advertencia");
+                return;
+            }
+            if (txtprintername.Text == "")
+            {
+                MessageBox.Show("No se ha establecido la impresora", "Advertencia");
+                return;
+            }
+            //this.boxsucursal.SelectedItem = 1;
+            //Console.WriteLine(boxsucursal.SelectedItem.ToString());
             string selectsedsucursal = boxsucursal.SelectedItem.ToString();
             if (mapasucursales.ContainsKey(selectsedsucursal))
             {
@@ -55,7 +68,7 @@ namespace InventarioCasaCeja
             }
             else
             {
-                Settings.Default["sucursalid"] = 0;
+                Settings.Default["sucursalid"] = 1;
             }
             Settings.Default["fontName"] = fuentes.SelectedItem.ToString();
             Settings.Default["fontSize"] = int.Parse(tamaños.SelectedItem.ToString());

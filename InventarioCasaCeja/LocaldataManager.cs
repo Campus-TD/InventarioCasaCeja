@@ -836,20 +836,45 @@ WHERE
         }
 
 
-        public void saveEntradas(List<Entrada> entradas)
+        public void saveEntradas(List<Entrada> entradas, int sucursalId)
         {
             foreach (Entrada entrada in entradas)
             {
                 SQLiteCommand command = connection.CreateCommand();
-                command.CommandText = "INSERT OR REPLACE INTO entradas (id, folio_factura, total_factura, fecha_factura, usuario_id, sucursal_id, proveedor_id, created_at, updated_at) " +
-                "VALUES(@setId, @setFolioFactura, @setTotalFactura, @setFechaFactura, @setUsuarioId, @setSucursalId, @setProveedorId, @setCreatedAt, @setUpdatedAt)";
+                command.CommandText = @"
+            INSERT OR REPLACE INTO entradas (
+                id,
+                folio_factura,
+                total_factura,
+                fecha_factura,
+                usuario_id,
+                sucursal_id,
+                proveedor_id,
+                created_at,
+                updated_at
+            )
+            VALUES(
+                @setId,
+                @setFolioFactura,
+                @setTotalFactura,
+                @setFechaFactura,
+                @setUsuarioId,
+                @setSucursalId,
+                @setProveedorId,
+                @setCreatedAt,
+                @setUpdatedAt
+            )
+            WHERE sucursal_id = @sucursalIdParam; -- Where clause added here
+            ";
 
                 command.Parameters.AddWithValue("setId", entrada.id);
                 command.Parameters.AddWithValue("setFolioFactura", entrada.folio_factura);
                 command.Parameters.AddWithValue("setTotalFactura", entrada.total_factura);
                 command.Parameters.AddWithValue("setFechaFactura", entrada.fecha_factura);
                 command.Parameters.AddWithValue("setUsuarioId", entrada.usuario_id);
-                command.Parameters.AddWithValue("setSucursalId", entrada.sucursal_id);
+                // We are using the sucursalId parameter from the function here
+                command.Parameters.AddWithValue("setSucursalId", sucursalId);
+                command.Parameters.AddWithValue("sucursalIdParam", sucursalId); // Parameter for WHERE clause
                 command.Parameters.AddWithValue("setProveedorId", entrada.proveedor_id);
                 string currentDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 command.Parameters.AddWithValue("setCreatedAt", currentDateTime);
@@ -858,6 +883,7 @@ WHERE
                 command.ExecuteNonQuery();
             }
         }
+
         public void saveSalidas(List<Salida> salidas)
         {
             foreach (Salida salida in salidas)

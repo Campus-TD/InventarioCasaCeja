@@ -48,6 +48,8 @@ namespace InventarioCasaCeja
             vermedidas = new Visor(1, webDM);
             verproveedores = new Visor(8, webDM);
             vercatalago = new Vercatalogo(webDM);
+            sucursalActual = new Sucursal();
+            sucursalActual.id = 1;
             //vercatalago.setData(tablacatalogo, mapamedidas, mapacategorias);
         }
         private async void loadData()
@@ -71,7 +73,7 @@ namespace InventarioCasaCeja
                     lw.setData(70, "Sincronizando datos desde el servidor...");
                     await webDM.GetProveedores();
                     lw.setData(80, "Sincronizando datos desde el servidor...");
-                    await webDM.GetEntradas();
+                    await webDM.GetEntradas(sucursalActual.id);
                     lw.setData(90, "Sincronizando datos desde el servidor...");
                     await webDM.GetEntradaProducto();
                     lw.setData(100, "Sincronizando datos desde el servidor...");

@@ -226,7 +226,7 @@ namespace InventarioCasaCeja
             }
             return false;
         }
-        public async Task<bool> GetEntradas()
+        public async Task<bool> GetEntradas(int sucursalId)
         {
             string res = "";
             Dictionary<string, string> date = new Dictionary<string, string>();
@@ -243,7 +243,7 @@ namespace InventarioCasaCeja
                         var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(result["data"].ToString());
                         var entradas = JsonConvert.DeserializeObject<List<Entrada>>(data["Entrada"].ToString());
 
-                        localDM.saveEntradas(entradas);
+                        localDM.saveEntradas(entradas, sucursalId);
                         entradas_lastupdate = localDM.getTableLastUpdate("entradas");
                         return true;
                     }
