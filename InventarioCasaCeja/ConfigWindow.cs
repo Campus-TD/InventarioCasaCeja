@@ -59,17 +59,17 @@ namespace InventarioCasaCeja
                 MessageBox.Show("No se ha establecido la impresora", "Advertencia");
                 return;
             }
-            //this.boxsucursal.SelectedItem = 1;
-            //Console.WriteLine(boxsucursal.SelectedItem.ToString());
             string selectsedsucursal = boxsucursal.SelectedItem.ToString();
             if (mapasucursales.ContainsKey(selectsedsucursal))
             {
                 Settings.Default["sucursalid"] = mapasucursales[selectsedsucursal];
+                MessageBox.Show("Se ha establecido la sucursal: " + selectsedsucursal, "Información");
             }
             else
             {
                 Settings.Default["sucursalid"] = 1;
             }
+
             Settings.Default["fontName"] = fuentes.SelectedItem.ToString();
             Settings.Default["fontSize"] = int.Parse(tamaños.SelectedItem.ToString());
             Settings.Default["printername"] = txtprintername.Text;

@@ -836,7 +836,7 @@ WHERE
         }
 
 
-        public void saveEntradas(List<Entrada> entradas, int sucursalId)
+        public void saveEntradas(List<Entrada> entradas)
         {
             foreach (Entrada entrada in entradas)
             {
@@ -863,22 +863,17 @@ WHERE
                 @setProveedorId,
                 @setCreatedAt,
                 @setUpdatedAt
-            )
-            WHERE sucursal_id = @sucursalIdParam; -- Where clause added here
-            ";
+            )";
 
                 command.Parameters.AddWithValue("setId", entrada.id);
                 command.Parameters.AddWithValue("setFolioFactura", entrada.folio_factura);
                 command.Parameters.AddWithValue("setTotalFactura", entrada.total_factura);
                 command.Parameters.AddWithValue("setFechaFactura", entrada.fecha_factura);
                 command.Parameters.AddWithValue("setUsuarioId", entrada.usuario_id);
-                // We are using the sucursalId parameter from the function here
-                command.Parameters.AddWithValue("setSucursalId", sucursalId);
-                command.Parameters.AddWithValue("sucursalIdParam", sucursalId); // Parameter for WHERE clause
+                command.Parameters.AddWithValue("setSucursalId", entrada.sucursal_id);
                 command.Parameters.AddWithValue("setProveedorId", entrada.proveedor_id);
-                string currentDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                command.Parameters.AddWithValue("setCreatedAt", currentDateTime);
-                command.Parameters.AddWithValue("setUpdatedAt", currentDateTime);
+                command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
                 command.ExecuteNonQuery();
             }

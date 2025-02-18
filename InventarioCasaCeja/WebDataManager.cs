@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using Windows.Storage;
 using System.Net.NetworkInformation;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace InventarioCasaCeja
 {
@@ -230,41 +231,52 @@ namespace InventarioCasaCeja
         {
             string res = "";
             Dictionary<string, string> date = new Dictionary<string, string>();
+            
             date["fecha_de_actualizacion"] = entradas_lastupdate;
+
             try
             {
                 HttpResponseMessage response = await client.PostAsJsonAsync(url + "api/entradas/sincronizar", date);
                 res = await response.Content.ReadAsStringAsync();
+
                 if (response.IsSuccessStatusCode)
                 {
+                    Console.WriteLine("Respuesta del servidor: " + res);
                     var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
+
                     if (result["status"].ToString().Equals("success"))
                     {
                         var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(result["data"].ToString());
                         var entradas = JsonConvert.DeserializeObject<List<Entrada>>(data["Entrada"].ToString());
+                        Console.WriteLine($"Valor de sucursalId ANTES del filtro: {sucursalId}"); // 👈  ID sucursal antes de filtrar
+                        // 👇 Filtrar entradas por sucursal_id antes de guardar
+                        var entradasFiltradas = entradas.Where(e => e.sucursal_id == sucursalId).ToList();
 
-                        localDM.saveEntradas(entradas, sucursalId);
+                        // Guardar solo las entradas filtradas
+                        localDM.saveEntradas(entradasFiltradas);
+
                         entradas_lastupdate = localDM.getTableLastUpdate("entradas");
+
                         return true;
                     }
                     else
                     {
-                        // Manejo de error
+                        Console.WriteLine("Error: " + result["message"].ToString());
                     }
                 }
                 else
                 {
-                    // Manejo de error en la conexión
+                    Console.WriteLine("Error en la conexión: " + response.StatusCode);
                 }
             }
             catch (Exception e)
             {
-                // Manejo de excepción
+                Console.WriteLine("Excepción: " + e.Message);
             }
             return false;
         }
 
-        public async Task<bool> GetSalidasGral()
+        public async Task<bool> GetSalidasGral(int sucursalId)
         {
             string res = "";
             Dictionary<string, string> date = new Dictionary<string, string>();
@@ -283,7 +295,8 @@ namespace InventarioCasaCeja
                         var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(result["data"].ToString());
                         var salidas = JsonConvert.DeserializeObject<List<Salida>>(data["Salida"].ToString());
 
-                        localDM.saveSalidasGral(salidas);
+                        var salidasFiltradas = salidas.Where(e => e.id_sucursal_origen == sucursalId).ToList();
+                        localDM.saveSalidasGral(salidasFiltradas);
                         salidasGral_lastupdate = localDM.getTableLastUpdate("salidas");
                         return true;
                     }
@@ -313,7 +326,7 @@ namespace InventarioCasaCeja
             return false;
         }
 
-        public async Task<bool> GetSalidas()
+        public async Task<bool> GetSalidas(int sucursalId)
         {
             string res = "";
             Dictionary<string, string> date = new Dictionary<string, string>();
@@ -331,8 +344,8 @@ namespace InventarioCasaCeja
                     {
                         var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(result["data"].ToString());
                         var salidas = JsonConvert.DeserializeObject<List<Salida>>(data["Salida"].ToString());
-
-                        localDM.saveSalidas(salidas);
+                        var salidasFiltradas = salidas.Where(e => e.id_sucursal_origen == sucursalId).ToList();
+                        localDM.saveSalidas(salidasFiltradas);
                         salidas_lastupdate = localDM.getTableLastUpdate("salidas_temporal");
                         return true;
                     }
