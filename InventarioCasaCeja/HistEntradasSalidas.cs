@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace InventarioCasaCeja
@@ -34,6 +35,9 @@ namespace InventarioCasaCeja
             tablaEntradas = localDM.getEntradasPorSucursal(idSucursal, offset, rowsPerPage);
             tablaEntradasySalidas.DataSource = tablaEntradas;
             tablaEntradasySalidas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+
+            // Cambiar el tamaño de la fuente de los encabezados de las columnas
+            tablaEntradasySalidas.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 18, FontStyle.Bold);
         }
         private void CargarSalidasEnDataGrid()
         {
@@ -42,6 +46,9 @@ namespace InventarioCasaCeja
             tablaSalidas = localDM.getSalidasPorSucursal(idSucursal, offset, rowsPerPage);
             tablaEntradasySalidas.DataSource = tablaSalidas;
             tablaEntradasySalidas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+
+            // Cambiar el tamaño de la fuente de los encabezados de las columnas
+            tablaEntradasySalidas.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 18, FontStyle.Bold);
         }
 
         protected override bool ProcessDialogKey(Keys keyData)

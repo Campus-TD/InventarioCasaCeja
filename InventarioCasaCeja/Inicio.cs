@@ -48,6 +48,7 @@ namespace InventarioCasaCeja
             vermedidas = new Visor(1, webDM);
             verproveedores = new Visor(8, webDM);
             vercatalago = new Vercatalogo(webDM);
+            sucursalActual = new Sucursal();
             //vercatalago.setData(tablacatalogo, mapamedidas, mapacategorias);
         }
         private async void loadData()
@@ -58,7 +59,20 @@ namespace InventarioCasaCeja
                 this.Enabled = false;
                 LoadWindow lw = new LoadWindow();
                 lw.Show(this);
-                if (await webDM.GetProductos())
+
+            getConfig();
+            int idsucursalParaEyS;
+            int sucursalIdSettingParaEyS = Settings.Default.sucursalid; // Obtener el valor int directamente
+
+            if (sucursalIdSettingParaEyS == 0) // Cambiar 0 al valor predeterminado correcto si es diferente
+            {
+                idsucursalParaEyS = 1; // Usar sucursal 1 si es la primera vez
+            }
+            else
+            {
+                idsucursalParaEyS = sucursalIdSettingParaEyS; // Usar la configurada
+            }
+            if (await webDM.GetProductos())
                 {
                     lw.setData(10, "Sincronizando datos desde el servidor...");
                     await webDM.GetSucursales();
@@ -71,11 +85,12 @@ namespace InventarioCasaCeja
                     lw.setData(70, "Sincronizando datos desde el servidor...");
                     await webDM.GetProveedores();
                     lw.setData(80, "Sincronizando datos desde el servidor...");
-                    await webDM.GetEntradas();
+                    await webDM.GetEntradas(idsucursalParaEyS);
                     lw.setData(90, "Sincronizando datos desde el servidor...");
                     await webDM.GetEntradaProducto();
                     lw.setData(100, "Sincronizando datos desde el servidor...");
-                    await webDM.GetSalidas();
+                    await webDM.GetSalidas(idsucursalParaEyS);
+                    await webDM.GetSalidasGral(idsucursalParaEyS);
                 }
                 else
                 {
@@ -96,7 +111,6 @@ namespace InventarioCasaCeja
                 this.Enabled = true;
                 this.Focus();
             //}
-            getConfig();
             refreshData(0);
             
             if (usuarioActivo == null)
@@ -254,12 +268,28 @@ namespace InventarioCasaCeja
         }
         void getConfig()
         {
-               
-            webDM.sucursal_id = idsucursal;
-                
+            Console.WriteLine(webDM.sucursal_id);
             printerType = int.Parse(Settings.Default["printertype"].ToString());
-            
-            idsucursal = int.Parse(Settings.Default["sucursalid"].ToString());
+
+            int sucursalIdSetting = Settings.Default.sucursalid; // Obtener el valor int directamente
+
+            // Verificar si la configuración de sucursalid es el valor predeterminado (asumimos que es 0)
+            if (sucursalIdSetting == 0) // Cambia 0 si tu valor predeterminado es otro
+            {
+                // Si es la primera vez o el valor predeterminado, establecer idsucursal a 1
+                idsucursal = 1;
+                Settings.Default["sucursalid"] = 1; // Guardar 1 como int (o como string "1" si prefieres, ¡lee la nota abajo!)
+                Settings.Default.Save(); // Guardar la configuración
+            }
+            else
+            {
+                // Si ya existe una configuración válida, cargarla normalmente
+                idsucursal = sucursalIdSetting;
+            }
+
+            // **Eliminar la línea `idsucursal = 1;` que estaba sobreescribiendo el valor**
+            // idsucursal = 1;
+
             localDM.setImpresora(Settings.Default["printername"].ToString());
             sucursalActual = localDM.getSucursal(idsucursal);
             fontName = Settings.Default["fontName"].ToString();
@@ -321,15 +351,11 @@ namespace InventarioCasaCeja
             if (runningProcessByName.Length == 0)
             {
                 //DialogResult response = MessageBox.Show("¿Desea eliminar la informacion del catálogo antes de sincronizar?\n\nEsta acción puede tomar unos minutos.", "Advertencia", MessageBoxButtons.YesNoCancel);
-                DialogResult response = MessageBox.Show("Al sincronizar, reemplazará la informacion local con la mas reciente en el servidor y se eliminara la informacion no enviada. \n\nEsta acción puede tomar unos minutos. ¿Desea continuar?", "Advertencia", MessageBoxButtons.YesNoCancel);
+                DialogResult response = MessageBox.Show("Al sincronizar, reemplazará la informacion local con la mas reciente en el servidor y se eliminara la informacion no enviada. \n\nEsta acción puede tomar unos minutos. ¿Desea continuar?", "Advertencia", MessageBoxButtons.YesNo);
                 if (response == DialogResult.Yes)
                 {
-                    localDM.clearTabble("productos");
+                    localDM.ClearDatabase();
                     webDM.resetDates();
-                }
-
-                if (response != DialogResult.Cancel)
-                {
                     loadData();
                 }
             }else

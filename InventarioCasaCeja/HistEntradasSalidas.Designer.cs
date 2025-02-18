@@ -28,30 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.exitButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.clientinfo = new System.Windows.Forms.TableLayoutPanel();
-            this.tablaEntradasySalidas = new System.Windows.Forms.DataGridView();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.BoxTipo = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.BSelRegistro = new System.Windows.Forms.Button();
             this.BelimHistorial = new System.Windows.Forms.Button();
             this.next = new System.Windows.Forms.Button();
             this.pageLabel = new System.Windows.Forms.Label();
             this.prev = new System.Windows.Forms.Button();
+            this.clientinfo = new System.Windows.Forms.TableLayoutPanel();
+            this.tablaEntradasySalidas = new System.Windows.Forms.DataGridView();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.BoxTipo = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.clientinfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tablaEntradasySalidas)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -103,6 +104,104 @@
             this.tableLayoutPanel3.Size = new System.Drawing.Size(1639, 728);
             this.tableLayoutPanel3.TabIndex = 2;
             // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel2.ColumnCount = 7;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 89.23885F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.76116F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 64F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 167F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 64F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 142F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 687F));
+            this.tableLayoutPanel2.Controls.Add(this.BSelRegistro, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.BelimHistorial, 6, 0);
+            this.tableLayoutPanel2.Controls.Add(this.next, 4, 0);
+            this.tableLayoutPanel2.Controls.Add(this.pageLabel, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.prev, 2, 0);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 652);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1633, 73);
+            this.tableLayoutPanel2.TabIndex = 1;
+            // 
+            // BSelRegistro
+            // 
+            this.BSelRegistro.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.BSelRegistro.Font = new System.Drawing.Font("Segoe UI Semibold", 20F, System.Drawing.FontStyle.Bold);
+            this.BSelRegistro.Location = new System.Drawing.Point(4, 4);
+            this.BSelRegistro.Margin = new System.Windows.Forms.Padding(4);
+            this.BSelRegistro.Name = "BSelRegistro";
+            this.BSelRegistro.Size = new System.Drawing.Size(446, 65);
+            this.BSelRegistro.TabIndex = 14;
+            this.BSelRegistro.Text = "SEL. REGISTRO (ENTER)";
+            this.BSelRegistro.UseVisualStyleBackColor = true;
+            this.BSelRegistro.Click += new System.EventHandler(this.BSelRegistro_Click);
+            // 
+            // BelimHistorial
+            // 
+            this.BelimHistorial.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.BelimHistorial.Font = new System.Drawing.Font("Segoe UI Semibold", 20F, System.Drawing.FontStyle.Bold);
+            this.BelimHistorial.Location = new System.Drawing.Point(949, 4);
+            this.BelimHistorial.Margin = new System.Windows.Forms.Padding(4);
+            this.BelimHistorial.Name = "BelimHistorial";
+            this.BelimHistorial.Size = new System.Drawing.Size(680, 65);
+            this.BelimHistorial.TabIndex = 13;
+            this.BelimHistorial.Text = "ELIM. HISTORIAL (F5)";
+            this.BelimHistorial.UseVisualStyleBackColor = true;
+            this.BelimHistorial.Click += new System.EventHandler(this.BelimHistorial_Click);
+            // 
+            // next
+            // 
+            this.next.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.next.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.next.Location = new System.Drawing.Point(743, 4);
+            this.next.Margin = new System.Windows.Forms.Padding(4);
+            this.next.Name = "next";
+            this.next.Size = new System.Drawing.Size(56, 65);
+            this.next.TabIndex = 10;
+            this.next.Text = ">";
+            this.next.UseVisualStyleBackColor = true;
+            this.next.Click += new System.EventHandler(this.next_Click);
+            // 
+            // pageLabel
+            // 
+            this.pageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pageLabel.AutoSize = true;
+            this.pageLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold);
+            this.pageLabel.Location = new System.Drawing.Point(576, 0);
+            this.pageLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.pageLabel.Name = "pageLabel";
+            this.pageLabel.Size = new System.Drawing.Size(159, 73);
+            this.pageLabel.TabIndex = 11;
+            this.pageLabel.Text = "Página 1/1";
+            this.pageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // prev
+            // 
+            this.prev.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.prev.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.prev.Location = new System.Drawing.Point(512, 4);
+            this.prev.Margin = new System.Windows.Forms.Padding(4);
+            this.prev.Name = "prev";
+            this.prev.Size = new System.Drawing.Size(55, 65);
+            this.prev.TabIndex = 12;
+            this.prev.Text = "<";
+            this.prev.UseVisualStyleBackColor = true;
+            this.prev.Click += new System.EventHandler(this.prev_Click);
+            // 
             // clientinfo
             // 
             this.clientinfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -142,32 +241,40 @@
             this.tablaEntradasySalidas.AllowUserToAddRows = false;
             this.tablaEntradasySalidas.AllowUserToDeleteRows = false;
             this.tablaEntradasySalidas.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold);
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.tablaEntradasySalidas.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.tablaEntradasySalidas.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.tablaEntradasySalidas.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold);
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.tablaEntradasySalidas.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI Semibold", 24F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.tablaEntradasySalidas.DefaultCellStyle = dataGridViewCellStyle2;
             this.tablaEntradasySalidas.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tablaEntradasySalidas.Location = new System.Drawing.Point(3, 3);
             this.tablaEntradasySalidas.MultiSelect = false;
             this.tablaEntradasySalidas.Name = "tablaEntradasySalidas";
             this.tablaEntradasySalidas.ReadOnly = true;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI Semibold", 10F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.tablaEntradasySalidas.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.tablaEntradasySalidas.RowHeadersVisible = false;
             this.tablaEntradasySalidas.RowHeadersWidth = 51;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold);
-            this.tablaEntradasySalidas.RowsDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold);
+            this.tablaEntradasySalidas.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.tablaEntradasySalidas.RowTemplate.Height = 24;
             this.tablaEntradasySalidas.RowTemplate.ReadOnly = true;
             this.tablaEntradasySalidas.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
@@ -182,7 +289,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.01623F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.98377F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 113F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 114F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 376F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 56F));
             this.tableLayoutPanel1.Controls.Add(this.label2, 1, 0);
@@ -205,7 +312,7 @@
             this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 13F, System.Drawing.FontStyle.Bold);
             this.label2.Location = new System.Drawing.Point(216, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(265, 33);
+            this.label2.Size = new System.Drawing.Size(264, 33);
             this.label2.TabIndex = 7;
             this.label2.Text = "TIPO (F1)";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -219,7 +326,7 @@
             this.BoxTipo.FormattingEnabled = true;
             this.BoxTipo.Location = new System.Drawing.Point(216, 36);
             this.BoxTipo.Name = "BoxTipo";
-            this.BoxTipo.Size = new System.Drawing.Size(265, 49);
+            this.BoxTipo.Size = new System.Drawing.Size(264, 49);
             this.BoxTipo.TabIndex = 2;
             this.BoxTipo.SelectedIndexChanged += new System.EventHandler(this.BoxTipo_SelectedIndexChanged);
             // 
@@ -237,104 +344,6 @@
             this.label1.Text = "FILTRAR POR";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel2.ColumnCount = 7;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 89.23885F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.76116F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 64F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 167F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 64F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 142F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 686F));
-            this.tableLayoutPanel2.Controls.Add(this.BSelRegistro, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.BelimHistorial, 6, 0);
-            this.tableLayoutPanel2.Controls.Add(this.next, 4, 0);
-            this.tableLayoutPanel2.Controls.Add(this.pageLabel, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.prev, 2, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 652);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1633, 73);
-            this.tableLayoutPanel2.TabIndex = 1;
-            // 
-            // BSelRegistro
-            // 
-            this.BSelRegistro.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.BSelRegistro.Font = new System.Drawing.Font("Segoe UI Semibold", 20F, System.Drawing.FontStyle.Bold);
-            this.BSelRegistro.Location = new System.Drawing.Point(4, 4);
-            this.BSelRegistro.Margin = new System.Windows.Forms.Padding(4);
-            this.BSelRegistro.Name = "BSelRegistro";
-            this.BSelRegistro.Size = new System.Drawing.Size(447, 65);
-            this.BSelRegistro.TabIndex = 14;
-            this.BSelRegistro.Text = "SEL. REGISTRO (ENTER)";
-            this.BSelRegistro.UseVisualStyleBackColor = true;
-            this.BSelRegistro.Click += new System.EventHandler(this.BSelRegistro_Click);
-            // 
-            // BelimHistorial
-            // 
-            this.BelimHistorial.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.BelimHistorial.Font = new System.Drawing.Font("Segoe UI Semibold", 20F, System.Drawing.FontStyle.Bold);
-            this.BelimHistorial.Location = new System.Drawing.Point(950, 4);
-            this.BelimHistorial.Margin = new System.Windows.Forms.Padding(4);
-            this.BelimHistorial.Name = "BelimHistorial";
-            this.BelimHistorial.Size = new System.Drawing.Size(679, 65);
-            this.BelimHistorial.TabIndex = 13;
-            this.BelimHistorial.Text = "ELIM. HISTORIAL (F5)";
-            this.BelimHistorial.UseVisualStyleBackColor = true;
-            this.BelimHistorial.Click += new System.EventHandler(this.BelimHistorial_Click);
-            // 
-            // next
-            // 
-            this.next.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.next.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.next.Location = new System.Drawing.Point(744, 4);
-            this.next.Margin = new System.Windows.Forms.Padding(4);
-            this.next.Name = "next";
-            this.next.Size = new System.Drawing.Size(56, 65);
-            this.next.TabIndex = 10;
-            this.next.Text = ">";
-            this.next.UseVisualStyleBackColor = true;
-            this.next.Click += new System.EventHandler(this.next_Click);
-            // 
-            // pageLabel
-            // 
-            this.pageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pageLabel.AutoSize = true;
-            this.pageLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold);
-            this.pageLabel.Location = new System.Drawing.Point(577, 0);
-            this.pageLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.pageLabel.Name = "pageLabel";
-            this.pageLabel.Size = new System.Drawing.Size(159, 73);
-            this.pageLabel.TabIndex = 11;
-            this.pageLabel.Text = "Página 1/1";
-            this.pageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // prev
-            // 
-            this.prev.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.prev.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.prev.Location = new System.Drawing.Point(513, 4);
-            this.prev.Margin = new System.Windows.Forms.Padding(4);
-            this.prev.Name = "prev";
-            this.prev.Size = new System.Drawing.Size(55, 65);
-            this.prev.TabIndex = 12;
-            this.prev.Text = "<";
-            this.prev.UseVisualStyleBackColor = true;
-            this.prev.Click += new System.EventHandler(this.prev_Click);
-            // 
             // HistEntradasSalidas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -348,12 +357,12 @@
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.groupBox1.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.clientinfo.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.tablaEntradasySalidas)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            this.tableLayoutPanel2.ResumeLayout(false);
-            this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
 
         }

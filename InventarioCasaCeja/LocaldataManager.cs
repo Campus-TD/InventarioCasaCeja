@@ -52,10 +52,14 @@ namespace InventarioCasaCeja
                 command.ExecuteNonQuery();
                 command.CommandText = "CREATE TABLE 'creditos' (    'id'    INTEGER,	'productos' TEXT,	'total' REAL,	'total_pagado'  REAL,	'fecha_de_credito'  TEXT,	'folio' TEXT,	'estado'    INTEGER,	'cliente_creditos_id'   INTEGER,	'id_cajero_registro'    INTEGER,	'sucursal_id'   INTEGER,	'observaciones' TEXT,	'created_at'    TEXT,	'updated_at'    TEXT,	FOREIGN KEY('sucursal_id') REFERENCES 'sucursales'('id'),	FOREIGN KEY('id_cajero_registro') REFERENCES 'usuarios'('id'),	PRIMARY KEY('id'))";
                 command.ExecuteNonQuery();
-                command.CommandText = "CREATE TABLE 'creditos_temporal' (    'id'    INTEGER,	'productos' TEXT,	'total' REAL,	'total_pagado'  REAL,	'fecha_de_credito'  TEXT,	'folio' TEXT,	'estado'    INTEGER,	'cliente_creditos_id'   INTEGER,	'id_cajero_registro'    INTEGER,	'sucursal_id'   INTEGER,	'temporal'  INTEGER,	'observaciones' TEXT,	FOREIGN KEY('id_cajero_registro') REFERENCES 'usuarios'('id'),	FOREIGN KEY('sucursal_id') REFERENCES 'sucursales'('id'),	PRIMARY KEY('id' AUTOINCREMENT))";
+                command.CommandText = "CREATE TABLE 'creditos_temporal' (    'id'    INTEGER,	'productos' TEXT,	'total' REAL,	'total_pagado'  REAL,	'fecha_de_credito'  TEXT,	'folio' TEXT,	'estado'    INTEGER,	'cliente_creditos_id'   INTEGER,	'id_cajero_registro'    INTEGER,	'sucursal_id'   INTEGER,	'temporal'  INTEGER,	'observaciones' TEXT,	FOREIGN KEY('id_cajero_registro') REFERENCES 'usuarios'('id'),	FOREIGN KEY('sucursal_id') REFERENCES 'sucursales'('id'),	PRIMARY KEY('id' AUTOINCREMENT))";                
                 command.ExecuteNonQuery();
-                command.CommandText = "CREATE TABLE 'entradas' (    'id'    INTEGER NOT NULL,	'fecha_factura' TEXT,	'total_factura' REAL,	'folio_factura' TEXT,	'usuario_id'    INTEGER,	'sucursal_id'   INTEGER,	'proveedor_id'  INTEGER,	'cancelacion'   INTEGER,	'estado'    INTEGER,	'detalles'  TEXT, 'created_at'    TEXT, 'updated_at'    TEXT,	PRIMARY KEY('id' AUTOINCREMENT))";
+                command.CommandText = "CREATE TABLE 'entradas' (    'id'    INTEGER NOT NULL,	'fecha_factura' TEXT,	'total_factura' REAL,	'folio_factura' TEXT,	'usuario_id'    INTEGER,	'sucursal_id'   INTEGER,	'proveedor_id'  INTEGER,	'cancelacion'   INTEGER,	'estado'    INTEGER,	'detalles'  TEXT, 'created_at'    TEXT, 'updated_at'    TEXT,	PRIMARY KEY('id' AUTOINCREMENT))";                
                 command.ExecuteNonQuery();
+
+                command.CommandText = "CREATE TABLE 'salidas' ('id' INTEGER NOT NULL, 'id_sucursal_origen' INTEGER NOT NULL, 'id_sucursal_destino' INTEGER NOT NULL, 'productos' TEXT NOT NULL, 'folio' TEXT NOT NULL, 'fecha_salida' TEXT NOT NULL, 'usuario_id' INTEGER NOT NULL, 'total_importe' REAL NOT NULL, 'cancelado' INTEGER NOT NULL DEFAULT 0, 'created_at' TEXT NOT NULL, 'updated_at' TEXT NOT NULL, PRIMARY KEY('id' AUTOINCREMENT))";
+                command.ExecuteNonQuery();
+
                 command.CommandText = "CREATE TABLE 'medidas' (    'id'    INTEGER NOT NULL,	'nombre'    TEXT,	'activo'    INTEGER,	'created_at'    TEXT,	'updated_at'    TEXT,	PRIMARY KEY('id'))";
                 command.ExecuteNonQuery();
                 command.CommandText = "CREATE TABLE 'operaciones' (    'id'    INTEGER NOT NULL,	'accion'    TEXT,	'confirmar' INTEGER,	'created_at'    TEXT,	'updated_at'    TEXT,	'producto_id'   INTEGER,	'usuario_id'    INTEGER,	PRIMARY KEY('id'))";
@@ -149,7 +153,8 @@ namespace InventarioCasaCeja
         public string getTableLastUpdate(string table)
         {
             string last_update = "2000-01-01T00:00:00Z";
-            if(!IsTableEmpty(table))
+            Console.WriteLine("Llamando tabla: " + table);
+            if (!IsTableEmpty(table))
             {
                 string query = "SELECT updated_at FROM " + table+" ORDER BY updated_at DESC LIMIT 1";
                 SQLiteCommand command = new SQLiteCommand(query, connection);
@@ -478,6 +483,8 @@ namespace InventarioCasaCeja
             command.ExecuteScalar();
             command.CommandText = "DELETE FROM salidas_temporal";
             command.ExecuteScalar();
+            command.CommandText = "DELETE FROM salidas";
+            command.ExecuteScalar();
         }
         public DataTable getCategorias()
         {
@@ -686,30 +693,31 @@ ORDER BY entradas.id DESC";
 
             return dtEntradas;
         }
-        public DataTable getSalidasPorSucursal(int sucursalId, int offset, int rowsPerPage)
+
+        public DataTable getSalidasPorSucursal(int idSucursalOrigen, int offset, int rowsPerPage)
         {
             DataTable dtSalidas = new DataTable();
             using (SQLiteCommand command = connection.CreateCommand())
             {
                 command.CommandText = @"
-        SELECT salidas_temporal.id AS ID,
-               origen.razon_social AS 'SUCURSAL ORIGEN',
-               destino.razon_social AS 'SUCURSAL DESTINO',
-               salidas_temporal.folio AS 'FOLIO',
-               salidas_temporal.fecha_salida AS 'FECHA SALIDA',
-               usuarios.nombre AS 'USUARIO',
-               salidas_temporal.total_importe AS 'TOTAL IMPORTE'
-        FROM salidas_temporal
-        JOIN usuarios ON salidas_temporal.usuario_id = usuarios.id
-        JOIN sucursales AS origen ON salidas_temporal.id_sucursal_origen = origen.id
-        JOIN sucursales AS destino ON salidas_temporal.id_sucursal_destino = destino.id
-        WHERE salidas_temporal.id_sucursal_origen = @sucursalId
-        ORDER BY salidas_temporal.fecha_salida DESC
-                LIMIT @rowsPerPage OFFSET @offset";
+SELECT salidas.id AS ID,
+       origen.razon_social AS 'SUCURSAL ORIGEN',
+       destino.razon_social AS 'SUCURSAL DESTINO',
+       salidas.folio AS 'FOLIO',
+       salidas.fecha_salida AS 'FECHA SALIDA',
+       usuarios.nombre AS 'USUARIO',
+       salidas.total_importe AS 'TOTAL IMPORTE'
+FROM salidas
+JOIN usuarios ON salidas.usuario_id = usuarios.id
+JOIN sucursales AS origen ON salidas.id_sucursal_origen = origen.id
+JOIN sucursales AS destino ON salidas.id_sucursal_destino = destino.id
+WHERE salidas.id_sucursal_origen = @setIdSucursalOrigen
+ORDER BY salidas.fecha_salida DESC
+LIMIT @setRowsPerPage OFFSET @setOffset";
 
-                command.Parameters.AddWithValue("@sucursalId", sucursalId);
-                command.Parameters.AddWithValue("@rowsPerPage", rowsPerPage);
-                command.Parameters.AddWithValue("@offset", offset);
+                command.Parameters.AddWithValue("@setIdSucursalOrigen", idSucursalOrigen);
+                command.Parameters.AddWithValue("@setRowsPerPage", rowsPerPage);
+                command.Parameters.AddWithValue("@setOffset", offset);
 
                 using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(command))
                 {
@@ -718,6 +726,7 @@ ORDER BY entradas.id DESC";
             }
             return dtSalidas;
         }
+
         public DataTable getProductoEntradaInfo(int entradaId)
         {
             DataTable dtProductoEntrada = new DataTable();
@@ -832,8 +841,29 @@ WHERE
             foreach (Entrada entrada in entradas)
             {
                 SQLiteCommand command = connection.CreateCommand();
-                command.CommandText = "INSERT OR REPLACE INTO entradas (id, folio_factura, total_factura, fecha_factura, usuario_id, sucursal_id, proveedor_id, created_at, updated_at) " +
-                "VALUES(@setId, @setFolioFactura, @setTotalFactura, @setFechaFactura, @setUsuarioId, @setSucursalId, @setProveedorId, @setCreatedAt, @setUpdatedAt)";
+                command.CommandText = @"
+            INSERT OR REPLACE INTO entradas (
+                id,
+                folio_factura,
+                total_factura,
+                fecha_factura,
+                usuario_id,
+                sucursal_id,
+                proveedor_id,
+                created_at,
+                updated_at
+            )
+            VALUES(
+                @setId,
+                @setFolioFactura,
+                @setTotalFactura,
+                @setFechaFactura,
+                @setUsuarioId,
+                @setSucursalId,
+                @setProveedorId,
+                @setCreatedAt,
+                @setUpdatedAt
+            )";
 
                 command.Parameters.AddWithValue("setId", entrada.id);
                 command.Parameters.AddWithValue("setFolioFactura", entrada.folio_factura);
@@ -842,13 +872,13 @@ WHERE
                 command.Parameters.AddWithValue("setUsuarioId", entrada.usuario_id);
                 command.Parameters.AddWithValue("setSucursalId", entrada.sucursal_id);
                 command.Parameters.AddWithValue("setProveedorId", entrada.proveedor_id);
-                string currentDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                command.Parameters.AddWithValue("setCreatedAt", currentDateTime);
-                command.Parameters.AddWithValue("setUpdatedAt", currentDateTime);
+                command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
                 command.ExecuteNonQuery();
             }
         }
+
         public void saveSalidas(List<Salida> salidas)
         {
             foreach (Salida salida in salidas)
@@ -869,7 +899,30 @@ WHERE
             }
         }
 
+        public void saveSalidasGral(List<Salida> salidas)
+        {
+            foreach (Salida salida in salidas)
+            {
+                // Imprimir la información de cada salida en la consola
+                Console.WriteLine($"ID: {salida.id}, ID SUCURSAL ORIGEN: {salida.id_sucursal_origen}, ID SUCURSAL DESTINO: {salida.id_sucursal_destino}, PRODUCTOS: {salida.productos}, FOLIO: {salida.folio}, FECHA SALIDA: {salida.fecha_salida}, USUARIO ID: {salida.usuario_id}, TOTAL IMPORTE: {salida.total_importe}, CREATED AT: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}, UPDATED AT: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
 
+
+                SQLiteCommand command = connection.CreateCommand();
+                command.CommandText = "INSERT OR REPLACE INTO salidas (id, id_sucursal_origen, id_sucursal_destino, productos, folio, fecha_salida, usuario_id, total_importe, created_at, updated_at) " +
+                "VALUES(@setId, @setIdSucursalOrigen, @setIdSucursalDestino, @setProductos, @setFolio, @setFechaSalida, @setUsuarioId, @setTotalImporte, @setCreatedAt, @setUpdatedAt)";
+                command.Parameters.AddWithValue("setId", salida.id);
+                command.Parameters.AddWithValue("setIdSucursalOrigen", salida.id_sucursal_origen);
+                command.Parameters.AddWithValue("setIdSucursalDestino", salida.id_sucursal_destino);
+                command.Parameters.AddWithValue("setProductos", salida.productos);
+                command.Parameters.AddWithValue("setFolio", salida.folio);
+                command.Parameters.AddWithValue("setFechaSalida", salida.fecha_salida);
+                command.Parameters.AddWithValue("setUsuarioId", salida.usuario_id);
+                command.Parameters.AddWithValue("setTotalImporte", salida.total_importe);
+                command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.ExecuteNonQuery();
+            }
+        }
 
         public void saveProductos(List<Producto> productos)
         {
@@ -1596,7 +1649,7 @@ WHERE
         public int getSalidasCountPorSucursal(int sucursalId)
         {
             int count = 0;
-            string query = "SELECT COUNT(*) FROM salidas_temporal WHERE id_sucursal_origen = @id_sucursal_origen";
+            string query = "SELECT COUNT(*) FROM salidas WHERE id_sucursal_origen = @id_sucursal_origen";
             using (SQLiteCommand command = new SQLiteCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@id_sucursal_origen", sucursalId);
