@@ -63,7 +63,6 @@ namespace InventarioCasaCeja
             if (mapasucursales.ContainsKey(selectsedsucursal))
             {
                 Settings.Default["sucursalid"] = mapasucursales[selectsedsucursal];
-                MessageBox.Show("Se ha establecido la sucursal: " + selectsedsucursal, "Información");
             }
             else
             {

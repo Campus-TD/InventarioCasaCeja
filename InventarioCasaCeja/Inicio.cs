@@ -341,6 +341,8 @@ namespace InventarioCasaCeja
 
         private void button2_Click(object sender, EventArgs e)
         {
+
+            sucursalActual = localDM.getSucursal(Settings.Default.sucursalid);
             CrearEntrada ce = new CrearEntrada(webDM, localDM, sucursalActual.id);
             ce.ShowDialog();
         }
@@ -354,6 +356,8 @@ namespace InventarioCasaCeja
                 DialogResult response = MessageBox.Show("Al sincronizar, reemplazará la informacion local con la mas reciente en el servidor y se eliminara la informacion no enviada. \n\nEsta acción puede tomar unos minutos. ¿Desea continuar?", "Advertencia", MessageBoxButtons.YesNo);
                 if (response == DialogResult.Yes)
                 {
+
+                    sucursalActual = localDM.getSucursal(Settings.Default.sucursalid);
                     localDM.ClearDatabase();
                     webDM.resetDates();
                     loadData();

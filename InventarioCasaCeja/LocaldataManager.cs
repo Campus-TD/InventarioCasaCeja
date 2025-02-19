@@ -1378,8 +1378,34 @@ WHERE
         public int registrarEntrada(Dictionary<string, object> entrada, List<ProductoEntrada> productos)
         {
             SQLiteCommand command = connection.CreateCommand();
-            command.CommandText = "INSERT INTO entradas (fecha_factura, total_factura, folio_factura, usuario_id, sucursal_id, proveedor_id, cancelacion, estado, detalles)" +
-                "VALUES (@setFecha, @setTotal, @setFolio, @setUsuario, @setSucursal, @setProveedor, @setCancelacion, @setEstado, @setDetalles)";
+            command.CommandText = @"
+        INSERT INTO entradas (
+            fecha_factura,
+            total_factura,
+            folio_factura,
+            usuario_id,
+            sucursal_id,
+            proveedor_id,
+            cancelacion,
+            estado,
+            detalles,
+            created_at,
+            updated_at
+        )
+        VALUES (
+            @setFecha,
+            @setTotal,
+            @setFolio,
+            @setUsuario,
+            @setSucursal,
+            @setProveedor,
+            @setCancelacion,
+            @setEstado,
+            @setDetalles,
+            @setCreatedAt,
+            @setUpdatedAt
+        )";
+
             command.Parameters.AddWithValue("setFecha", entrada["fecha_factura"].ToString());
             command.Parameters.AddWithValue("setTotal", entrada["total_factura"].ToString());
             command.Parameters.AddWithValue("setFolio", entrada["folio_factura"].ToString());
@@ -1389,14 +1415,40 @@ WHERE
             command.Parameters.AddWithValue("setCancelacion", 0);
             command.Parameters.AddWithValue("setEstado", 1);
             command.Parameters.AddWithValue("setDetalles", "Pendiente de envío");
+            command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             command.ExecuteScalar();
+
             command.CommandText = "select last_insert_rowid()";
             Int64 LastRowID64 = (Int64)command.ExecuteScalar();
             int id = (int)LastRowID64;
+
             foreach (ProductoEntrada p in productos)
             {
-                command.CommandText = "INSERT INTO producto_entrada (entrada_id, producto_id, codigo, cantidad, costo, estado, detalles)" +
-                    "VALUES (@setEntrada, @setProducto, @setCodigo, @setCantidad, @setCosto, @setEstado, @setDetalles)";
+                command.CommandText = @"
+            INSERT INTO producto_entrada (
+                entrada_id,
+                producto_id,
+                codigo,
+                cantidad,
+                costo,
+                estado,
+                detalles,
+                created_at,
+                updated_at
+            )
+            VALUES (
+                @setEntrada,
+                @setProducto,
+                @setCodigo,
+                @setCantidad,
+                @setCosto,
+                @setEstado,
+                @setDetalles,
+                @setCreatedAt,
+                @setUpdatedAt
+            )";
+                command.Parameters.Clear(); 
                 command.Parameters.AddWithValue("setEntrada", id);
                 command.Parameters.AddWithValue("setProducto", p.id);
                 command.Parameters.AddWithValue("setCodigo", p.codigo);
@@ -1404,6 +1456,8 @@ WHERE
                 command.Parameters.AddWithValue("setCantidad", p.cantidad);
                 command.Parameters.AddWithValue("setEstado", 1);
                 command.Parameters.AddWithValue("setDetalles", "Pendiente de envío");
+                command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 command.ExecuteScalar();
             }
             return id;
