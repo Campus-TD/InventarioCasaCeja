@@ -1,8 +1,12 @@
-﻿using System;
+﻿using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
+using System.Windows.Markup;
 
 namespace InventarioCasaCeja
 {
@@ -50,6 +54,129 @@ namespace InventarioCasaCeja
             // Cambiar el tamaño de la fuente de los encabezados de las columnas
             tablaEntradasySalidas.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 18, FontStyle.Bold);
         }
+        private void BcrearExcel_Click(object sender, EventArgs e)
+        {
+            int opc = BoxTipo.SelectedIndex;
+            GenerarExcel(opc);
+        }
+        private void GenerarExcel(int opc)
+        {
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;            
+            DataTable EntradasTable = localDM.getEntradasPorSucursal(idSucursal);
+            DataTable SalidasTable = localDM.getSalidasPorSucursal(idSucursal);
+            DateTime localDate = DateTime.Now;
+            string fecha = localDate.ToString("dd-MM-yyyy");
+
+            if (EntradasTable.Rows.Count == 0 && opc == 0)
+            {
+                MessageBox.Show("No hay Entradas de Productos disponibles para la sucursal actual.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            else if (SalidasTable.Rows.Count == 0 && opc == 1)
+            {
+                MessageBox.Show("No hay Salidas de Productos disponibles para la sucursal actual.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            else if (EntradasTable.Rows.Count == 0 && SalidasTable.Rows.Count == 0 && opc == 2)
+            {
+                MessageBox.Show("No hay informacion disponibles para la sucursal actual.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Especificar la carpeta y el nombre del archivo
+            string carpeta = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "CasaCejaDocs");
+            string nombre = "";
+            if (opc == 0)
+            {
+                nombre = "ListaEntradas ";
+            }
+            else if (opc == 1)
+            {
+                nombre = "ListaSalidas ";
+            }
+            string nombreArchivo = nombre + fecha + ".xlsx";
+            string rutaArchivo = Path.Combine(carpeta, nombreArchivo);
+
+            // Verificar si la carpeta existe, si no, crearla
+            if (!Directory.Exists(carpeta))
+            {
+                Directory.CreateDirectory(carpeta);
+            }
+
+            // Verificar si el archivo ya existe
+            if (File.Exists(rutaArchivo))
+            {
+                DialogResult dialogResult = MessageBox.Show("El archivo ya existe. ¿Deseas sobrescribirlo?", "Archivo Existente", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (dialogResult == DialogResult.No)
+                {
+                    return;
+                }
+            }
+
+            // Generar el archivo Excel
+            try
+            {
+                using (ExcelPackage paquete = new ExcelPackage())
+                {
+                    if (opc == 0 || opc == 2)
+                    {
+                        // Crear la hoja para las entradas
+                        ExcelWorksheet hojaEntradas = paquete.Workbook.Worksheets.Add("ListadoEntradas " + fecha);
+
+                        // Agregar los encabezados de las columnas
+                        for (int i = 0; i < EntradasTable.Columns.Count; i++)
+                        {
+                            hojaEntradas.Cells[1, i + 1].Value = EntradasTable.Columns[i].ColumnName;
+                            hojaEntradas.Cells[1, i + 1].Style.Font.Bold = true;
+                            hojaEntradas.Cells[1, i + 1].Style.Font.Size = 14;
+                        }
+
+                        // Agregar los datos de las filas
+                        for (int fila = 0; fila < EntradasTable.Rows.Count; fila++)
+                        {
+                            for (int col = 0; col < EntradasTable.Columns.Count; col++)
+                            {
+                                hojaEntradas.Cells[fila + 2, col + 1].Value = EntradasTable.Rows[fila][col].ToString();
+                            }
+                        }
+                    }
+
+                    if (opc == 1 || opc == 2)
+                    {
+                        // Crear la hoja para las salidas
+                        ExcelWorksheet hojaSalidas = paquete.Workbook.Worksheets.Add("ListadoSalidas " + fecha);
+
+                        // Agregar los encabezados de las columnas
+                        for (int i = 0; i < SalidasTable.Columns.Count; i++)
+                        {
+                            hojaSalidas.Cells[1, i + 1].Value = SalidasTable.Columns[i].ColumnName;
+                            hojaSalidas.Cells[1, i + 1].Style.Font.Bold = true;
+                            hojaSalidas.Cells[1, i + 1].Style.Font.Size = 14;
+                        }
+
+                        // Agregar los datos de las filas
+                        for (int fila = 0; fila < SalidasTable.Rows.Count; fila++)
+                        {
+                            for (int col = 0; col < SalidasTable.Columns.Count; col++)
+                            {
+                                hojaSalidas.Cells[fila + 2, col + 1].Value = SalidasTable.Rows[fila][col].ToString();
+                            }
+                        }
+                    }
+
+                    // Guardar el archivo en la ruta especificada
+                    FileInfo archivo = new FileInfo(rutaArchivo);
+                    paquete.SaveAs(archivo);
+
+                    // Mostrar mensaje de éxito si se ha creado correctamente
+                    MessageBox.Show(nombre + fecha + ".xlsx" + " se generó correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocurrió un error al generar el archivo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         protected override bool ProcessDialogKey(Keys keyData)
         {
@@ -66,6 +193,9 @@ namespace InventarioCasaCeja
                     case Keys.F1:
                         BoxTipo.DroppedDown = true;
                         BoxTipo.Focus();
+                        break;
+                    case Keys.F3:
+                        BcrearExcel.PerformClick(); 
                         break;
                     case Keys.F5:
                         BelimHistorial.PerformClick();
@@ -115,6 +245,11 @@ namespace InventarioCasaCeja
                 BSelRegistro.PerformClick();
                 return;
             }
+            if (e.KeyCode == Keys.F3)
+            {
+                BcrearExcel.PerformClick();
+                return;
+            }
             if (e.KeyCode == Keys.F5)
             {
                 BelimHistorial.PerformClick();
@@ -127,6 +262,7 @@ namespace InventarioCasaCeja
                 return;
             }
         }
+
 
         private void BoxTipo_SelectedIndexChanged(object sender, EventArgs e)
         {

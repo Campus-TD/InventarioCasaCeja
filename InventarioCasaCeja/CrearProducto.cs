@@ -274,7 +274,7 @@ namespace InventarioCasaCeja
             return base.ProcessDialogKey(keyData);
         }
 
-        private void tabla_KeyDown(object sender, KeyEventArgs e)
+        private void tabla_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
             {

@@ -693,7 +693,35 @@ ORDER BY entradas.id DESC";
 
             return dtEntradas;
         }
+        public DataTable getSalidasPorSucursal(int idSucursalOrigen)
+        {
+            DataTable dtSalidas = new DataTable();
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = @"
+                SELECT salidas.id AS ID,
+                origen.razon_social AS 'SUCURSAL ORIGEN',
+                destino.razon_social AS 'SUCURSAL DESTINO',
+                salidas.folio AS 'FOLIO',
+                salidas.fecha_salida AS 'FECHA SALIDA',
+                usuarios.nombre AS 'USUARIO',
+                salidas.total_importe AS 'TOTAL IMPORTE'
+                FROM salidas
+                JOIN usuarios ON salidas.usuario_id = usuarios.id
+                JOIN sucursales AS origen ON salidas.id_sucursal_origen = origen.id
+                JOIN sucursales AS destino ON salidas.id_sucursal_destino = destino.id
+                WHERE salidas.id_sucursal_origen = @setIdSucursalOrigen
+                ORDER BY salidas.fecha_salida DESC";            
 
+                command.Parameters.AddWithValue("@setIdSucursalOrigen", idSucursalOrigen);                
+
+                using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(command))
+                {
+                    adapter.Fill(dtSalidas);
+                }
+            }
+            return dtSalidas;
+        }
         public DataTable getSalidasPorSucursal(int idSucursalOrigen, int offset, int rowsPerPage)
         {
             DataTable dtSalidas = new DataTable();
