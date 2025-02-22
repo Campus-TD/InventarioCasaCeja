@@ -59,6 +59,8 @@ namespace InventarioCasaCeja
 
                 command.CommandText = "CREATE TABLE 'salidas' ('id' INTEGER NOT NULL, 'id_sucursal_origen' INTEGER NOT NULL, 'id_sucursal_destino' INTEGER NOT NULL, 'productos' TEXT NOT NULL, 'folio' TEXT NOT NULL, 'fecha_salida' TEXT NOT NULL, 'usuario_id' INTEGER NOT NULL, 'total_importe' REAL NOT NULL, 'cancelado' INTEGER NOT NULL DEFAULT 0, 'created_at' TEXT NOT NULL, 'updated_at' TEXT NOT NULL, PRIMARY KEY('id' AUTOINCREMENT))";
                 command.ExecuteNonQuery();
+                command.CommandText = "CREATE TABLE 'cortes' (  'id'    INTEGER NOT NULL UNIQUE,    'folio_corte' TEXT, 'fondo_apertura'      REAL, 'total_efectivo'      REAL, 'total_tarjetas_debito'  REAL, 'total_tarjetas_credito' REAL, 'total_cheques' REAL, 'total_transferencias'    REAL, 'efectivo_apartados'      REAL, 'efectivo_creditos' REAL, 'gastos'      TEXT, 'ingresos'  TEXT, 'sobrante'      REAL, 'fecha_apertura_caja'      TEXT, 'fecha_corte_caja'     TEXT, 'sucursal_id'     INTEGER, 'usuario_id'      INTEGER, 'estado'      INTEGER, 'detalles'  TEXT, 'created_at'      TEXT, 'updated_at'  TEXT, 'total_apartados' REAL DEFAULT 0, 'total_creditos' REAL DEFAULT 0, FOREIGN KEY('sucursal_id') REFERENCES 'sucursales'('id'), FOREIGN KEY('usuario_id') REFERENCES 'usuarios'('id'), PRIMARY KEY('id' AUTOINCREMENT))";
+                command.ExecuteNonQuery();
 
                 command.CommandText = "CREATE TABLE 'medidas' (    'id'    INTEGER NOT NULL,	'nombre'    TEXT,	'activo'    INTEGER,	'created_at'    TEXT,	'updated_at'    TEXT,	PRIMARY KEY('id'))";
                 command.ExecuteNonQuery();
