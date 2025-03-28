@@ -320,6 +320,12 @@
     <Compile Include="VerEntradaSalida.Designer.cs">
       <DependentUpon>VerEntradaSalida.cs</DependentUpon>
     </Compile>
+    <Compile Include="VerExistencia.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VerExistencia.Designer.cs">
+      <DependentUpon>VerExistencia.cs</DependentUpon>
+    </Compile>
     <Compile Include="Visor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -393,6 +399,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="VerEntradaSalida.resx">
       <DependentUpon>VerEntradaSalida.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VerExistencia.resx">
+      <DependentUpon>VerExistencia.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Visor.resx">
       <DependentUpon>Visor.cs</DependentUpon>

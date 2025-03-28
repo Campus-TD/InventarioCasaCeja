@@ -632,15 +632,21 @@ namespace InventarioCasaCeja
         */
         private void finish_Click(object sender, EventArgs e)
         {
+            String destino = boxsucursales.SelectedItem.ToString();           
+            if (destino == data.sucursal.razon_social)
+            {                
+                MessageBox.Show("No es posible enviar productos a la misma sucursal.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }            
             if (boxsucursales.SelectedIndex < 0)
             {
-                MessageBox.Show("Favor de seleccionar la sucursal destino", "Advertencia");
+                MessageBox.Show("Favor de seleccionar la sucursal destino.", "Advertencia");
             }
             else
             {
                 if (productosEnvio.Count == 0)
                 {
-                    MessageBox.Show("Aún no se han agregado productos", "Advertencia");
+                    MessageBox.Show("Aún no se han agregado productos.", "Advertencia");
                 }
                 else
                 {
@@ -676,7 +682,7 @@ namespace InventarioCasaCeja
                     productosImprimir.Clear();
                     tablasource.ResetBindings(false);
                 }                
-            }            
+            }                
         }
         async void enviarSalida(Salida salida)
         {

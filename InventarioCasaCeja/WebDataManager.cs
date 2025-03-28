@@ -1516,7 +1516,7 @@ namespace InventarioCasaCeja
 
             return false;
         }
-        public async Task<List<ProductoExistencia>> getProductoExistencia (string idproducto)
+        public async Task<List<ProductoExistencia>> getProductoExistencia(string idproducto)
         {
             string res;
             try

@@ -34,6 +34,9 @@ namespace InventarioCasaCeja
             maxPages = 1;
             rowsPerPage = 21;
             urls = new Dictionary<string, string>();
+            this.catalogo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.catalogo_KeyDown);
+            this.txtbuscar.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtbuscar_KeyDown);
+
         }
 
         public void setData(DataTable tablacatalogo, Dictionary<string, int> mapamedidas, Dictionary<string, int> mapacategorias)
@@ -110,6 +113,12 @@ namespace InventarioCasaCeja
                 case Keys.F5:
                     alta();
                     break;
+                case Keys.E:
+                    if (e.Modifiers == Keys.Alt)
+                        verExistencia();
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                    break;
             }
         }
 
@@ -122,6 +131,7 @@ namespace InventarioCasaCeja
             CrearProducto crear = new CrearProducto(webDM, mapamedidas, mapacategorias);
             crear.Show();
         }
+
         void loadData()
         {
             DataTable tablacatalogo;
@@ -272,6 +282,12 @@ namespace InventarioCasaCeja
             {
                 modify();
             }
+            if (e.Modifiers == Keys.Alt && e.KeyData == Keys.E)
+            {
+                verExistencia();
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
         }
 
         private void button1_KeyDown(object sender, KeyEventArgs e)
@@ -319,5 +335,47 @@ namespace InventarioCasaCeja
         {
             alta();
         }
+
+        private void details_Click(object sender, EventArgs e)
+        {
+            if (catalogo.SelectedRows.Count > 0)
+            {
+                verExistencia();
+            }
+            else
+            {
+                MessageBox.Show("Favor de seleccionar un producto", "Advertencia");
+            }
+        }
+        private async void verExistencia()
+        {           
+            string idprod = catalogo.SelectedRows[0].Cells[0].Value.ToString();
+            string titulo = "Producto: " + catalogo.SelectedRows[0].Cells[2].Value.ToString();
+            List<ProductoExistencia> prodex = await webDM.getProductoExistencia(idprod);
+            if (prodex != null)
+            {
+                //foreach(ProductoExistencia p in prodex)
+                //{
+                //    if (p.RAZON_SOCIAL.Equals(sucursal))
+                //    {
+                //        prodex.Remove(p);
+                //        prodex.Insert(0, p);
+                //        break;
+                //    }
+                //}
+                if (prodex.Count == 0)
+                {
+                    MessageBox.Show("No se encontraron existencias de este producto, favor de intentar más tarde", "Advertencia");
+                }
+                else
+                {                    
+                    VerExistencia ve = new VerExistencia(prodex, titulo);
+                    ve.ShowDialog();
+                }
+
+            }
+            else MessageBox.Show("No se pudo conectar con el servidor, favor de intentar más tarde", "Advertencia");
+        }
+
     }
 }
