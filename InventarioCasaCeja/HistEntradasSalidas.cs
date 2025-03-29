@@ -37,7 +37,8 @@ namespace InventarioCasaCeja
             rowCount = localDM.getEntradasCountPorSucursal(idSucursal);
             calculateMaxPages(rowCount);
             tablaEntradas = localDM.getEntradasPorSucursal(idSucursal, offset, rowsPerPage);
-            tablaEntradasySalidas.DataSource = tablaEntradas;
+            tablaEntradas.DefaultView.Sort = "id DESC";
+            tablaEntradasySalidas.DataSource = tablaEntradas;            
             tablaEntradasySalidas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
 
             // Cambiar el tamaño de la fuente de los encabezados de las columnas
@@ -48,6 +49,7 @@ namespace InventarioCasaCeja
             rowCount = localDM.getSalidasCountPorSucursal(idSucursal);
             calculateMaxPages(rowCount);
             tablaSalidas = localDM.getSalidasPorSucursal(idSucursal, offset, rowsPerPage);
+            tablaSalidas.DefaultView.Sort = "id DESC";
             tablaEntradasySalidas.DataSource = tablaSalidas;
             tablaEntradasySalidas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
 

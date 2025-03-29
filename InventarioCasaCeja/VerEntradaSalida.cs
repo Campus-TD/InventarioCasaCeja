@@ -19,21 +19,42 @@ namespace InventarioCasaCeja
         {
             InitializeComponent();
             this.type = type;
+            DataTable dataTable;
             switch (type)
             {
                 case 0:
                     this.Text = "Ver Entrada";
                     groupBox1.Text = "VER ENTRADA";
-                    tablaInfo.DataSource = localDM.getProductoEntradaInfo(id);
+                    dataTable = localDM.getProductoEntradaInfo(id);
+                    tablaInfo.DataSource = dataTable;
                     break;
                 case 1:
                     this.Text = "Ver Salida";
                     groupBox1.Text = "VER SALIDA";
-                    tablaInfo.DataSource = localDM.getProductosFromSalida(id);
+                    dataTable = localDM.getProductosFromSalida(id);
+                    tablaInfo.DataSource = dataTable;
+                    break;
+                default:
+                    dataTable = null;
                     break;
             }
-
-        }
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("resultado");
+            // Imprimir en consola el resultado de la consulta
+            if (dataTable != null)
+            {
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    foreach (DataColumn column in dataTable.Columns)
+                    {
+                        Console.Write($"{column.ColumnName}: {row[column]} ");
+                    }
+                    Console.WriteLine();
+                }
+            }
+        }        
 
         protected override bool ProcessDialogKey(Keys keyData)
         {

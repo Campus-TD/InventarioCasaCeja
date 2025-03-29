@@ -5,6 +5,7 @@ using System.IO;
 using System.Data;
 using Newtonsoft.Json;
 using System;
+using System.Windows.Forms;
 
 namespace InventarioCasaCeja
 {
@@ -320,6 +321,53 @@ namespace InventarioCasaCeja
 
             // If the maximum number of retries is reached and the update operation still fails, you can handle the error or throw an exception
             throw new Exception("Error al actualizar la tabla salidas_temporal debido a un bloqueo en la base de datos.");
+        }
+        public void GuardarSalidaLocal(Salida salida)
+        {
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = @"
+            INSERT INTO salidas (
+                id_sucursal_origen, 
+                id_sucursal_destino, 
+                productos, 
+                folio, 
+                fecha_salida, 
+                usuario_id, 
+                total_importe, 
+                cancelado, 
+                created_at, 
+                updated_at
+            )
+            VALUES (
+                @id_sucursal_origen, 
+                @id_sucursal_destino, 
+                @productos, 
+                @folio, 
+                @fecha_salida, 
+                @usuario_id, 
+                @total_importe, 
+                @cancelado, 
+                @created_at, 
+                @updated_at
+            )";
+
+                // Parámetros principales
+                command.Parameters.AddWithValue("@id_sucursal_origen", salida.id_sucursal_origen);
+                command.Parameters.AddWithValue("@id_sucursal_destino", salida.id_sucursal_destino);
+                command.Parameters.AddWithValue("@productos", salida.productos);
+                command.Parameters.AddWithValue("@folio", salida.folio);
+                command.Parameters.AddWithValue("@fecha_salida", salida.fecha_salida);
+                command.Parameters.AddWithValue("@usuario_id", salida.usuario_id);
+                command.Parameters.AddWithValue("@total_importe", salida.total_importe);
+
+                // Nuevos parámetros con valores por defecto
+                command.Parameters.AddWithValue("@cancelado", 0); // Valor por defecto
+                command.Parameters.AddWithValue("@created_at", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("@updated_at", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
+                command.ExecuteNonQuery();
+            }
         }
         public void confirmarSalidaTemporal(int idsalida)
         {
@@ -761,22 +809,22 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
             using (SQLiteCommand command = connection.CreateCommand())
             {
                 command.CommandText = @"
-SELECT 
-    producto_entrada.entrada_id AS 'ENTRADA ID',
-    producto_entrada.producto_id AS 'PRODUCTO ID',
-    producto_entrada.cantidad AS 'CANTIDAD',
-    productos.codigo AS 'CÓDIGO',
-    productos.nombre AS 'NOMBRE',
-    categorias.nombre AS 'CATEGORÍA',
-    productos.presentacion AS 'PRESENTACIÓN'
-FROM 
-    producto_entrada
-JOIN 
-    productos ON producto_entrada.producto_id = productos.id
-JOIN 
-    categorias ON productos.categoria_id = categorias.id
-WHERE 
-    producto_entrada.entrada_id = @entradaId";
+                SELECT 
+                    producto_entrada.entrada_id AS 'ENTRADA ID',
+                    producto_entrada.producto_id AS 'PRODUCTO ID',
+                    producto_entrada.cantidad AS 'CANTIDAD',
+                    productos.codigo AS 'CÓDIGO',
+                    productos.nombre AS 'NOMBRE',
+                    categorias.nombre AS 'CATEGORÍA',
+                    productos.presentacion AS 'PRESENTACIÓN'
+                FROM 
+                    producto_entrada
+                JOIN 
+                    productos ON producto_entrada.producto_id = productos.id
+                JOIN 
+                    categorias ON productos.categoria_id = categorias.id
+                WHERE 
+                    producto_entrada.entrada_id = @entradaId";
 
                 command.Parameters.AddWithValue("@entradaId", entradaId);
 
@@ -789,6 +837,7 @@ WHERE
         }
         public DataTable getProductosFromSalida(int salidaId)
         {
+            MessageBox.Show(salidaId.ToString());
             DataTable dtProductos = new DataTable();
             dtProductos.Columns.Add("ID PRODUCTO", typeof(int));
             dtProductos.Columns.Add("NOMBRE", typeof(string));
@@ -798,7 +847,8 @@ WHERE
 
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                command.CommandText = "SELECT productos FROM salidas_temporal WHERE id = @salidaId";
+                command.CommandText = "SELECT productos FROM salidas WHERE id = @salidaId";
+                //command.CommandText = "SELECT productos FROM salidas_temporal WHERE id = @salidaId";
                 command.Parameters.AddWithValue("@salidaId", salidaId);
 
                 using (SQLiteDataReader reader = command.ExecuteReader())

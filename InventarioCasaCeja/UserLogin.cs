@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Windows.System;
 
 namespace InventarioCasaCeja
 {
@@ -15,12 +16,21 @@ namespace InventarioCasaCeja
         LocaldataManager localDM;
         Action<Usuario> setUser;
         bool admin;
+
         public UserLogin(LocaldataManager localdataManager, Action<Usuario> setUser, bool admin)
         {
             InitializeComponent();
             this.localDM = localdataManager;
             this.setUser = setUser;
-            this.admin = admin;
+            this.admin = admin;                      
+
+            automatizarlogin();
+        }
+
+        private void automatizarlogin()
+        {
+            this.user.Text = "admin";
+            this.password.Text = "admin";        
         }
 
         private void cancel_Click(object sender, EventArgs e)

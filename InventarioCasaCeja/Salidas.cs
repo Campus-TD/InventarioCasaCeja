@@ -671,7 +671,9 @@ namespace InventarioCasaCeja
                         total_importe = total,
                         productos = JsonConvert.SerializeObject(productosEnvio),
                     };
-                    localDM.guardarSalidaTemporal(salida, idSalida);
+                    localDM.guardarSalidaTemporal(salida, idSalida);                    
+                    localDM.GuardarSalidaLocal(salida);
+                    
                     enviarSalida(salida);
                     cargarTicketCarta(localDate.ToString("HH:mm dd/MM/yyyy"));
                     //Aqui almaceno la lista de productos a imprimir para generar el
