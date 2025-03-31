@@ -1,4 +1,6 @@
 ﻿using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using OfficeOpenXml.Table;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -38,7 +40,7 @@ namespace InventarioCasaCeja
             calculateMaxPages(rowCount);
             tablaEntradas = localDM.getEntradasPorSucursal(idSucursal, offset, rowsPerPage);
             tablaEntradas.DefaultView.Sort = "id DESC";
-            tablaEntradasySalidas.DataSource = tablaEntradas;            
+            tablaEntradasySalidas.DataSource = tablaEntradas;
             tablaEntradasySalidas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
 
             // Cambiar el tamaño de la fuente de los encabezados de las columnas
@@ -61,9 +63,12 @@ namespace InventarioCasaCeja
             int opc = BoxTipo.SelectedIndex;
             GenerarExcel(opc);
         }
-        private void GenerarExcel(int opc)
+
+        // Método anterior para generar un archivo Excel con la información de las entradas y salidas
+        /*         
+        private void GenerarExcel2(int opc)
         {
-            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;            
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
             DataTable EntradasTable = localDM.getEntradasPorSucursal(idSucursal);
             DataTable SalidasTable = localDM.getSalidasPorSucursal(idSucursal);
             DateTime localDate = DateTime.Now;
@@ -177,6 +182,290 @@ namespace InventarioCasaCeja
             catch (Exception ex)
             {
                 MessageBox.Show("Ocurrió un error al generar el archivo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        */
+
+        public void GenerarExcel(int opc)
+        {
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+            DataTable EntradasTable = localDM.getEntradasPorSucursal(idSucursal);
+            DataTable SalidasTable = localDM.getSalidasPorSucursal(idSucursal);
+            DateTime localDate = DateTime.Now;
+            string fecha = localDate.ToString("dd-MM-yyyy");
+
+            // Validaciones para el documento.
+            if (EntradasTable.Rows.Count == 0 && opc == 0)
+            {
+                MessageBox.Show("No hay Entradas de Productos disponibles para la sucursal actual.",
+                                  "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            else if (SalidasTable.Rows.Count == 0 && opc == 1)
+            {
+                MessageBox.Show("No hay Salidas de Productos disponibles para la sucursal actual.",
+                                  "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            else if (EntradasTable.Rows.Count == 0 && SalidasTable.Rows.Count == 0 && opc == 2)
+            {
+                MessageBox.Show("No hay información disponible para la sucursal actual.",
+                                  "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Configuración de archivo
+            string carpeta = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "CasaCejaDocs");
+            string nombre;
+
+            switch (opc)
+            {
+                case 0:
+                    nombre = "ListaEntradas ";
+                    break;
+                case 1:
+                    nombre = "ListaSalidas ";
+                    break;
+                default:
+                    nombre = "MovimientosCompletos ";
+                    break;
+            }
+
+            string nombreArchivo = nombre + fecha + ".xlsx";
+            string rutaArchivo = Path.Combine(carpeta, nombreArchivo);
+
+            if (!Directory.Exists(carpeta)) Directory.CreateDirectory(carpeta);
+
+            if (File.Exists(rutaArchivo))
+            {
+                var respuesta = MessageBox.Show("El archivo ya existe. ¿Deseas sobrescribirlo?",
+                                              "Archivo Existente", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (respuesta == DialogResult.No)
+                    return;
+            }
+
+            try
+            {
+                using (ExcelPackage paquete = new ExcelPackage())
+                {
+                    // Hoja general de Entradas y hoja de detalle de Entradas
+                    if (opc == 0 || opc == 2)
+                    {
+                        ExcelWorksheet hojaEntradas = paquete.Workbook.Worksheets.Add("Entradas");
+                        CargarDatosEnHoja(hojaEntradas, EntradasTable);
+
+                        ExcelWorksheet hojaDetalleEntradas = paquete.Workbook.Worksheets.Add("DetalleEntradas");
+                        ConfigurarHojaDetalles(hojaDetalleEntradas);
+                        LlenarDetallesEntradas(hojaDetalleEntradas, EntradasTable);
+                    }
+
+                    // Hojas de Salidas y Detalles
+                    if (opc == 1 || opc == 2)
+                    {
+                        ExcelWorksheet hojaSalidas = paquete.Workbook.Worksheets.Add("Salidas");
+                        CargarDatosEnHoja(hojaSalidas, SalidasTable);
+
+                        ExcelWorksheet hojaDetalles = paquete.Workbook.Worksheets.Add("DetalleSalidas");
+                        ConfigurarHojaDetalles(hojaDetalles);
+                        LlenarDetallesSalidas(hojaDetalles, SalidasTable);
+                    }
+
+                    paquete.SaveAs(new FileInfo(rutaArchivo));
+                    MessageBox.Show($"{nombreArchivo} generado correctamente",
+                                  "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al generar el archivo: {ex.Message}",
+                              "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        // Método para cargar datos generales en una hoja
+        private void CargarDatosEnHoja(ExcelWorksheet hoja, DataTable tabla)
+        {
+            // Encabezados
+            for (int i = 0; i < tabla.Columns.Count; i++)
+            {
+                hoja.Cells[1, i + 1].Value = tabla.Columns[i].ColumnName;
+                hoja.Cells[1, i + 1].Style.Font.Bold = true;
+                hoja.Cells[1, i + 1].Style.Font.Size = 12;
+            }
+
+            // Datos
+            for (int fila = 0; fila < tabla.Rows.Count; fila++)
+            {
+                for (int col = 0; col < tabla.Columns.Count; col++)
+                {
+                    hoja.Cells[fila + 2, col + 1].Value = tabla.Rows[fila][col];
+                }
+            }
+
+            hoja.Cells[hoja.Dimension.Address].AutoFitColumns();
+            hoja.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+        }
+        // Método para configurar la hoja de detalles (establece encabezados base)
+        private void ConfigurarHojaDetalles(ExcelWorksheet hoja)
+        {
+            // Este método se utiliza para inicializar la hoja;        
+            string[] encabezados = { "ID", "ID PRODUCTO", "NOMBRE", "CATEGORÍA", "PRECIO UNITARIO", "CANTIDAD", "TOTAL" };
+            for (int i = 0; i < encabezados.Length; i++)
+            {
+                var celda = hoja.Cells[1, i + 1];
+                celda.Value = encabezados[i];
+                celda.Style.Font.Bold = true;
+                celda.Style.Font.Size = 12;
+                celda.Style.Font.Color.SetColor(Color.Black);
+                celda.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                celda.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                celda.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+            }
+        }
+        // Método para llenar la hoja de detalles de Salidas
+        private void LlenarDetallesSalidas(ExcelWorksheet hoja, DataTable salidas)
+        {
+            int filaActual = 2;
+            int ultimoIdSalida = -1;
+
+            // Encabezados para salidas
+            string[] encabezados = { "ID SALIDA", "ID PRODUCTO", "NOMBRE", "CATEGORÍA", "PRECIO UNITARIO", "CANTIDAD", "TOTAL" };
+            for (int i = 0; i < encabezados.Length; i++)
+            {
+                var celda = hoja.Cells[1, i + 1];
+                celda.Value = encabezados[i];
+                celda.Style.Font.Bold = true;
+                celda.Style.Font.Size = 11;
+                celda.Style.Font.Color.SetColor(Color.Black);
+                celda.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                celda.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                celda.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+            }
+
+            foreach (DataRow salida in salidas.Rows)
+            {
+                int idSalida = Convert.ToInt32(salida["ID"]);
+                DataTable productos = localDM.getProductosFromSalida(idSalida);
+
+                if (productos.Rows.Count == 0) continue;
+
+                if (ultimoIdSalida != -1 && ultimoIdSalida != idSalida)
+                {
+                    filaActual++;
+                }
+
+                foreach (DataRow producto in productos.Rows)
+                {
+                    var colorFondo = Color.White;
+
+                    hoja.Cells[filaActual, 1].Value = idSalida;
+                    hoja.Cells[filaActual, 2].Value = producto["ID PRODUCTO"];
+                    hoja.Cells[filaActual, 3].Value = producto["NOMBRE"];
+                    hoja.Cells[filaActual, 4].Value = producto["CATEGORÍA"];
+                    hoja.Cells[filaActual, 5].Value = producto["PRECIO"];
+                    hoja.Cells[filaActual, 6].Value = producto["CANTIDAD"];
+                    hoja.Cells[filaActual, 7].Value = Convert.ToDecimal(producto["PRECIO"]) * Convert.ToInt32(producto["CANTIDAD"]);
+
+                    for (int col = 1; col <= 7; col++)
+                    {
+                        var celda = hoja.Cells[filaActual, col];
+                        celda.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        celda.Style.Fill.BackgroundColor.SetColor(colorFondo);
+                        celda.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                        celda.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        celda.Style.Font.Color.SetColor(Color.Black);
+                    }
+
+                    filaActual++;
+                }
+
+                ultimoIdSalida = idSalida;
+            }
+
+            hoja.Cells["E2:E" + (filaActual - 1)].Style.Numberformat.Format = "$#,##0.00";
+            hoja.Cells["G2:G" + (filaActual - 1)].Style.Numberformat.Format = "$#,##0.00";
+            hoja.Cells["F2:F" + (filaActual - 1)].Style.Numberformat.Format = "0";
+
+            if (filaActual > 2)
+            {
+                var rangoTabla = hoja.Cells["A1:G" + (filaActual - 1)];
+                var tabla = hoja.Tables.Add(rangoTabla, "DetalleSalidas");
+                tabla.TableStyle = TableStyles.Light11;
+                tabla.ShowHeader = true;
+                tabla.ShowTotal = false;
+                tabla.ShowFirstColumn = false;
+            }
+
+            hoja.Cells[hoja.Dimension.Address].AutoFitColumns();
+            hoja.View.FreezePanes(2, 1);
+        }
+        // Método para llenar la hoja de detalles de Entradas.
+        private void LlenarDetallesEntradas(ExcelWorksheet hoja, DataTable entradas)
+        {
+            int filaActual = 2;
+            int ultimoIdEntrada = -1;
+            
+            string[] encabezados = { "ENTRADA ID", "PRODUCTO ID", "CÓDIGO", "NOMBRE", "CATEGORÍA", "PRESENTACIÓN", "CANTIDAD" };
+            for (int i = 0; i < encabezados.Length; i++)
+            {
+                var celda = hoja.Cells[1, i + 1];
+                celda.Value = encabezados[i];
+                celda.Style.Font.Bold = true;
+                celda.Style.Font.Size = 11;
+                celda.Style.Font.Color.SetColor(Color.Black);
+                celda.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                celda.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                celda.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+            }
+
+            foreach (DataRow entrada in entradas.Rows)
+            {
+                int entradaId = Convert.ToInt32(entrada["ID"]);
+                DataTable productos = localDM.getProductoEntradaInfo(entradaId);
+
+                if (productos.Rows.Count == 0) continue;
+
+                if (ultimoIdEntrada != -1 && ultimoIdEntrada != entradaId)
+                {
+                    filaActual++;
+                }
+
+                foreach (DataRow producto in productos.Rows)
+                {
+                    var colorFondo = Color.White;
+
+                    hoja.Cells[filaActual, 1].Value = producto["ENTRADA ID"];
+                    hoja.Cells[filaActual, 2].Value = producto["PRODUCTO ID"];
+                    hoja.Cells[filaActual, 3].Value = producto["CÓDIGO"];
+                    hoja.Cells[filaActual, 4].Value = producto["NOMBRE"];
+                    hoja.Cells[filaActual, 5].Value = producto["CATEGORÍA"];
+                    hoja.Cells[filaActual, 6].Value = producto["PRESENTACIÓN"];
+                    hoja.Cells[filaActual, 7].Value = producto["CANTIDAD"];
+
+                    for (int col = 1; col <= 7; col++)
+                    {
+                        var celda = hoja.Cells[filaActual, col];
+                        celda.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        celda.Style.Fill.BackgroundColor.SetColor(colorFondo);
+                        celda.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                        celda.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        celda.Style.Font.Color.SetColor(Color.Black);
+                    }
+                    filaActual++;
+                }
+                ultimoIdEntrada = entradaId;
+            }
+
+            hoja.Cells[hoja.Dimension.Address].AutoFitColumns();
+            hoja.View.FreezePanes(2, 1);
+
+            if (filaActual > 2)
+            {
+                var rangoTabla = hoja.Cells["A1:G" + (filaActual - 1)];
+                var tabla = hoja.Tables.Add(rangoTabla, "DetalleEntradas");
+                tabla.TableStyle = TableStyles.Light11;
+                tabla.ShowHeader = true;
+                tabla.ShowTotal = false;
+                tabla.ShowFirstColumn = false;
             }
         }
 

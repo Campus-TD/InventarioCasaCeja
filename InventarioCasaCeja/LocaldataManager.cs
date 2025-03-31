@@ -836,8 +836,7 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
             return dtProductoEntrada;
         }
         public DataTable getProductosFromSalida(int salidaId)
-        {
-            MessageBox.Show(salidaId.ToString());
+        {          
             DataTable dtProductos = new DataTable();
             dtProductos.Columns.Add("ID PRODUCTO", typeof(int));
             dtProductos.Columns.Add("NOMBRE", typeof(string));
