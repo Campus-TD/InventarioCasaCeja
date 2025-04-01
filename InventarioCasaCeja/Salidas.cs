@@ -630,30 +630,44 @@ namespace InventarioCasaCeja
             }
         }
         */
-        private void finish_Click(object sender, EventArgs e)
+
+
+// Método para guardar el documento en PDF usando Microsoft Print to PDF
+private void GuardarComoPDF(string rutaPDF)
+    {
+        PrintDocument pd = new PrintDocument();
+        pd.PrintPage += new PrintPageEventHandler(docToPrint_PrintPage);        
+        pd.PrinterSettings = new PrinterSettings
         {
-            String destino = boxsucursales.SelectedItem.ToString();           
-            if (destino == data.sucursal.razon_social)
-            {                
-                MessageBox.Show("No es posible enviar productos a la misma sucursal.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }            
-            if (boxsucursales.SelectedIndex < 0)
-            {
-                MessageBox.Show("Favor de seleccionar la sucursal destino.", "Advertencia");
-            }
-            else
-            {
+            PrinterName = "Microsoft Print to PDF",
+            PrintToFile = true,
+            PrintFileName = rutaPDF
+        };        
+        pd.DefaultPageSettings.Landscape = true;       
+        pd.Print();
+    }
+
+    private void finish_Click(object sender, EventArgs e)
+    {
+        string destino = boxsucursales.SelectedItem.ToString();
+        if (destino == data.sucursal.razon_social)
+        {
+            MessageBox.Show("No es posible enviar productos a la misma sucursal.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+        }
+        if (boxsucursales.SelectedIndex < 0)
+        {
+            MessageBox.Show("Favor de seleccionar la sucursal destino.", "Advertencia");
+        }
+        else
+        {
                 if (productosEnvio.Count == 0)
                 {
                     MessageBox.Show("Aún no se han agregado productos.", "Advertencia");
                 }
                 else
                 {
-                    // Reinicia el total a 0 antes de calcularlo
                     total = 0;
-
-                    // Recorre la lista de productosImprimir para calcular el total
                     foreach (var producto in productosImprimir)
                     {
                         total += producto.cantidad * producto.precio;
@@ -671,22 +685,54 @@ namespace InventarioCasaCeja
                         total_importe = total,
                         productos = JsonConvert.SerializeObject(productosEnvio),
                     };
-                    localDM.guardarSalidaTemporal(salida, idSalida);                    
+                    localDM.guardarSalidaTemporal(salida, idSalida);
                     localDM.GuardarSalidaLocal(salida);
-                    
                     enviarSalida(salida);
                     cargarTicketCarta(localDate.ToString("HH:mm dd/MM/yyyy"));
-                    //Aqui almaceno la lista de productos a imprimir para generar el
-                    //List<ProductoSalida> listaProductos = productosImprimir;
-                    //string json = JsonConvert.SerializeObject(listaProductos);
 
-                     previewDialog.ShowDialog();
+                    // Mostrar la vista previa
+                    previewDialog.ShowDialog();
+
+                    // Configuración de archivo
+                    string carpetaPrincipal = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "CasaCejaDocs");
+                    string subcarpeta = Path.Combine(carpetaPrincipal, "Inventario");
+                    string nombrePDF = $"Salida_{folio}.pdf";
+                    string rutaPDF = Path.Combine(subcarpeta, nombrePDF);
+
+                    // Crear la carpeta principal y la subcarpeta si no existen
+                    if (!Directory.Exists(carpetaPrincipal))
+                        Directory.CreateDirectory(carpetaPrincipal);
+
+                    if (!Directory.Exists(subcarpeta))
+                        Directory.CreateDirectory(subcarpeta);
+
+                    // Validar si el archivo ya existe
+                    if (File.Exists(rutaPDF))
+                    {
+                        var respuesta = MessageBox.Show("El archivo ya existe. ¿Deseas sobrescribirlo?",
+                                                          "Archivo Existente", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                        if (respuesta == DialogResult.No)
+                            return;
+                    }
+
+                    // Si existe, eliminar el archivo para sobrescribirlo
+                    if (File.Exists(rutaPDF))
+                    {
+                        File.Delete(rutaPDF);
+                    }
+
+                    // Llamar al método para guardar el documento como PDF
+                    GuardarComoPDF(rutaPDF);
+                    MessageBox.Show($"{nombrePDF} generado correctamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Limpiar la lista de productos e inicializar el binding nuevamente
                     productosImprimir.Clear();
                     tablasource.ResetBindings(false);
-                }                
-            }                
+                }
+            }
         }
-        async void enviarSalida(Salida salida)
+
+    async void enviarSalida(Salida salida)
         {
             if (await webDM.SendSalidaAsync(salida))
             {

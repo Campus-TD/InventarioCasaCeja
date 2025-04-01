@@ -215,7 +215,8 @@ namespace InventarioCasaCeja
             }
 
             // Configuración de archivo
-            string carpeta = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "CasaCejaDocs");
+            string carpetaPrincipal = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "CasaCejaDocs");
+            string subcarpeta = Path.Combine(carpetaPrincipal, "Inventario");
             string nombre;
 
             switch (opc)
@@ -232,14 +233,19 @@ namespace InventarioCasaCeja
             }
 
             string nombreArchivo = nombre + fecha + ".xlsx";
-            string rutaArchivo = Path.Combine(carpeta, nombreArchivo);
+            string rutaArchivo = Path.Combine(subcarpeta, nombreArchivo);
 
-            if (!Directory.Exists(carpeta)) Directory.CreateDirectory(carpeta);
+            // Se crean las carpetas si no existen
+            if (!Directory.Exists(carpetaPrincipal))
+                Directory.CreateDirectory(carpetaPrincipal);
+
+            if (!Directory.Exists(subcarpeta))
+                Directory.CreateDirectory(subcarpeta);
 
             if (File.Exists(rutaArchivo))
             {
                 var respuesta = MessageBox.Show("El archivo ya existe. ¿Deseas sobrescribirlo?",
-                                              "Archivo Existente", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                                          "Archivo Existente", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 if (respuesta == DialogResult.No)
                     return;
             }
@@ -281,8 +287,8 @@ namespace InventarioCasaCeja
                               "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        // Método para cargar datos generales en una hoja
-        private void CargarDatosEnHoja(ExcelWorksheet hoja, DataTable tabla)
+            // Método para cargar datos generales en una hoja
+            private void CargarDatosEnHoja(ExcelWorksheet hoja, DataTable tabla)
         {
             // Encabezados
             for (int i = 0; i < tabla.Columns.Count; i++)

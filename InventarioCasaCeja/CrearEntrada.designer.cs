@@ -204,7 +204,7 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel6.ColumnCount = 3;
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.94479F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.05521F));
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 698F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 699F));
             this.tableLayoutPanel6.Controls.Add(this.label3, 2, 0);
             this.tableLayoutPanel6.Controls.Add(this.txtSucOrig, 2, 1);
             this.tableLayoutPanel6.Controls.Add(this.label1, 1, 0);
@@ -224,7 +224,7 @@ namespace InventarioCasaCeja
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
-            this.label3.Location = new System.Drawing.Point(790, 0);
+            this.label3.Location = new System.Drawing.Point(789, 0);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(256, 37);
@@ -239,11 +239,11 @@ namespace InventarioCasaCeja
             this.txtSucOrig.BackColor = System.Drawing.SystemColors.Window;
             this.txtSucOrig.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.txtSucOrig.Enabled = false;
-            this.txtSucOrig.Location = new System.Drawing.Point(790, 47);
+            this.txtSucOrig.Location = new System.Drawing.Point(789, 47);
             this.txtSucOrig.Margin = new System.Windows.Forms.Padding(4);
             this.txtSucOrig.Name = "txtSucOrig";
             this.txtSucOrig.ShortcutsEnabled = false;
-            this.txtSucOrig.Size = new System.Drawing.Size(691, 61);
+            this.txtSucOrig.Size = new System.Drawing.Size(692, 61);
             this.txtSucOrig.TabIndex = 28;
             // 
             // label1
@@ -265,7 +265,7 @@ namespace InventarioCasaCeja
             this.button1.Location = new System.Drawing.Point(412, 47);
             this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(370, 63);
+            this.button1.Size = new System.Drawing.Size(369, 63);
             this.button1.TabIndex = 14;
             this.button1.Text = "SELECCIONAR IMAGEN (F5)";
             this.button1.UseVisualStyleBackColor = true;
