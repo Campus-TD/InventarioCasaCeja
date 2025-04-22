@@ -51,68 +51,103 @@ namespace InventarioCasaCeja
             sucursalActual = new Sucursal();
             //vercatalago.setData(tablacatalogo, mapamedidas, mapacategorias);
         }
+
         private async void loadData()
         {
-            //var runningProcessByName = Process.GetProcessesByName("CCSync");
-            //if (runningProcessByName.Length == 0)
-            //{
-                this.Enabled = false;
-                LoadWindow lw = new LoadWindow();
-                lw.Show(this);
+            this.Enabled = false;
+            LoadWindow lw = new LoadWindow();
+            lw.Show(this);
 
-            getConfig();
-            int idsucursalParaEyS;
-            int sucursalIdSettingParaEyS = Settings.Default.sucursalid; // Obtener el valor int directamente
+            try
+            {
+                getConfig();
+                int idsucursalParaEyS;
+                int sucursalIdSettingParaEyS = Settings.Default.sucursalid; // Obtener el valor int directamente
 
-            if (sucursalIdSettingParaEyS == 0) // Cambiar 0 al valor predeterminado correcto si es diferente
-            {
-                idsucursalParaEyS = 1; // Usar sucursal 1 si es la primera vez
-            }
-            else
-            {
-                idsucursalParaEyS = sucursalIdSettingParaEyS; // Usar la configurada
-            }
-            if (await webDM.GetProductos())
+                if (sucursalIdSettingParaEyS == 0) // Cambiar 0 al valor predeterminado correcto si es diferente
                 {
-                    lw.setData(10, "Sincronizando datos desde el servidor...");
+                    idsucursalParaEyS = 1; // Usar sucursal 1 si es la primera vez
+                }
+                else
+                {
+                    idsucursalParaEyS = sucursalIdSettingParaEyS; // Usar la configurada
+                }
+                // Lógica para bases precargadas
+                if (localDM.IsCatalogPreloaded)
+                {
+                    Debug.WriteLine("Base de datos precargada detectada. Sincronizando datos esenciales primero...");
+
+                    // 1. Sincronizar datos básicos
+                    lw.setData(10, "Sincronizando datos básicos...");
                     await webDM.GetSucursales();
-                    lw.setData(30, "Sincronizando datos desde el servidor...");
-                    await webDM.GetMedidas();
-                    lw.setData(50, "Sincronizando datos desde el servidor...");
-                    await webDM.GetCategorias();
-                    lw.setData(60, "Sincronizando datos desde el servidor...");
                     await webDM.GetUsuarios();
-                    lw.setData(70, "Sincronizando datos desde el servidor...");
+
+                    // 2. Actualizar catálogo con cambios recientes
+                    lw.setData(30, "Actualizando catálogo...");
+                    await webDM.GetProductos();
+
+                    // 3. Sincronizar datos específicos de inventario
+                    lw.setData(50, "Sincronizando proveedores...");
                     await webDM.GetProveedores();
-                    lw.setData(80, "Sincronizando datos desde el servidor...");
+
+                    lw.setData(70, "Sincronizando entradas...");
                     await webDM.GetEntradas(idsucursalParaEyS);
-                    lw.setData(90, "Sincronizando datos desde el servidor...");
+
+                    lw.setData(80, "Sincronizando relación productos-entradas...");
                     await webDM.GetEntradaProducto();
-                    lw.setData(100, "Sincronizando datos desde el servidor...");
+
+                    lw.setData(90, "Sincronizando salidas...");
                     await webDM.GetSalidas(idsucursalParaEyS);
                     await webDM.GetSalidasGral(idsucursalParaEyS);
                 }
                 else
                 {
-                    lw.Dispose();
-                    MessageBox.Show("No se pudo conectar con el servidor, favor de intentar más tarde", "Advertencia");
+                    Debug.WriteLine("No se detectó base precargada. Sincronización completa desde servidor...");
 
+                    // Flujo completo para instalación nueva
+                    if (await webDM.GetProductos())
+                    {
+                        lw.setData(10, "Sincronizando datos básicos...");
+                        await webDM.GetSucursales();
+
+                        lw.setData(30, "Obteniendo unidades de medida...");
+                        await webDM.GetMedidas();
+
+                        lw.setData(50, "Cargando categorías...");
+                        await webDM.GetCategorias();
+
+                        lw.setData(70, "Sincronizando usuarios...");
+                        await webDM.GetUsuarios();
+
+                        lw.setData(80, "Actualizando proveedores...");
+                        await webDM.GetProveedores();
+
+                        lw.setData(90, "Cargando entradas...");
+                        await webDM.GetEntradas(idsucursalParaEyS);
+
+                        lw.setData(95, "Relacionando productos con entradas...");
+                        await webDM.GetEntradaProducto();
+
+                        lw.setData(100, "Sincronizando movimientos...");
+                        await webDM.GetSalidas(idsucursalParaEyS);
+                        await webDM.GetSalidasGral(idsucursalParaEyS);
+                    }
                 }
-                //try
-                //{
-                //    string path = Path.Combine(Directory.GetCurrentDirectory(), @"CCSync/CCSync.exe");
-                //    Process.Start(path);
-                //}
-                //catch (Exception e)
-                //{
-
-                //}
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error en sincronización: {ex.Message}");
+                MessageBox.Show("Error al sincronizar datos. Verifique su conexión.");
+            }
+            finally
+            {
                 lw.Dispose();
                 this.Enabled = true;
                 this.Focus();
-            //}
+            }
+
             refreshData(0);
-            
+
             if (usuarioActivo == null)
             {
                 pedirUsuario();

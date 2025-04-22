@@ -10,6 +10,7 @@ using Windows.Storage;
 using System.Net.NetworkInformation;
 using System.Windows.Forms;
 using System.Linq;
+using System.Diagnostics;
 
 namespace InventarioCasaCeja
 {
@@ -44,19 +45,35 @@ namespace InventarioCasaCeja
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
-            productos_lastupdate = localDM.getTableLastUpdate("productos");
-            categorias_lastupdate = localDM.getTableLastUpdate("categorias");
-            medidas_lastupdate = localDM.getTableLastUpdate("medidas");
-            usuarios_lastupdate = localDM.getTableLastUpdate("usuarios");
-            proveedores_lastupdate = localDM.getTableLastUpdate("proveedores");
-            sucursales_lastupdate = localDM.getTableLastUpdate("sucursales");
-            entradas_lastupdate = localDM.getTableLastUpdate("entradas");
-            entrada_producto_lastupdate = localDM.getTableLastUpdate("entradas");
-            
-            salidasGral_lastupdate = localDM.getTableLastUpdate("salidas");
 
-            //salidas_lastupdate = localDM.getTableLastUpdate("salidas_temporal");
-        }
+            // Inicialización optimizada para tablas precargadas           
+            if (localDM.IsCatalogPreloaded)
+            {
+                Console.WriteLine("Obteniendo fecha de actualizacion para base de datos precargada");
+                productos_lastupdate = localDM.getTableLastUpdate("productos");
+                categorias_lastupdate = localDM.getTableLastUpdate("categorias");
+                medidas_lastupdate = localDM.getTableLastUpdate("medidas");
+            }
+            else
+            {
+                // Comportamiento normal para instalaciones sin precarga
+                Console.WriteLine("Obteniendo fecha de actualizacion para base de datos normal");
+                productos_lastupdate = localDM.getTableLastUpdate("productos");
+                categorias_lastupdate = localDM.getTableLastUpdate("categorias");
+                medidas_lastupdate = localDM.getTableLastUpdate("medidas");
+            }
+            proveedores_lastupdate = localDM.getTableLastUpdate("proveedores");
+            usuarios_lastupdate = localDM.getTableLastUpdate("usuarios");
+            sucursales_lastupdate = localDM.getTableLastUpdate("sucursales");
+            /*apartados_lastupdate = localDM.getTableLastUpdate("apartados");
+            creditos_lastupdate = localDM.getTableLastUpdate("creditos");
+            clientes_lastupdate = localDM.getTableLastUpdate("clientes");
+            abonos_credito_lu = localDM.getTableLastUpdate("abonos_credito");
+            abonos_apartado_lu = localDM.getTableLastUpdate("abonos_apartado");
+            cortes_lastupdate = localDM.getTableLastUpdate("cortes");*/
+        
+        //salidas_lastupdate = localDM.getTableLastUpdate("salidas_temporal");
+    }
         public void resetDates()
         {
             productos_lastupdate = localDM.getTableLastUpdate("productos");
@@ -81,17 +98,23 @@ namespace InventarioCasaCeja
         //}
         public async Task<bool> GetCategorias()
         {
-            string res="";
+            if (localDM.IsCatalogPreloaded)
+            {
+                // No descargar categorías si están precargadas
+                return true;
+            }
+
+            string res = "";
             Dictionary<string, string> date = new Dictionary<string, string>();
             date["fecha_de_actualizacion"] = categorias_lastupdate;
+
             try
             {
                 HttpResponseMessage response = await client.PostAsJsonAsync(url + "api/categorias/sincronizar", date);
                 res = await response.Content.ReadAsStringAsync();
+
                 if (response.IsSuccessStatusCode)
                 {
-                    res = await response.Content.ReadAsStringAsync();
-
                     var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
                     if (result["status"].ToString().Equals("success"))
                     {
@@ -102,36 +125,33 @@ namespace InventarioCasaCeja
                         categorias_lastupdate = localDM.getTableLastUpdate("categorias");
                         return true;
                     }
-                    else
-                    {
-                        //MessageBox.Show("Error", result["data"].ToString());
-                    }
-
-                }
-                else
-                {
                 }
             }
             catch (Exception e)
             {
-                //MessageBox.Show(e.Message, "Hubo un problema al establecer la conexion con el servidor");
+                Debug.WriteLine($"Error sincronizando categorías: {e.Message}");
             }
             return false;
-
         }
         public async Task<bool> GetMedidas()
         {
+            if (localDM.IsCatalogPreloaded)
+            {
+                // No descargar medidas si están precargadas
+                return true;
+            }
+
             string res = "";
             Dictionary<string, string> date = new Dictionary<string, string>();
             date["fecha_de_actualizacion"] = medidas_lastupdate;
+
             try
             {
                 HttpResponseMessage response = await client.PostAsJsonAsync(url + "api/medidas/sincronizar", date);
                 res = await response.Content.ReadAsStringAsync();
+
                 if (response.IsSuccessStatusCode)
                 {
-                    res = await response.Content.ReadAsStringAsync();
-
                     var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
                     if (result["status"].ToString().Equals("success"))
                     {
@@ -142,23 +162,60 @@ namespace InventarioCasaCeja
                         medidas_lastupdate = localDM.getTableLastUpdate("medidas");
                         return true;
                     }
-                    else
-                    {
-                        //MessageBox.Show("Error", result["data"].ToString());
-                    }
-
-                }
-                else
-                {
-                    //MessageBox.Show("Hubo un problema al establecer la conexion con el servidor", "Error");
                 }
             }
             catch (Exception e)
             {
-                //MessageBox.Show(e.Message, "Hubo un problema al establecer la conexion con el servidor");
+                Debug.WriteLine($"Error sincronizando medidas: {e.Message}");
             }
             return false;
         }
+        public async Task<bool> GetProductos()
+        {
+            string res = "";
+            Dictionary<string, string> date = new Dictionary<string, string>();
+
+            // Usamos la fecha de última actualización o fecha mínima si es precargado
+            date["fecha_de_actualizacion"] = productos_lastupdate;
+
+            try
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(url + "api/productos/sincronizar", date);
+                res = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
+                    if (result["status"].ToString().Equals("success"))
+                    {
+                        var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(result["data"].ToString());
+                        var productos = JsonConvert.DeserializeObject<List<Producto>>(data["productos"].ToString());
+
+                        // Procesamos los productos recibidos
+                        if (localDM.IsCatalogPreloaded)
+                        {
+                            // Para precarga, solo actualizamos los productos modificados
+                            localDM.UpdateExistingProducts(productos);
+                        }
+                        else
+                        {
+                            // Para instalación nueva, guardamos todos los productos
+                            localDM.saveProductos(productos);
+                        }
+
+                        // Actualizamos la fecha de última sincronización
+                        productos_lastupdate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                        return true;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Errorrrrr sincronizando productos: {e.Message}");
+            }
+            return false;
+        }
+
         public async Task<bool> GetEntradaProducto()
         {
             string res = "";
@@ -450,44 +507,7 @@ namespace InventarioCasaCeja
             }
             return null;
         }
-        public async Task<bool> GetProductos()
-        {
-            string res = "";
-            Dictionary<string, string> date = new Dictionary<string, string>();
-            date["fecha_de_actualizacion"] = productos_lastupdate;
-            try
-            {
-                HttpResponseMessage response = await client.PostAsJsonAsync(url + "api/productos/sincronizar", date);
-                res = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
-                if (result["status"].ToString().Equals("success"))
 
-                {
-                    var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(result["data"].ToString());
-                    var productos = JsonConvert.DeserializeObject<List<Producto>>(data["productos"].ToString());
-                    localDM.saveProductos(productos);
-                    productos_lastupdate = localDM.getTableLastUpdate("productos");
-                        return true;
-                }
-                else
-                {
-                        //MessageBox.Show("Error", result["data"].ToString());
-                    }
-                }
-                else
-                {
-                    //MessageBox.Show("Hubo un problema al establecer la conexion con el servidor", "Error");
-                }
-            }
-            catch (Exception e)
-            {
-                //MessageBox.Show(e.Message, "Hubo un problema al establecer la conexion con el servidor");
-            }
-
-            return false;
-        }
         public async Task<bool> GetUsuarios()
         {
             string res = "";
