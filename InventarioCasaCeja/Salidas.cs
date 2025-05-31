@@ -91,7 +91,7 @@ namespace InventarioCasaCeja
                 {
                     // Obtener el objeto ProductoSalida de la fila
                     ProductoSalida producto = (ProductoSalida)fila.DataBoundItem;
-
+                    tabla.Columns["precio"].DefaultCellStyle.Format = "N2";
                     // Calcular el importe (cantidad * precio)
                     double importe = producto.cantidad * producto.precio;
 
