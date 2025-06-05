@@ -27,7 +27,7 @@ namespace InventarioCasaCeja
         Producto currentProd = null;
         WebDataManager webDM;
         LocaldataManager localDM;
-        List<ProductoSalida> productosImprimir;
+        BindingList<ProductoSalida> productosImprimir;
         List<Dictionary<string, object>> productosEnvio;
         BindingSource tablasource;
         bool hasTemporal = false;
@@ -36,6 +36,7 @@ namespace InventarioCasaCeja
         double total;
         string folio;
         int sucursal;
+        private bool usarPrecioVendedor = false; // Nueva variable para controlar el modo de precio       
 
         private void Salidas_Load(object sender, EventArgs e)
         {
@@ -43,10 +44,13 @@ namespace InventarioCasaCeja
             txtcodigo.Focus();
             idSalida = localDM.nuevaSalida(data.sucursal.id);
             boxsucursales.DataSource = data.mapasucursales.Keys.ToList();
-            folio = data.sucursal.id.ToString().PadLeft(2, '0') + localDate.Day.ToString().PadLeft(2, '0') + localDate.Month.ToString().PadLeft(2, '0') + localDate.Year + "5" + (idSalida%1000).ToString().PadLeft(3, '0');
+            folio = data.sucursal.id.ToString().PadLeft(2, '0') + localDate.Day.ToString().PadLeft(2, '0') + localDate.Month.ToString().PadLeft(2, '0') + localDate.Year + "5" + (idSalida % 1000).ToString().PadLeft(3, '0');
             txtfolio.Text = folio;
             txtfecha.Text = localDate.ToString("dd/MM/yyyy");
             txtSucOrig.Text = data.sucursal.razon_social;
+
+            // Configurar el estado inicial del botón
+            ActualizarEstadoBoton();
         }
 
         private PrintDocument docToPrint = new PrintDocument();
@@ -64,23 +68,112 @@ namespace InventarioCasaCeja
             fontName = data.fontName;
             fontSize = data.fontSize;
             printerName = data.printerName;
-            productosImprimir = new List<ProductoSalida>();
+            productosImprimir = new BindingList<ProductoSalida>();
             productosEnvio = new List<Dictionary<string, object>>();
             tablasource = new BindingSource();
             tablasource.DataSource = productosImprimir;
             tabla.DataSource = tablasource;
             total = 0;
             (previewDialog as Form).WindowState = FormWindowState.Maximized;
-
-            // Modificación para cambiar el encabezado de la columna y formatear visualmente
-            tabla.Columns["idproducto"].HeaderText = "Importe"; // Cambiar el encabezado a "Importe"
-
+            tabla.Columns["idproducto"].HeaderText = "Importe";
             // Suscribir al evento CellFormatting para mostrar el importe calculado
             tabla.CellFormatting += Tabla_CellFormatting;
+
+            // Configurar el estado inicial del botón
+            ActualizarEstadoBoton();
         }
-        private void Tabla_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+
+        // ***** NUEVOS MÉTODOS PARA PRECIO VENDEDOR *****
+        // Método para actualizar la apariencia del botón
+        private void ActualizarEstadoBoton()
         {
-            // Verificar si la celda actual es de la columna "idproducto" (ahora visualmente "Importe")
+            if (usarPrecioVendedor)
+            {
+                Bpvendedor.Text = "P VENDEDOR ACTIVO";
+                Bpvendedor.BackColor = Color.LightGreen;
+                Bpvendedor.ForeColor = Color.DarkGreen;
+                // Opcional: cambiar color de fondo de la tabla para indicar modo vendedor
+                tabla.BackgroundColor = Color.LightYellow;
+            }
+            else
+            {
+                Bpvendedor.Text = "PRECIO VENDEDOR (F3)";
+                Bpvendedor.BackColor = SystemColors.Control;
+                Bpvendedor.ForeColor = SystemColors.ControlText;
+                tabla.BackgroundColor = SystemColors.Window;
+            }
+        }
+
+        // Método para actualizar precios de productos existentes en la tabla
+        private void ActualizarPreciosProductos()
+        {
+            foreach (var productoSalida in productosImprimir)
+            {
+                // Obtener el producto completo de la base de datos para tener acceso al precio vendedor
+                Producto productoCompleto = localDM.GetProductByIdOrCode(productoSalida.idproducto.ToString());
+
+                if (productoCompleto != null)
+                {
+                    // Validar precio vendedor si está activo
+                    if (usarPrecioVendedor && !ValidarPrecioVendedor(productoCompleto))
+                    {
+                        continue; // Saltar este producto si no tiene precio vendedor válido
+                    }
+
+                    // Actualizar precio según el modo activo
+                    double nuevoPrecio = ObtenerPrecioProducto(productoCompleto);
+                    productoSalida.precio = nuevoPrecio;
+
+                    // Actualizar también en productosEnvio
+                    var productoEnvio = productosEnvio.FirstOrDefault(p => Convert.ToInt32(p["idproducto"]) == productoSalida.idproducto);
+                    if (productoEnvio != null)
+                    {
+                        productoEnvio["precio"] = Math.Round(nuevoPrecio, 2);
+                    }
+                }
+            }
+
+            // Refrescar la tabla para mostrar los nuevos precios
+            tablasource.ResetBindings(false);
+        }
+
+        // Método auxiliar para obtener el precio correcto
+        private double ObtenerPrecioProducto(Producto producto)
+        {
+            return usarPrecioVendedor ? producto.vendedor : producto.menudeo;
+        }
+
+        // Validación para cuando no hay precio vendedor
+        private bool ValidarPrecioVendedor(Producto producto)
+        {
+            if (usarPrecioVendedor && (producto.vendedor <= 0))
+            {
+                MessageBox.Show($"El producto '{producto.nombre}' no tiene precio de vendedor configurado.",
+                               "Precio no disponible", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            return true;
+        }
+
+        // ***** EVENTO DEL BOTÓN PRECIO VENDEDOR *****
+        private void Bpvendedor_Click(object sender, EventArgs e)
+        {
+            usarPrecioVendedor = !usarPrecioVendedor;
+            ActualizarEstadoBoton();
+            ActualizarPreciosProductos();
+
+            // Mostrar mensaje informativo
+            string mensaje = usarPrecioVendedor ?
+                "Modo PRECIO VENDEDOR activado. Los nuevos productos usarán precio de vendedor." :
+                "Modo PRECIO NORMAL activado. Los nuevos productos usarán precio de menudeo.";
+
+            MessageBox.Show(mensaje, "Cambio de Precio", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        // ***** MÉTODOS MODIFICADOS *****
+
+        private void Tabla_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {           
             if (tabla.Columns[e.ColumnIndex].Name == "idproducto")
             {
                 // Obtener la fila actual
@@ -92,6 +185,7 @@ namespace InventarioCasaCeja
                     // Obtener el objeto ProductoSalida de la fila
                     ProductoSalida producto = (ProductoSalida)fila.DataBoundItem;
                     tabla.Columns["precio"].DefaultCellStyle.Format = "N2";
+
                     // Calcular el importe (cantidad * precio)
                     double importe = producto.cantidad * producto.precio;
 
@@ -100,115 +194,23 @@ namespace InventarioCasaCeja
                     e.FormattingApplied = true; // Indicar que hemos aplicado el formato
                 }
             }
-        }
 
-        /*
-         Codigo Original de agregar producto, productoimprimir y productoenvio.
-        private void AgregarProductoDirectamente(Producto producto)
-        {
-            tabla.EndEdit(); //EndEdit se encarga de verificar si hay cambios en la celda y los guarda antes de agregar un nuevo producto.
-            if (producto != null)
+            // Colorear la columna de precio según el modo activo
+            if (tabla.Columns[e.ColumnIndex].Name == "precio")
             {
-                if (producto.id == 0)
+                if (usarPrecioVendedor)
                 {
-                    hasTemporal = true;
-                }
-                // Verifica si el producto ya existe en la lista productosImprimir
-                var productoExistente = productosImprimir.FirstOrDefault(p => p.idproducto == producto.id);
-                if (productoExistente != null)
-                {
-                    MessageBox.Show("El producto ya se agregó previamente", "Advertencia");
-                    txtcodigo.Text = "";
-                    return;
+                    e.CellStyle.BackColor = Color.LightGreen;
+                    e.CellStyle.ForeColor = Color.DarkGreen;
                 }
                 else
                 {
-                    // Encuentra la fila en la tabla que corresponde al producto que se está agregando
-                    var filaCorrespondiente = tabla.Rows.Cast<DataGridViewRow>().FirstOrDefault(r => Convert.ToInt32(r.Cells["idproducto"].Value) == producto.id);
-
-                    // Obtiene la cantidad de la fila correspondiente
-                    //int c = filaCorrespondiente != null ? Convert.ToInt32(filaCorrespondiente.Cells["cantidad"].Value) : 5; // Usa 1 como valor predeterminado si no se encuentra la fila
-                    int c = 1;
-                    // Agrega el producto a la lista productosImprimir
-                    productosImprimir.Insert(0, new ProductoSalida
-                    {
-                        idproducto = producto.id,
-                        codigo = producto.codigo,
-                        nombre = producto.nombre,
-                        cantidad = c,
-                        precio = producto.menudeo,
-                        unidad = data.mapamedidasinv[producto.medida_id]
-                    });
-                    // Agrega el producto a la lista productosEnvio
-                    Dictionary<string, object> prod = new Dictionary<string, object>();
-                    prod["idproducto"] = producto.id;
-                    prod["cantidad"] = c;
-                    prod["precio"] = Math.Round(producto.menudeo, 2);
-
-                    productosEnvio.Add(prod);
-                    // Actualiza el BindingSource
-                    tablasource.ResetBindings(false);
-
-                    // Limpia txtcodigo y currentProd para el próximo producto
-                    txtcodigo.Text = "";
-                    currentProd = null;
-                    tabla.Focus();
-                    tabla.CurrentCell = tabla.Rows[0].Cells[3];
-                    tabla.BeginEdit(true);
+                    e.CellStyle.BackColor = SystemColors.Window;
+                    e.CellStyle.ForeColor = SystemColors.WindowText;
                 }
             }
         }
 
-        // Evento que maneja el final de la edición de una celda en la tabla
-        private void tabla_CellEndEdit(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.ColumnIndex == tabla.Columns["cantidad"].Index)
-            {
-                // Obtiene la fila y el producto actualizados
-                var fila = tabla.Rows[e.RowIndex];
-                int idProducto = Convert.ToInt32(fila.Cells["idproducto"].Value);
-                int cantidadActualizada = Convert.ToInt32(fila.Cells["cantidad"].Value);
-                string codigo = fila.Cells["codigo"].Value.ToString();
-                string nombre = fila.Cells["nombre"].Value.ToString();
-                double precio = Convert.ToDouble(fila.Cells["precio"].Value);
-                string unidad = fila.Cells["unidad"].Value.ToString();
-
-                // Actualiza la cantidad en productosImprimir
-                var productoImprimir = productosImprimir.FirstOrDefault(p => p.idproducto == idProducto);
-                if (productoImprimir != null)
-                {
-                    productoImprimir.cantidad = cantidadActualizada;
-                }
-                else
-                {
-                    productosImprimir.Insert(0, new ProductoSalida
-                    {
-                        idproducto = idProducto,
-                        codigo = codigo,
-                        nombre = nombre,
-                        cantidad = cantidadActualizada,
-                        precio = precio,
-                        unidad = unidad
-                    });
-                }
-
-                // Actualiza la cantidad en productosEnvio
-                var productoEnvio = productosEnvio.FirstOrDefault(p => Convert.ToInt32(p["idproducto"]) == idProducto);
-                if (productoEnvio != null)
-                {
-                    productoEnvio["cantidad"] = cantidadActualizada;
-                }
-                else
-                {
-                    Dictionary<string, object> prod = new Dictionary<string, object>();
-                    prod["idproducto"] = idProducto;
-                    prod["cantidad"] = cantidadActualizada;
-                    prod["precio"] = Math.Round(precio, 2);
-                    productosEnvio.Add(prod);
-                }
-            }
-        }
-        */
         private void AgregarProductoDirectamente(Producto producto)
         {
             tabla.EndEdit(); // Verificar y guardar cambios en la celda antes de agregar un nuevo producto.
@@ -226,10 +228,20 @@ namespace InventarioCasaCeja
                 return;
             }
 
+            // Validar precio vendedor si está activo
+            if (usarPrecioVendedor && !ValidarPrecioVendedor(producto))
+            {
+                LimpiarEntrada();
+                return;
+            }
+
             int cantidad = 1; // Usar 1 como valor predeterminado.
 
-            // Agregar a productosImprimir y productosEnvio
-            AgregarOActualizarProducto(producto.id, producto.codigo, producto.nombre, cantidad, producto.menudeo, data.mapamedidasinv[producto.medida_id]);
+            // Determinar qué precio usar según el estado del botón
+            double precioAUsar = ObtenerPrecioProducto(producto);
+
+            // Agregar a productosImprimir y productosEnvio con el precio correcto
+            AgregarOActualizarProducto(producto.id, producto.codigo, producto.nombre, cantidad, precioAUsar, data.mapamedidasinv[producto.medida_id]);
 
             LimpiarEntrada();
         }
@@ -255,6 +267,7 @@ namespace InventarioCasaCeja
             if (productoImprimir != null)
             {
                 productoImprimir.cantidad = cantidad;
+                // Mantener el precio actual si ya existe el producto
             }
             else
             {
@@ -273,6 +286,7 @@ namespace InventarioCasaCeja
             if (productoEnvio != null)
             {
                 productoEnvio["cantidad"] = cantidad;
+                // Actualizar precio en productosEnvio solo si es un producto nuevo o se cambió el modo
             }
             else
             {
@@ -291,13 +305,17 @@ namespace InventarioCasaCeja
         {
             txtcodigo.Text = "";
             currentProd = null;
-            tabla.Focus();
-            tabla.CurrentCell = tabla.Rows[0].Cells[3];
-            tabla.BeginEdit(true);
+            if (tabla.Rows.Count > 0)
+            {
+                tabla.Focus();
+                tabla.CurrentCell = tabla.Rows[0].Cells[3];
+                tabla.BeginEdit(true);
+            }
         }
 
+        // ***** RESTO DEL CÓDIGO ORIGINAL *****
 
-        private void cargarTicketCarta( string fechaSalida)
+        private void cargarTicketCarta(string fechaSalida)
         {
             //titulo = "CASA CEJA S.A. DE C.V.";
             titulo = "CASA CEJA";
@@ -306,7 +324,7 @@ namespace InventarioCasaCeja
             fecha = "FECHA:\n" + fechaSalida;
             pedido = "PEDIDO:\n" + folio;
             tot = "TOTAL: $" + total.ToString("0.00");
-            
+
             createdoc();
         }
 
@@ -522,7 +540,7 @@ namespace InventarioCasaCeja
             int spaceBetweenQRs = 450;
 
             // Calcular la posición para el primer código QR
-            int xPos1 = margin; 
+            int xPos1 = margin;
             // Ajusta esta posición según tus necesidades
             int yPos = documentHeight - qrHeight - margin;
 
@@ -572,95 +590,36 @@ namespace InventarioCasaCeja
 
             return new Bitmap(barcodeWriter.Write(texto));
         }
-        /*
-        private void AgregarProductoTabla(object sender, EventArgs e)
-        {
 
-            if (txtcodigo.Text.Equals(""))
+        // Método para guardar el documento en PDF usando Microsoft Print to PDF
+        private void GuardarComoPDF(string rutaPDF)
+        {
+            PrintDocument pd = new PrintDocument();
+            pd.PrintPage += new PrintPageEventHandler(docToPrint_PrintPage);
+            pd.PrinterSettings = new PrinterSettings
             {
-                MessageBox.Show("Debes ingresar todos los datos de producto", "Advertencia");
+                PrinterName = "Microsoft Print to PDF",
+                PrintToFile = true,
+                PrintFileName = rutaPDF
+            };
+            pd.DefaultPageSettings.Landscape = true;
+            pd.Print();
+        }
+
+        private void finish_Click(object sender, EventArgs e)
+        {
+            string destino = boxsucursales.SelectedItem.ToString();
+            if (destino == data.sucursal.razon_social)
+            {
+                MessageBox.Show("No es posible enviar productos a la misma sucursal.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (boxsucursales.SelectedIndex < 0)
+            {
+                MessageBox.Show("Favor de seleccionar la sucursal destino.", "Advertencia");
             }
             else
             {
-                if (currentProd == null)
-                    currentProd = localDM.GetProductByCode(txtcodigo.Text);
-                if (currentProd == null)
-                {
-                    BuscarExistencia bs = new BuscarExistencia(webDM, agregarProd, sucursal, txtcodigo.Text);
-                    bs.ShowDialog();
-                    txtcodigo.Focus();
-                }
-                else
-                {
-                    if (currentProd.id == 0)
-                    {
-                        hasTemporal = true;
-                    }
-                    int c = 0;
-
-                    var productoExistente = productosImprimir.FirstOrDefault(p => p.idproducto == currentProd.id);
-                    if (productoExistente != null)
-                    {
-                        MessageBox.Show("El producto ya se agrego previamente", "Advertencia");
-                        return;
-                    }
-                    else
-                    {
-                        productosImprimir.Insert(0, new ProductoSalida
-                        {
-                            idproducto = currentProd.id,
-                            codigo = currentProd.codigo,
-                            nombre = currentProd.nombre,
-                            cantidad = c,
-                            precio = currentProd.menudeo,
-                            unidad = data.mapamedidasinv[currentProd.medida_id]
-                        });
-                    }
-
-                    Dictionary<string, object> prod = new Dictionary<string, object>();
-                    prod["idproducto"] = currentProd.id;
-                    prod["cantidad"] = c;
-                    prod["precio"] = Math.Round(currentProd.menudeo, 2);
-                    productosEnvio.Add(prod);
-                    tablasource.ResetBindings(false);
-                    total += Math.Round(c * currentProd.menudeo, 2);
-                    txtcodigo.Text = "";
-                    currentProd = null;
-                }
-            }
-        }
-        */
-
-
-// Método para guardar el documento en PDF usando Microsoft Print to PDF
-private void GuardarComoPDF(string rutaPDF)
-    {
-        PrintDocument pd = new PrintDocument();
-        pd.PrintPage += new PrintPageEventHandler(docToPrint_PrintPage);        
-        pd.PrinterSettings = new PrinterSettings
-        {
-            PrinterName = "Microsoft Print to PDF",
-            PrintToFile = true,
-            PrintFileName = rutaPDF
-        };        
-        pd.DefaultPageSettings.Landscape = true;       
-        pd.Print();
-    }
-
-    private void finish_Click(object sender, EventArgs e)
-    {
-        string destino = boxsucursales.SelectedItem.ToString();
-        if (destino == data.sucursal.razon_social)
-        {
-            MessageBox.Show("No es posible enviar productos a la misma sucursal.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
-        }
-        if (boxsucursales.SelectedIndex < 0)
-        {
-            MessageBox.Show("Favor de seleccionar la sucursal destino.", "Advertencia");
-        }
-        else
-        {
                 if (productosEnvio.Count == 0)
                 {
                     MessageBox.Show("Aún no se han agregado productos.", "Advertencia");
@@ -732,7 +691,7 @@ private void GuardarComoPDF(string rutaPDF)
             }
         }
 
-    async void enviarSalida(Salida salida)
+        async void enviarSalida(Salida salida)
         {
             if (await webDM.SendSalidaAsync(salida))
             {
@@ -748,16 +707,6 @@ private void GuardarComoPDF(string rutaPDF)
                         MessageBox.Show($"No se pudo restar la existencia para el producto ID: {producto.idproducto}", "Error");
                     }
                 }
-
-                // Sumar existencias de los productos en la sucursal destino
-                /*foreach (var producto in productosImprimir)
-                {
-                    bool resultado = await webDM.sumarExistencia(salida.id_sucursal_destino, producto.idproducto, producto.cantidad);
-                    if (!resultado)
-                    {
-                        MessageBox.Show($"No se pudo sumar la existencia para el producto ID: {producto.idproducto} en la sucursal destino", "Error");
-                    }
-                }*/
 
                 this.Close();
             }
@@ -788,6 +737,7 @@ private void GuardarComoPDF(string rutaPDF)
                 e.Handled = true;
             }
         }
+
         private void exit_button_Click(object sender, EventArgs e)
         {
             if (DialogResult.Yes == MessageBox.Show("Esta seguro que desea salir?", "Advertencia", MessageBoxButtons.YesNo))
@@ -803,6 +753,7 @@ private void GuardarComoPDF(string rutaPDF)
                 e.Handled = true;
             }
         }
+
         protected override bool ProcessDialogKey(Keys keyData)
         {
             if (Form.ModifierKeys == Keys.None)
@@ -821,6 +772,9 @@ private void GuardarComoPDF(string rutaPDF)
                         tabla.Focus();
                         SendKeys.Send("{RIGHT}");
                         SendKeys.Send("{DOWN}");
+                        break;
+                    case Keys.F3: // Nueva tecla para alternar precio vendedor
+                        Bpvendedor_Click(this, new EventArgs());
                         break;
                     case Keys.F5:
                         boxsucursales.Focus();
@@ -842,6 +796,7 @@ private void GuardarComoPDF(string rutaPDF)
             }
             return base.ProcessDialogKey(keyData);
         }
+
         private void txtcodigo_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Down || e.KeyCode == Keys.Up)
@@ -858,11 +813,12 @@ private void GuardarComoPDF(string rutaPDF)
                 }
                 else
                 {
-                    MessageBox.Show("El código ingresado no se encontro o no existe.", "Producto no encontrado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("El código ingresado no se encontró o no existe.", "Producto no encontrado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     txtcodigo.Focus();
                 }
             }
         }
+
         private void tabla_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.F1)
@@ -876,6 +832,10 @@ private void GuardarComoPDF(string rutaPDF)
                 tabla.Focus();
                 SendKeys.Send("{RIGHT}");
                 SendKeys.Send("{DOWN}");
+            }
+            if (e.KeyCode == Keys.F3) // Nueva tecla para alternar precio vendedor
+            {
+                Bpvendedor_Click(this, new EventArgs());
             }
             //if (e.KeyCode == Keys.Enter){
             if (e.KeyCode == Keys.Down || e.KeyCode == Keys.Up)
@@ -908,9 +868,10 @@ private void GuardarComoPDF(string rutaPDF)
 
         private void quitarProdButton_Click(object sender, EventArgs e)
         {
-            ProductoSalida productoSeleccionado = (ProductoSalida)tabla.CurrentRow.DataBoundItem;
-            if (productoSeleccionado != null)
+            if (tabla.CurrentRow?.DataBoundItem != null)
             {
+                ProductoSalida productoSeleccionado = (ProductoSalida)tabla.CurrentRow.DataBoundItem;
+
                 // Elimina el producto de productosImprimir
                 productosImprimir.Remove(productoSeleccionado);
 
@@ -920,11 +881,13 @@ private void GuardarComoPDF(string rutaPDF)
                 {
                     productosEnvio.Remove(productoAQuitar);
                 }
+
                 // Actualiza el BindingSource
                 tablasource.ResetBindings(false);
                 Console.WriteLine("producto cosa", productoSeleccionado.cantidad);
             }
         }
+
         private void tabla_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (tabla.CurrentCell != null && tabla.RowCount > 0)

@@ -95,10 +95,7 @@ namespace InventarioCasaCeja
         private void catalogo_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyData)
-            {
-                case Keys.Enter:
-                    //modify();
-                    break;
+            {               
                 case Keys.F1:
                     txtbuscar.Focus();
                     break;
@@ -109,10 +106,7 @@ namespace InventarioCasaCeja
                 case Keys.F3:
                     boxmedida.DroppedDown = true;
                     boxmedida.Focus();
-                    break;
-                case Keys.F5:
-                    alta();
-                    break;
+                    break;               
                 case Keys.E:
                     if (e.Modifiers == Keys.Alt)
                         verExistencia();
@@ -242,10 +236,7 @@ namespace InventarioCasaCeja
                     case Keys.F3:
                         boxmedida.DroppedDown = true;
                         boxmedida.Focus();
-                        break;
-                    case Keys.F5:
-                        alta();
-                        break;
+                        break;                    
                     case Keys.F6:
                         modify();
                         break;

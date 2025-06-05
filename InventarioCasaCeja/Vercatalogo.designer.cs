@@ -221,11 +221,11 @@
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 167F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 135F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 124F));
-            this.tableLayoutPanel6.Controls.Add(this.details, 0, 0);
             this.tableLayoutPanel6.Controls.Add(this.Bsalir, 4, 0);
             this.tableLayoutPanel6.Controls.Add(this.tableLayoutPanel7, 0, 0);
-            this.tableLayoutPanel6.Controls.Add(this.BaltaProducto, 2, 0);
             this.tableLayoutPanel6.Controls.Add(this.Bmodificar, 3, 0);
+            this.tableLayoutPanel6.Controls.Add(this.details, 2, 0);
+            this.tableLayoutPanel6.Controls.Add(this.BaltaProducto, 1, 0);
             this.tableLayoutPanel6.Location = new System.Drawing.Point(2, 2);
             this.tableLayoutPanel6.Margin = new System.Windows.Forms.Padding(2);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
@@ -240,9 +240,9 @@
             this.details.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.details.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
-            this.details.Location = new System.Drawing.Point(736, 3);
+            this.details.Location = new System.Drawing.Point(901, 3);
             this.details.Name = "details";
-            this.details.Size = new System.Drawing.Size(159, 75);
+            this.details.Size = new System.Drawing.Size(161, 75);
             this.details.TabIndex = 13;
             this.details.Text = "VER EXISTENCIA (Alt+E)";
             this.details.UseVisualStyleBackColor = true;
@@ -269,7 +269,7 @@
             this.tableLayoutPanel7.ColumnCount = 3;
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.74216F));
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.25784F));
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 298F));
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 299F));
             this.tableLayoutPanel7.Controls.Add(this.label3, 0, 0);
             this.tableLayoutPanel7.Controls.Add(this.label1, 2, 0);
             this.tableLayoutPanel7.Controls.Add(this.label2, 1, 0);
@@ -301,7 +301,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(432, 0);
+            this.label1.Location = new System.Drawing.Point(431, 0);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(147, 30);
@@ -312,7 +312,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
-            this.label2.Location = new System.Drawing.Point(225, 0);
+            this.label2.Location = new System.Drawing.Point(224, 0);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(180, 30);
@@ -329,7 +329,7 @@
             this.txtbuscar.MaxLength = 255;
             this.txtbuscar.Name = "txtbuscar";
             this.txtbuscar.ShortcutsEnabled = false;
-            this.txtbuscar.Size = new System.Drawing.Size(217, 35);
+            this.txtbuscar.Size = new System.Drawing.Size(216, 35);
             this.txtbuscar.TabIndex = 2;
             this.txtbuscar.TextChanged += new System.EventHandler(this.txtbuscar_TextChanged);
             this.txtbuscar.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtbuscar_KeyDown);
@@ -342,7 +342,7 @@
             this.boxcategoria.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.boxcategoria.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
             this.boxcategoria.FormattingEnabled = true;
-            this.boxcategoria.Location = new System.Drawing.Point(226, 35);
+            this.boxcategoria.Location = new System.Drawing.Point(225, 35);
             this.boxcategoria.Name = "boxcategoria";
             this.boxcategoria.Size = new System.Drawing.Size(201, 38);
             this.boxcategoria.TabIndex = 3;
@@ -356,9 +356,9 @@
             this.boxmedida.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.boxmedida.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
             this.boxmedida.FormattingEnabled = true;
-            this.boxmedida.Location = new System.Drawing.Point(433, 35);
+            this.boxmedida.Location = new System.Drawing.Point(432, 35);
             this.boxmedida.Name = "boxmedida";
-            this.boxmedida.Size = new System.Drawing.Size(293, 38);
+            this.boxmedida.Size = new System.Drawing.Size(294, 38);
             this.boxmedida.TabIndex = 4;
             this.boxmedida.SelectedIndexChanged += new System.EventHandler(this.boxmedida_SelectedIndexChanged);
             // 
@@ -367,12 +367,13 @@
             this.BaltaProducto.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.BaltaProducto.Font = new System.Drawing.Font("Segoe UI Semibold", 13F, System.Drawing.FontStyle.Bold);
-            this.BaltaProducto.Location = new System.Drawing.Point(901, 3);
+            this.BaltaProducto.Location = new System.Drawing.Point(736, 3);
             this.BaltaProducto.Name = "BaltaProducto";
-            this.BaltaProducto.Size = new System.Drawing.Size(161, 75);
+            this.BaltaProducto.Size = new System.Drawing.Size(159, 75);
             this.BaltaProducto.TabIndex = 9;
             this.BaltaProducto.Text = "ALTA DE PRODUCTO (F5)";
             this.BaltaProducto.UseVisualStyleBackColor = true;
+            this.BaltaProducto.Visible = false;
             this.BaltaProducto.Click += new System.EventHandler(this.BaltaProducto_Click);
             // 
             // Bmodificar
