@@ -22,7 +22,7 @@ namespace InventarioCasaCeja
         {
              // 1. Tablas de PreLoadedCatalog.db correspondiente a productos, categorias y medidas
             { "productos", "CREATE TABLE 'productos' ( 'id' INTEGER NOT NULL, 'codigo' TEXT, 'nombre' TEXT, 'presentacion' TEXT, 'iva' REAL, 'menudeo' REAL, 'mayoreo' REAL, 'cantidad_mayoreo' INTEGER, 'especial' REAL, 'vendedor' REAL, 'imagen' TEXT, 'activo' INTEGER, 'created_at' TEXT, 'updated_at' TEXT, 'medida_id' INTEGER, 'categoria_id' INTEGER, FOREIGN KEY('categoria_id') REFERENCES 'categorias'('id'), PRIMARY KEY('id'), FOREIGN KEY('medida_id') REFERENCES 'medidas'('id'))" },
-            { "categorias", "CREATE TABLE 'categorias' ( 'id' INTEGER NOT NULL, 'nombre' TEXT, 'activo' INTEGER, 'created_at' TEXT, 'updated_at' TEXT, PRIMARY KEY('id'))" },
+            { "categorias", "CREATE TABLE 'categorias' ( 'id' INTEGER NOT NULL, 'nombre' TEXT, 'activo' INTEGER, 'isdescuento' INTEGER, 'descuento' REAL, 'created_at' TEXT, 'updated_at' TEXT, PRIMARY KEY('id'))" },
             { "medidas", "CREATE TABLE 'medidas' ( 'id' INTEGER NOT NULL, 'nombre' TEXT, 'activo' INTEGER, 'created_at' TEXT, 'updated_at' TEXT, PRIMARY KEY('id'))" },
             
             // 2. Tablas básicas sin dependencias
