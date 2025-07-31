@@ -6,7 +6,7 @@ namespace InventarioCasaCeja
 {
     public partial class Visor : Form
     {
-        bool active;
+        public bool active; // ★ Hacer público para debug
         WebDataManager webDM;
         int type;
 
@@ -15,7 +15,8 @@ namespace InventarioCasaCeja
             InitializeComponent();
             this.webDM = webDataManager;
             this.type = Type;
-            active = false;
+            active = false; // Se activará en Load
+
             switch (type)
             {
                 case 0:
@@ -56,17 +57,93 @@ namespace InventarioCasaCeja
                     break;
             }
         }
+
+        // ★ MÉTODO setData CORREGIDO (como se mostró arriba)
+        // ★ MÉTODO setData CORREGIDO en Visor.cs
         public void setData(DataTable Data)
         {
-            if (active)
+            try
             {
-                tabla.Invoke(new Action(() => { tabla.DataSource = Data; tabla.Refresh(); }));
-            }
-            else
-            {
-                tabla.DataSource = Data;
-            }
+                if (Data == null)
+                {
+                    Console.WriteLine("★ Warning: DataTable es null en setData");
+                    return;
+                }
 
+                Console.WriteLine($"★ setData llamado con {Data.Rows.Count} filas para tipo {type}");
+
+                if (this.InvokeRequired)
+                {
+                    Console.WriteLine("★ Usando Invoke para actualizar tabla desde hilo background");
+
+                    if (this.IsHandleCreated && !this.IsDisposed)
+                    {
+                        this.Invoke(new Action(() => {
+                            ActualizarTabla(Data);
+                        }));
+                    }
+                    else
+                    {
+                        this.BeginInvoke(new Action(() => {
+                            if (!this.IsDisposed && this.IsHandleCreated)
+                            {
+                                ActualizarTabla(Data);
+                            }
+                        }));
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("★ Actualizando tabla directamente (ya en hilo UI)");
+                    ActualizarTabla(Data);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"★ Error en setData: {ex.Message}");
+                Console.WriteLine($"★ StackTrace: {ex.StackTrace}");
+            }
+        }
+
+        // ★ MÉTODO AUXILIAR CORREGIDO
+        private void ActualizarTabla(DataTable data)
+        {
+            try
+            {
+                if (this.IsDisposed || data == null)
+                {
+                    Console.WriteLine("★ Control disposed o data null, saltando actualización");
+                    return;
+                }
+
+                // ★ CAMBIO PRINCIPAL: Actualizar SIEMPRE, no depender de 'active'
+                Console.WriteLine($"★ Actualizando DataSource con {data.Rows.Count} filas");
+                tabla.DataSource = data;
+                tabla.Refresh();
+                Console.WriteLine("★ Tabla actualizada correctamente");
+
+                // ★ OPCIONAL: Solo logging si no está activo
+                if (!active)
+                {
+                    Console.WriteLine("★ NOTA: Visor no estaba activo pero se actualizó exitosamente");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"★ Error en ActualizarTabla: {ex.Message}");
+            }
+        }
+
+        private void Visor_Load(object sender, EventArgs e)
+        {
+            active = true; // ★ ACTIVAR el visor cuando se carga
+            Console.WriteLine($"★ Visor cargado, tipo: {type}, activo: {active}");
+        }
+
+        private void Visor_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            active = false;
+            Console.WriteLine($"★ Visor cerrado, tipo: {type}, activo: {active}");
         }
         public void loadData()
         {
@@ -152,12 +229,7 @@ namespace InventarioCasaCeja
         public void setConfig(string Title)
         {
             this.Text = Title;
-        }
-
-        private void Visor_Load(object sender, EventArgs e)
-        {
-            active = true;
-        }
+        }       
 
         private void salirToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -192,11 +264,7 @@ namespace InventarioCasaCeja
             }
 
         }
-
-        private void Visor_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            active = false;
-        }
+        
         private void modify()
         {
             int rowIndex = tabla.SelectedCells[0].RowIndex;

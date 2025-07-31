@@ -812,12 +812,16 @@ namespace InventarioCasaCeja
         public DataTable getCategorias()
         {
             DataTable dt = new DataTable();
-            string query = "SELECT id AS ID, nombre AS CATEGORIA FROM categorias WHERE activo = 1";
-            SQLiteCommand command = new SQLiteCommand(query, connection);
+            SQLiteCommand command = connection.CreateCommand();
+            command.CommandText = "SELECT * FROM categorias WHERE activo = 1 ORDER BY nombre";
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dt);
+
+            Console.WriteLine($"★ getCategorias devuelve {dt.Rows.Count} registros");
             return dt;
         }
+
+        
         public DataTable getCategorias(string arg)
         {
             DataTable dt = new DataTable();
@@ -876,14 +880,16 @@ namespace InventarioCasaCeja
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dt);
             return dt;
-        }
+        }     
         public DataTable getMedidas()
         {
             DataTable dt = new DataTable();
             SQLiteCommand command = connection.CreateCommand();
-            command.CommandText = "SELECT id AS ID, nombre AS MEDIDA FROM medidas WHERE activo=1";
+            command.CommandText = "SELECT * FROM medidas WHERE activo = 1 ORDER BY nombre";
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dt);
+
+            Console.WriteLine($"★ getMedidas devuelve {dt.Rows.Count} registros");
             return dt;
         }
         public DataTable getMedidas(string arg)
@@ -990,6 +996,7 @@ namespace InventarioCasaCeja
 
             return dtEntradas;
         }
+
         public DataTable getEntradasPorSucursal(int sucursalId)
         {
             DataTable dtEntradas = new DataTable();
@@ -1080,26 +1087,26 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
 
         public DataTable getProductoEntradaInfo(int entradaId)
         {
+            Console.WriteLine($"★ Buscando productos para entrada ID: {entradaId}");
+
             DataTable dtProductoEntrada = new DataTable();
             using (SQLiteCommand command = connection.CreateCommand())
             {
                 command.CommandText = @"
-                SELECT 
-                    producto_entrada.entrada_id AS 'ENTRADA ID',
-                    producto_entrada.producto_id AS 'PRODUCTO ID',
-                    producto_entrada.cantidad AS 'CANTIDAD',
-                    productos.codigo AS 'CÓDIGO',
-                    productos.nombre AS 'NOMBRE',
-                    categorias.nombre AS 'CATEGORÍA',
-                    productos.presentacion AS 'PRESENTACIÓN'
-                FROM 
-                    producto_entrada
-                JOIN 
-                    productos ON producto_entrada.producto_id = productos.id
-                JOIN 
-                    categorias ON productos.categoria_id = categorias.id
-                WHERE 
-                    producto_entrada.entrada_id = @entradaId";
+            SELECT 
+                pe.entrada_id AS 'ENTRADA ID',
+                pe.producto_id AS 'PRODUCTO ID',
+                pe.cantidad AS 'CANTIDAD',
+                p.codigo AS 'CÓDIGO',
+                p.nombre AS 'NOMBRE',
+                c.nombre AS 'CATEGORÍA',
+                p.presentacion AS 'PRESENTACIÓN',
+                pe.costo AS 'COSTO'
+            FROM producto_entrada pe
+            LEFT JOIN productos p ON pe.producto_id = p.id
+            LEFT JOIN categorias c ON p.categoria_id = c.id
+            WHERE pe.entrada_id = @entradaId
+            ORDER BY pe.id";
 
                 command.Parameters.AddWithValue("@entradaId", entradaId);
 
@@ -1108,85 +1115,184 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
                     adapter.Fill(dtProductoEntrada);
                 }
             }
-            return dtProductoEntrada;
-        }
-        public DataTable getProductosFromSalida(int salidaId)
-        {          
-            DataTable dtProductos = new DataTable();
-            dtProductos.Columns.Add("ID PRODUCTO", typeof(int));
-            dtProductos.Columns.Add("NOMBRE", typeof(string));
-            dtProductos.Columns.Add("CATEGORÍA", typeof(string));
-            dtProductos.Columns.Add("PRECIO", typeof(decimal));
-            dtProductos.Columns.Add("CANTIDAD", typeof(int));
 
-            using (SQLiteCommand command = connection.CreateCommand())
+            Console.WriteLine($"★ Productos encontrados para entrada {entradaId}: {dtProductoEntrada.Rows.Count}");
+
+            // Diagnóstico detallado
+            if (dtProductoEntrada.Rows.Count > 0)
             {
-                command.CommandText = "SELECT productos FROM salidas WHERE id = @salidaId";
-                //command.CommandText = "SELECT productos FROM salidas_temporal WHERE id = @salidaId";
-                command.Parameters.AddWithValue("@salidaId", salidaId);
-
-                using (SQLiteDataReader reader = command.ExecuteReader())
+                Console.WriteLine($"★ Detalles de productos encontrados:");
+                foreach (DataRow row in dtProductoEntrada.Rows)
                 {
-                    if (reader.Read())
+                    Console.WriteLine($"   - ProductoID: {row["PRODUCTO ID"]}, Nombre: {row["NOMBRE"]}, Cantidad: {row["CANTIDAD"]}, Costo: {row["COSTO"]}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"★ ❌ No se encontraron productos para entrada {entradaId}");
+
+                // Verificar si existen registros en producto_entrada
+                using (SQLiteCommand countCommand = connection.CreateCommand())
+                {
+                    countCommand.CommandText = "SELECT COUNT(*) FROM producto_entrada";
+                    var totalCount = countCommand.ExecuteScalar();
+                    Console.WriteLine($"★ Total registros en producto_entrada: {totalCount}");
+
+                    if (Convert.ToInt32(totalCount) > 0)
                     {
-                        string productosJson = reader.GetString(0);
-
-                        var productos = JsonConvert.DeserializeObject<List<dynamic>>(productosJson);
-
-                        foreach (var producto in productos)
+                        countCommand.CommandText = "SELECT DISTINCT entrada_id FROM producto_entrada ORDER BY entrada_id";
+                        using (SQLiteDataReader reader = countCommand.ExecuteReader())
                         {
-                            string nombreProducto = "";
-                            string categoriaProducto = "";
-
-                            using (SQLiteCommand productCommand = connection.CreateCommand())
+                            Console.WriteLine($"★ IDs de entrada disponibles:");
+                            while (reader.Read())
                             {
-                                productCommand.CommandText = @"
-                        SELECT productos.nombre, categorias.nombre 
-                        FROM productos 
-                        JOIN categorias ON productos.categoria_id = categorias.id 
-                        WHERE productos.id = @productoId";
-                                productCommand.Parameters.AddWithValue("@productoId", (int)producto.idproducto);
-
-                                using (SQLiteDataReader productReader = productCommand.ExecuteReader())
-                                {
-                                    if (productReader.Read())
-                                    {
-                                        nombreProducto = productReader.GetString(0);
-                                        categoriaProducto = productReader.GetString(1);
-                                    }
-                                }
+                                Console.WriteLine($"   - Entrada ID: {reader.GetInt32(0)}");
                             }
-                            DataRow row = dtProductos.NewRow();
-                            row["ID PRODUCTO"] = (int)producto.idproducto;
-                            row["NOMBRE"] = nombreProducto;
-                            row["CATEGORÍA"] = categoriaProducto;
-                            row["PRECIO"] = (decimal)producto.precio;
-                            row["CANTIDAD"] = (int)producto.cantidad;
-                            dtProductos.Rows.Add(row);
                         }
                     }
                 }
             }
 
+            return dtProductoEntrada;
+        }
+        public DataTable getProductosFromSalida(int salidaId)
+        {
+            DataTable dtProductos = new DataTable();
+
+            // Definir columnas
+            dtProductos.Columns.Add("ID PRODUCTO", typeof(int));
+            dtProductos.Columns.Add("NOMBRE", typeof(string));
+            dtProductos.Columns.Add("CATEGORÍA", typeof(string));
+            dtProductos.Columns.Add("PRECIO", typeof(double));
+            dtProductos.Columns.Add("CANTIDAD", typeof(int));
+
+            try
+            {
+                using (SQLiteCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        SELECT productos 
+                        FROM salidas 
+                        WHERE id = @salidaId";
+
+                    command.Parameters.AddWithValue("@salidaId", salidaId);
+
+                    using (SQLiteDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            int productosIdx = reader.GetOrdinal("productos");
+                            string productosJson = reader.IsDBNull(productosIdx) ? "" : reader.GetString(productosIdx);
+                            Console.WriteLine($"★ JSON de productos para salida {salidaId}: {productosJson}");
+
+                            if (!string.IsNullOrEmpty(productosJson))
+                            {
+                                try
+                                {
+                                    // Deserializar JSON
+                                    var productos = JsonConvert.DeserializeObject<List<dynamic>>(productosJson);
+
+                                    foreach (var producto in productos)
+                                    {
+                                        try
+                                        {
+                                            int idProducto = Convert.ToInt32(producto.idproducto);
+                                            double precio = Convert.ToDouble(producto.precio);
+                                            int cantidad = Convert.ToInt32(producto.cantidad);
+
+                                            // Obtener información del producto
+                                            string nombre = "";
+                                            string categoria = "";
+
+                                            using (SQLiteCommand prodCommand = connection.CreateCommand())
+                                            {
+                                                prodCommand.CommandText = @"
+                                                    SELECT p.nombre, c.nombre as categoria
+                                                    FROM productos p
+                                                    LEFT JOIN categorias c ON p.categoria_id = c.id
+                                                    WHERE p.id = @idProducto";
+
+                                                prodCommand.Parameters.AddWithValue("@idProducto", idProducto);
+
+                                                using (SQLiteDataReader prodReader = prodCommand.ExecuteReader())
+                                                {
+                                                    if (prodReader.Read())
+                                                    {
+                                                        int nombreIdx = prodReader.GetOrdinal("nombre");
+                                                        int categoriaIdx = prodReader.GetOrdinal("categoria");
+
+                                                        nombre = prodReader.IsDBNull(nombreIdx) ? "Producto no encontrado" : prodReader.GetString(nombreIdx);
+                                                        categoria = prodReader.IsDBNull(categoriaIdx) ? "Sin categoría" : prodReader.GetString(categoriaIdx);
+                                                    }
+                                                    else
+                                                    {
+                                                        nombre = $"Producto ID {idProducto} (No encontrado)";
+                                                        categoria = "Sin categoría";
+                                                    }
+                                                }
+                                            }
+
+                                            // Agregar fila a la tabla
+                                            DataRow row = dtProductos.NewRow();
+                                            row["ID PRODUCTO"] = idProducto;
+                                            row["NOMBRE"] = nombre;
+                                            row["CATEGORÍA"] = categoria;
+                                            row["PRECIO"] = precio;
+                                            row["CANTIDAD"] = cantidad;
+                                            dtProductos.Rows.Add(row);
+
+                                            Console.WriteLine($"★ Producto procesado: ID={idProducto}, Nombre={nombre}, Precio={precio}, Cantidad={cantidad}");
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Console.WriteLine($"★ Error procesando producto individual: {ex.Message}");
+                                        }
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"★ Error deserializando JSON de productos: {ex.Message}");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"★ Error en getProductosFromSalida: {ex.Message}");
+            }
+
+            Console.WriteLine($"★ Productos encontrados para salida {salidaId}: {dtProductos.Rows.Count}");
             return dtProductos;
         }
 
 
-        public void saveEntradaProductos(List<EntradaProducto> entradaProductos)
+        public void saveProductosEntrada(List<ProductoEntrada> productos)
         {
-            foreach (EntradaProducto entradaProducto in entradaProductos)
+            foreach (ProductoEntrada producto in productos)
             {
                 SQLiteCommand command = connection.CreateCommand();
-                command.CommandText = "INSERT OR REPLACE INTO producto_entrada (entrada_id, producto_id, codigo, cantidad, costo, estado, detalles) " +
-                                      "VALUES(@setEntradaId, @setProductoId, 1, @setCantidad, @setCosto, 1, 'Enviado')";
-                command.Parameters.AddWithValue("setEntradaId", entradaProducto.entrada_id);
-                command.Parameters.AddWithValue("setProductoId", entradaProducto.producto_id);
-                command.Parameters.AddWithValue("setCantidad", entradaProducto.cantidad);
-                command.Parameters.AddWithValue("setCosto", entradaProducto.costo);
+                command.CommandText = @"INSERT OR REPLACE INTO producto_entrada 
+            (id, entrada_id, producto_id, codigo, cantidad, costo, estado, detalles, created_at, updated_at) 
+            VALUES(@setId, @setEntradaId, @setProductoId, @setCodigo, @setCantidad, @setCosto, @setEstado, @setDetalles, @setCreatedAt, @setUpdatedAt)";
+
+                command.Parameters.AddWithValue("setId", producto.id);
+                command.Parameters.AddWithValue("setEntradaId", producto.entrada_id);
+                command.Parameters.AddWithValue("setProductoId", producto.producto_id);
+                command.Parameters.AddWithValue("setCodigo", producto.codigo ?? "");
+                command.Parameters.AddWithValue("setCantidad", producto.cantidad);
+                command.Parameters.AddWithValue("setCosto", producto.costo);
+                command.Parameters.AddWithValue("setEstado", producto.estado ?? 1);
+                command.Parameters.AddWithValue("setDetalles", producto.detalles ?? "");
+                command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
                 command.ExecuteNonQuery();
+
+                Console.WriteLine($"★ Guardado producto entrada: ID={producto.id}, EntradaID={producto.entrada_id}, ProductoID={producto.producto_id}, Cantidad={producto.cantidad}");
             }
         }
-
 
         public void saveEntradas(List<Entrada> entradas)
         {
@@ -1230,7 +1336,34 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
                 command.ExecuteNonQuery();
             }
         }
+        public void saveEntradaProductos(List<EntradaProducto> entradaProductos)
+        {
+            Console.WriteLine($"★ Guardando {entradaProductos.Count} productos de entrada...");
 
+            foreach (EntradaProducto entradaProducto in entradaProductos)
+            {
+                SQLiteCommand command = connection.CreateCommand();
+                command.CommandText = @"INSERT OR REPLACE INTO producto_entrada 
+            (entrada_id, producto_id, codigo, cantidad, costo, estado, detalles, created_at, updated_at) 
+            VALUES(@setEntradaId, @setProductoId, @setCodigo, @setCantidad, @setCosto, @setEstado, @setDetalles, @setCreatedAt, @setUpdatedAt)";
+
+                command.Parameters.AddWithValue("setEntradaId", entradaProducto.entrada_id);
+                command.Parameters.AddWithValue("setProductoId", entradaProducto.producto_id);
+                command.Parameters.AddWithValue("setCodigo", 1); // Valor por defecto
+                command.Parameters.AddWithValue("setCantidad", entradaProducto.cantidad);
+                command.Parameters.AddWithValue("setCosto", entradaProducto.costo);
+                command.Parameters.AddWithValue("setEstado", 1); // Valor por defecto
+                command.Parameters.AddWithValue("setDetalles", "Enviado"); // Valor por defecto
+                command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
+                command.ExecuteNonQuery();
+
+                Console.WriteLine($"★ Guardado producto entrada: EntradaID={entradaProducto.entrada_id}, ProductoID={entradaProducto.producto_id}, Cantidad={entradaProducto.cantidad}, Costo={entradaProducto.costo}");
+            }
+
+            Console.WriteLine($"★ Finalizado guardado de productos de entrada");
+        }
         public void saveSalidas(List<Salida> salidas)
         {
             foreach (Salida salida in salidas)

@@ -9,9 +9,17 @@ namespace InventarioCasaCeja
     public class ProductoEntrada
     {
         public int id { get; set; }
+        public int entrada_id { get; set; }
+        public int producto_id { get; set; }
         public string codigo { get; set; }
-        public string nombre { get; set; }
         public int cantidad { get; set; }
         public double costo { get; set; }
+        public int? estado { get; set; }
+        public string detalles { get; set; }
+        public string created_at { get; set; }
+        public string updated_at { get; set; }
+
+        // Propiedades adicionales para la vista (si las usa)
+        public string nombre { get; set; }
     }
 }

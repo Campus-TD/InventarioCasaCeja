@@ -26,7 +26,7 @@ namespace InventarioCasaCeja
         string proveedores_lastupdate;
         string sucursales_lastupdate;
         string entradas_lastupdate;
-        string entrada_producto_lastupdate;
+        string entrada_producto_lastupdate = "";
         string salidas_lastupdate;
         string salidasGral_lastupdate;
 
@@ -58,6 +58,7 @@ namespace InventarioCasaCeja
             {
                 // Comportamiento normal para instalaciones sin precarga
                 Console.WriteLine("Obteniendo fecha de actualizacion para base de datos normal");
+                entrada_producto_lastupdate = localDM.getTableLastUpdate("producto_entrada");
                 productos_lastupdate = localDM.getTableLastUpdate("productos");
                 categorias_lastupdate = localDM.getTableLastUpdate("categorias");
                 medidas_lastupdate = localDM.getTableLastUpdate("medidas");
@@ -83,12 +84,11 @@ namespace InventarioCasaCeja
             proveedores_lastupdate = localDM.getTableLastUpdate("proveedores");
             sucursales_lastupdate = localDM.getTableLastUpdate("sucursales");
             entradas_lastupdate = localDM.getTableLastUpdate("entradas");
-            entrada_producto_lastupdate = localDM.getTableLastUpdate("entradas");
+
+            // ★ CORREGIR: Usar tabla correcta
+            entrada_producto_lastupdate = localDM.getTableLastUpdate("producto_entrada");
 
             salidasGral_lastupdate = localDM.getTableLastUpdate("salidas");
-
-
-            //salidas_lastupdate = localDM.getTableLastUpdate("salidas_temporal");
         }
         //public async Task<bool> PingServerAsync()
         //{
@@ -96,22 +96,24 @@ namespace InventarioCasaCeja
         //    PingReply result = await ping.SendPingAsync(url);
         //    return result.Status == IPStatus.Success;
         //}
+        // En InventarioCasaCeja/WebDataManager.cs
+        // AGREGAR logs adicionales en GetCategorias() y GetMedidas():
+
         public async Task<bool> GetCategorias()
         {
-            if (localDM.IsCatalogPreloaded)
-            {
-                // No descargar categorías si están precargadas
-                return true;
-            }
-
             string res = "";
             Dictionary<string, string> date = new Dictionary<string, string>();
             date["fecha_de_actualizacion"] = categorias_lastupdate;
 
             try
             {
+                Console.WriteLine($"★ GETCATEGORIAS - Fecha enviada: {categorias_lastupdate}");
+
                 HttpResponseMessage response = await client.PostAsJsonAsync(url + "api/categorias/sincronizar", date);
                 res = await response.Content.ReadAsStringAsync();
+
+                Console.WriteLine($"★ GETCATEGORIAS - Respuesta status: {response.StatusCode}");
+                Console.WriteLine($"★ GETCATEGORIAS - Respuesta (primeros 200 chars): {res.Substring(0, Math.Min(200, res.Length))}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -121,34 +123,55 @@ namespace InventarioCasaCeja
                         var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(result["data"].ToString());
                         var categorias = JsonConvert.DeserializeObject<List<Categoria>>(data["categorias"].ToString());
 
-                        localDM.saveCategorias(categorias);
+                        Console.WriteLine($"★ GETCATEGORIAS - Categorías recibidas: {categorias?.Count ?? 0}");
+
+                        if (categorias != null && categorias.Count > 0)
+                        {
+                            localDM.saveCategorias(categorias);
+                            Console.WriteLine($"★ GETCATEGORIAS - Categorías guardadas exitosamente");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"★ GETCATEGORIAS - ADVERTENCIA: No hay categorías para guardar!");
+                        }
+
                         categorias_lastupdate = localDM.getTableLastUpdate("categorias");
+                        Console.WriteLine($"★ GETCATEGORIAS - Nueva fecha actualización: {categorias_lastupdate}");
                         return true;
                     }
+                    else
+                    {
+                        Console.WriteLine($"★ GETCATEGORIAS - Error en respuesta: {result["status"]}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"★ GETCATEGORIAS - Error HTTP: {response.StatusCode}");
                 }
             }
             catch (Exception e)
             {
-                Debug.WriteLine($"Error sincronizando categorías: {e.Message}");
+                Console.WriteLine($"★ GETCATEGORIAS - Excepción: {e.Message}");
             }
             return false;
         }
+
+        // MISMO PATRÓN para GetMedidas():
         public async Task<bool> GetMedidas()
         {
-            if (localDM.IsCatalogPreloaded)
-            {
-                // No descargar medidas si están precargadas
-                return true;
-            }
-
             string res = "";
             Dictionary<string, string> date = new Dictionary<string, string>();
             date["fecha_de_actualizacion"] = medidas_lastupdate;
 
             try
             {
+                Console.WriteLine($"★ GETMEDIDAS - Fecha enviada: {medidas_lastupdate}");
+
                 HttpResponseMessage response = await client.PostAsJsonAsync(url + "api/medidas/sincronizar", date);
                 res = await response.Content.ReadAsStringAsync();
+
+                Console.WriteLine($"★ GETMEDIDAS - Respuesta status: {response.StatusCode}");
+                Console.WriteLine($"★ GETMEDIDAS - Respuesta (primeros 200 chars): {res.Substring(0, Math.Min(200, res.Length))}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -158,15 +181,35 @@ namespace InventarioCasaCeja
                         var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(result["data"].ToString());
                         var medidas = JsonConvert.DeserializeObject<List<Medida>>(data["medidas"].ToString());
 
-                        localDM.saveMedidas(medidas);
+                        Console.WriteLine($"★ GETMEDIDAS - Medidas recibidas: {medidas?.Count ?? 0}");
+
+                        if (medidas != null && medidas.Count > 0)
+                        {
+                            localDM.saveMedidas(medidas);
+                            Console.WriteLine($"★ GETMEDIDAS - Medidas guardadas exitosamente");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"★ GETMEDIDAS - ADVERTENCIA: No hay medidas para guardar!");
+                        }
+
                         medidas_lastupdate = localDM.getTableLastUpdate("medidas");
+                        Console.WriteLine($"★ GETMEDIDAS - Nueva fecha actualización: {medidas_lastupdate}");
                         return true;
                     }
+                    else
+                    {
+                        Console.WriteLine($"★ GETMEDIDAS - Error en respuesta: {result["status"]}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"★ GETMEDIDAS - Error HTTP: {response.StatusCode}");
                 }
             }
             catch (Exception e)
             {
-                Debug.WriteLine($"Error sincronizando medidas: {e.Message}");
+                Console.WriteLine($"★ GETMEDIDAS - Excepción: {e.Message}");
             }
             return false;
         }
@@ -220,174 +263,382 @@ namespace InventarioCasaCeja
         {
             string res = "";
             Dictionary<string, string> date = new Dictionary<string, string>();
+
+            // ★ SOLUCIÓN: Inicializar fecha si está vacía
+            if (string.IsNullOrEmpty(entrada_producto_lastupdate))
+            {
+                entrada_producto_lastupdate = "1900-01-01 00:00:00";
+                Console.WriteLine($"★ Inicializando entrada_producto_lastupdate por primera vez: {entrada_producto_lastupdate}");
+            }
+
             date["fecha_de_actualizacion"] = entrada_producto_lastupdate;
 
             try
             {
+                Console.WriteLine($"★ === DIAGNÓSTICO GetEntradaProducto ===");
+                Console.WriteLine($"★ Fecha última actualización: {entrada_producto_lastupdate}");
+
                 HttpResponseMessage response = await client.PostAsJsonAsync(url + "api/entrada_producto/sincronizar", date);
                 res = await response.Content.ReadAsStringAsync();
 
+                Console.WriteLine($"★ Status Code: {response.StatusCode}");
+                Console.WriteLine($"★ IsSuccessStatusCode: {response.IsSuccessStatusCode}");
+
                 if (response.IsSuccessStatusCode)
                 {
+                    Console.WriteLine($"★ Respuesta del servidor (primeros 500 chars): {res.Substring(0, Math.Min(500, res.Length))}");
+
                     var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
+                    Console.WriteLine($"★ Status en respuesta: {result["status"]}");
+
                     if (result["status"].ToString().Equals("success"))
                     {
-                        //Console.WriteLine("Respuesta JSON completa: " + result["data"].ToString());
-
                         var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(result["data"].ToString());
+                        Console.WriteLine($"★ Claves en data: {string.Join(", ", data.Keys)}");
 
                         try
                         {
                             if (data.ContainsKey("Entrada"))
                             {
                                 var entradaProductos = JsonConvert.DeserializeObject<List<EntradaProducto>>(data["Entrada"].ToString());
-                                //Console.WriteLine("Datos recibidos:");
-                                /*foreach (var entradaProducto in entradaProductos)
-                                {
-                                    Console.WriteLine($"Entrada ID: {entradaProducto.entrada_id}, Producto ID: {entradaProducto.producto_id}, Cantidad: {entradaProducto.cantidad}, Costo: {entradaProducto.costo}");
-                                }*/
+                                Console.WriteLine($"★ Total productos de entrada del servidor: {entradaProductos.Count}");
 
+                                if (entradaProductos.Count > 0)
+                                {
+                                    Console.WriteLine($"★ Primeros 3 productos de entrada:");
+                                    for (int i = 0; i < Math.Min(3, entradaProductos.Count); i++)
+                                    {
+                                        var prod = entradaProductos[i];
+                                        Console.WriteLine($"   - Producto {i + 1}: EntradaID={prod.entrada_id}, ProductoID={prod.producto_id}, Cantidad={prod.cantidad}, Costo={prod.costo}");
+                                    }
+                                }
+
+                                Console.WriteLine($"★ Intentando guardar {entradaProductos.Count} productos de entrada...");
                                 localDM.saveEntradaProductos(entradaProductos);
-                                entrada_producto_lastupdate = localDM.getTableLastUpdate("entradas");
+
+                                // ★ CORREGIR: Usar tabla correcta para fecha de actualización
+                                entrada_producto_lastupdate = localDM.getTableLastUpdate("producto_entrada");
+                                Console.WriteLine($"★ Nueva fecha de actualización: {entrada_producto_lastupdate}");
+
                                 return true;
                             }
                             else
                             {
-                                //Console.WriteLine("Clave 'entradaProducto' no encontrada en el JSON.");
+                                Console.WriteLine($"★ ❌ Clave 'Entrada' no encontrada en el JSON");
+                                Console.WriteLine($"★ Claves disponibles: {string.Join(", ", data.Keys)}");
                             }
                         }
-                        catch (Exception e)
+                        catch (Exception ex)
                         {
-                            //Console.WriteLine("Error al deserializar o guardar los datos de EntradaProducto:");
-                            //Console.WriteLine(e.Message);
-                            //Console.WriteLine(e.StackTrace);
+                            Console.WriteLine($"★ ❌ Error procesando datos de entrada: {ex.Message}");
                         }
                     }
                     else
                     {
-                        //Console.WriteLine("Error en la respuesta del servidor:");
-                        //Console.WriteLine(result["status"].ToString());
+                        Console.WriteLine($"★ ❌ Status no exitoso: {result["status"]}");
                     }
                 }
                 else
                 {
-                    //Console.WriteLine("Error en la conexión:");
-                    //Console.WriteLine(response.StatusCode);
-                    //Console.WriteLine(res);
+                    Console.WriteLine($"★ ❌ Error HTTP: {response.StatusCode}");
+                    Console.WriteLine($"★ Contenido de error: {res}");
                 }
             }
             catch (Exception e)
             {
-                //Console.WriteLine("Excepción durante la solicitud HTTP:");
-                //Console.WriteLine(e.Message);
-                //Console.WriteLine(e.StackTrace);
+                Console.WriteLine($"★ ❌ Excepción en GetEntradaProducto: {e.Message}");
+                Console.WriteLine($"★ StackTrace: {e.StackTrace}");
             }
+
+            Console.WriteLine($"★ === FIN DIAGNÓSTICO GetEntradaProducto ===");
             return false;
         }
+
         public async Task<bool> GetEntradas(int sucursalId)
         {
             string res = "";
             Dictionary<string, string> date = new Dictionary<string, string>();
-            
+
+            // ★ SOLUCIÓN: Asegurar que la fecha no esté vacía
+            if (string.IsNullOrEmpty(entradas_lastupdate))
+            {
+                entradas_lastupdate = "1900-01-01 00:00:00";  // Fecha muy antigua para obtener todos los registros
+                Console.WriteLine($"★ Inicializando entradas_lastupdate por primera vez: {entradas_lastupdate}");
+            }
+
             date["fecha_de_actualizacion"] = entradas_lastupdate;
 
             try
             {
+                Console.WriteLine($"★ === DIAGNÓSTICO GetEntradas ===");
+                Console.WriteLine($"★ Sucursal solicitada: {sucursalId}");
+                Console.WriteLine($"★ Fecha última actualización: {entradas_lastupdate}");
+
                 HttpResponseMessage response = await client.PostAsJsonAsync(url + "api/entradas/sincronizar", date);
                 res = await response.Content.ReadAsStringAsync();
 
+                Console.WriteLine($"★ Status Code: {response.StatusCode}");
+                Console.WriteLine($"★ IsSuccessStatusCode: {response.IsSuccessStatusCode}");
+
                 if (response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine("Respuesta del servidor: " + res);
+                    Console.WriteLine($"★ Respuesta del servidor (primeros 500 chars): {res.Substring(0, Math.Min(500, res.Length))}");
+
                     var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
+                    Console.WriteLine($"★ Status en respuesta: {result["status"]}");
 
                     if (result["status"].ToString().Equals("success"))
                     {
                         var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(result["data"].ToString());
-                        var entradas = JsonConvert.DeserializeObject<List<Entrada>>(data["Entrada"].ToString());
-                        Console.WriteLine($"Valor de sucursalId ANTES del filtro: {sucursalId}"); // 👈  ID sucursal antes de filtrar
-                        // 👇 Filtrar entradas por sucursal_id antes de guardar
-                        var entradasFiltradas = entradas.Where(e => e.sucursal_id == sucursalId).ToList();
 
-                        // Guardar solo las entradas filtradas
-                        localDM.saveEntradas(entradasFiltradas);
+                        // ★ VERIFICAR SI EXISTE LA CLAVE "Entrada"
+                        Console.WriteLine($"★ Claves en data: {string.Join(", ", data.Keys)}");
 
-                        entradas_lastupdate = localDM.getTableLastUpdate("entradas");
+                        if (data.ContainsKey("Entrada"))
+                        {
+                            var entradas = JsonConvert.DeserializeObject<List<Entrada>>(data["Entrada"].ToString());
 
-                        return true;
+                            Console.WriteLine($"★ Total entradas del servidor: {entradas.Count}");
+
+                            if (entradas.Count > 0)
+                            {
+                                Console.WriteLine($"★ Primeras 5 entradas recibidas:");
+                                for (int i = 0; i < Math.Min(5, entradas.Count); i++)
+                                {
+                                    var entrada = entradas[i];
+                                    Console.WriteLine($"   - Entrada {i + 1}: ID={entrada.id}, Sucursal={entrada.sucursal_id}, Folio={entrada.folio_factura}");
+                                }
+
+                                // ★ MOSTRAR TODAS LAS SUCURSALES PRESENTES
+                                var sucursalesPresentes = entradas.GroupBy(e => e.sucursal_id)
+                                    .Select(g => new { SucursalId = g.Key, Cantidad = g.Count() })
+                                    .OrderBy(x => x.SucursalId);
+
+                                Console.WriteLine($"★ Sucursales presentes en entradas:");
+                                foreach (var grupo in sucursalesPresentes)
+                                {
+                                    Console.WriteLine($"   - Sucursal {grupo.SucursalId}: {grupo.Cantidad} entradas");
+                                }
+                            }
+
+                            Console.WriteLine($"★ Filtrando para sucursal: {sucursalId}");
+
+                            // ★ FILTRAR Y MOSTRAR PROCESO DETALLADO
+                            var entradasFiltradas = entradas.Where(e => e.sucursal_id == sucursalId).ToList();
+                            Console.WriteLine($"★ Entradas filtradas: {entradasFiltradas.Count}");
+
+                            if (entradasFiltradas.Count > 0)
+                            {
+                                Console.WriteLine($"★ Entradas que se van a guardar:");
+                                foreach (var entrada in entradasFiltradas.Take(3))
+                                {
+                                    Console.WriteLine($"   - ID: {entrada.id}, Folio: {entrada.folio_factura}, Sucursal: {entrada.sucursal_id}");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine($"★ ❌ NO SE ENCONTRARON ENTRADAS para sucursal {sucursalId}");
+
+                                // Verificar si hay entradas con sucursal 3 exactamente
+                                var entradasSucursal3 = entradas.Where(e => e.sucursal_id == 3).ToList();
+                                Console.WriteLine($"★ Entradas específicamente para sucursal 3: {entradasSucursal3.Count}");
+
+                                if (entradasSucursal3.Count > 0)
+                                {
+                                    Console.WriteLine($"★ Primera entrada de sucursal 3:");
+                                    var primera = entradasSucursal3[0];
+                                    Console.WriteLine($"   - ID: {primera.id}");
+                                    Console.WriteLine($"   - sucursal_id: {primera.sucursal_id} (tipo: {primera.sucursal_id.GetType()})");
+                                    Console.WriteLine($"   - sucursalId parámetro: {sucursalId} (tipo: {sucursalId.GetType()})");
+                                    Console.WriteLine($"   - Son iguales: {primera.sucursal_id == sucursalId}");
+                                }
+                            }
+
+                            // ★ INTENTAR GUARDAR Y VERIFICAR
+                            Console.WriteLine($"★ Intentando guardar {entradasFiltradas.Count} entradas...");
+                            localDM.saveEntradas(entradasFiltradas);
+
+                            // ★ VERIFICAR QUE SE GUARDARON
+                            var countDespues = localDM.getEntradasCountPorSucursal(sucursalId);
+                            Console.WriteLine($"★ Entradas en BD local después de guardar: {countDespues}");
+
+                            entradas_lastupdate = localDM.getTableLastUpdate("entradas");
+                            Console.WriteLine($"★ Nueva fecha de actualización: {entradas_lastupdate}");
+
+                            return true;
+                        }
+                        else
+                        {
+                            Console.WriteLine($"★ ❌ No se encontró clave 'Entrada' en la respuesta");
+                            Console.WriteLine($"★ Contenido de data: {data}");
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("Error: " + result["message"].ToString());
+                        Console.WriteLine($"★ ❌ Status no exitoso: {result["status"]}");
+                        if (result.ContainsKey("message"))
+                            Console.WriteLine($"★ Mensaje: {result["message"]}");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Error en la conexión: " + response.StatusCode);
+                    Console.WriteLine($"★ ❌ Error HTTP: {response.StatusCode}");
+                    Console.WriteLine($"★ Contenido de error: {res}");
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("Excepción: " + e.Message);
+                Console.WriteLine($"★ ❌ Excepción en GetEntradas:");
+                Console.WriteLine($"   Mensaje: {e.Message}");
+                Console.WriteLine($"   StackTrace: {e.StackTrace}");
             }
+
+            Console.WriteLine($"★ === FIN DIAGNÓSTICO GetEntradas ===");
             return false;
         }
+
+        // ====================================================================
+        // MODIFICAR WebDataManager.cs - GetSalidasGral
+        // ====================================================================
 
         public async Task<bool> GetSalidasGral(int sucursalId)
         {
             string res = "";
             Dictionary<string, string> date = new Dictionary<string, string>();
+
+            // ★ SOLUCIÓN: Asegurar que la fecha no esté vacía
+            if (string.IsNullOrEmpty(salidasGral_lastupdate))
+            {
+                salidasGral_lastupdate = "1900-01-01 00:00:00";  // Fecha muy antigua para obtener todos los registros
+                Console.WriteLine($"★ Inicializando salidasGral_lastupdate por primera vez: {salidasGral_lastupdate}");
+            }
+
             date["fecha_de_actualizacion"] = salidasGral_lastupdate;
 
             try
             {
+                Console.WriteLine($"★ === DIAGNÓSTICO GetSalidasGral ===");
+                Console.WriteLine($"★ Sucursal solicitada: {sucursalId}");
+                Console.WriteLine($"★ Fecha última actualización: {salidasGral_lastupdate}");
+
                 HttpResponseMessage response = await client.PostAsJsonAsync(url + "api/salidas/sincronizar", date);
                 res = await response.Content.ReadAsStringAsync();
 
+                Console.WriteLine($"★ Status Code: {response.StatusCode}");
+                Console.WriteLine($"★ IsSuccessStatusCode: {response.IsSuccessStatusCode}");
+
                 if (response.IsSuccessStatusCode)
                 {
+                    Console.WriteLine($"★ Respuesta del servidor (primeros 500 chars): {res.Substring(0, Math.Min(500, res.Length))}");
+
                     var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
+                    Console.WriteLine($"★ Status en respuesta: {result["status"]}");
+
                     if (result["status"].ToString().Equals("success"))
                     {
                         var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(result["data"].ToString());
-                        var salidas = JsonConvert.DeserializeObject<List<Salida>>(data["Salida"].ToString());
 
-                        var salidasFiltradas = salidas.Where(e => e.id_sucursal_origen == sucursalId).ToList();
-                        localDM.saveSalidasGral(salidasFiltradas);
-                        salidasGral_lastupdate = localDM.getTableLastUpdate("salidas");
-                        return true;
+                        // ★ VERIFICAR SI EXISTE LA CLAVE "Salida"
+                        Console.WriteLine($"★ Claves en data: {string.Join(", ", data.Keys)}");
+
+                        if (data.ContainsKey("Salida"))
+                        {
+                            var salidas = JsonConvert.DeserializeObject<List<Salida>>(data["Salida"].ToString());
+
+                            Console.WriteLine($"★ Total salidas del servidor: {salidas.Count}");
+
+                            if (salidas.Count > 0)
+                            {
+                                Console.WriteLine($"★ Primeras 5 salidas recibidas:");
+                                for (int i = 0; i < Math.Min(5, salidas.Count); i++)
+                                {
+                                    var salida = salidas[i];
+                                    Console.WriteLine($"   - Salida {i + 1}: ID={salida.id}, SucOrigen={salida.id_sucursal_origen}, SucDestino={salida.id_sucursal_destino}");
+                                }
+
+                                // ★ MOSTRAR TODAS LAS SUCURSALES ORIGEN PRESENTES
+                                var sucursalesOrigen = salidas.GroupBy(s => s.id_sucursal_origen)
+                                    .Select(g => new { SucursalId = g.Key, Cantidad = g.Count() })
+                                    .OrderBy(x => x.SucursalId);
+
+                                Console.WriteLine($"★ Sucursales origen presentes en salidas:");
+                                foreach (var grupo in sucursalesOrigen)
+                                {
+                                    Console.WriteLine($"   - Sucursal origen {grupo.SucursalId}: {grupo.Cantidad} salidas");
+                                }
+                            }
+
+                            Console.WriteLine($"★ Filtrando para sucursal origen: {sucursalId}");
+
+                            var salidasFiltradas = salidas.Where(e => e.id_sucursal_origen == sucursalId).ToList();
+                            Console.WriteLine($"★ Salidas filtradas: {salidasFiltradas.Count}");
+
+                            if (salidasFiltradas.Count > 0)
+                            {
+                                Console.WriteLine($"★ Salidas que se van a guardar:");
+                                foreach (var salida in salidasFiltradas.Take(3))
+                                {
+                                    Console.WriteLine($"   - ID: {salida.id}, Folio: {salida.folio}, SucOrigen: {salida.id_sucursal_origen}");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine($"★ ❌ NO SE ENCONTRARON SALIDAS para sucursal origen {sucursalId}");
+                            }
+
+                            // ★ INTENTAR GUARDAR Y VERIFICAR
+                            Console.WriteLine($"★ Intentando guardar {salidasFiltradas.Count} salidas...");
+                            localDM.saveSalidasGral(salidasFiltradas);
+
+                            // ★ VERIFICAR QUE SE GUARDARON
+                            var countDespues = localDM.getSalidasCountPorSucursal(sucursalId);
+                            Console.WriteLine($"★ Salidas en BD local después de guardar: {countDespues}");
+
+                            salidasGral_lastupdate = localDM.getTableLastUpdate("salidas");
+                            Console.WriteLine($"★ Nueva fecha de actualización: {salidasGral_lastupdate}");
+
+                            return true;
+                        }
+                        else
+                        {
+                            Console.WriteLine($"★ ❌ No se encontró clave 'Salida' en la respuesta");
+                        }
                     }
                     else
                     {
-                        // Manejo de error
-                        //Console.WriteLine("Error en la respuesta del servidor:");
-                        //Console.WriteLine(result["status"].ToString());
+                        Console.WriteLine($"★ ❌ Status no exitoso: {result["status"]}");
+                        if (result.ContainsKey("message"))
+                            Console.WriteLine($"★ Mensaje: {result["message"]}");
                     }
                 }
                 else
                 {
-                    // Manejo de error en la conexión
-                    //Console.WriteLine("Error en la conexión:");
-                    //Console.WriteLine(response.StatusCode);
-                    //Console.WriteLine(res);
-
+                    Console.WriteLine($"★ ❌ Error HTTP: {response.StatusCode}");
+                    Console.WriteLine($"★ Contenido de error: {res}");
                 }
             }
             catch (Exception e)
             {
-                // Manejo de excepción
-                //Console.WriteLine("Excepción durante la solicitud HTTP:");
-                //Console.WriteLine(e.Message);
-                //Console.WriteLine(e.StackTrace);
+                Console.WriteLine($"★ ❌ Excepción en GetSalidasGral:");
+                Console.WriteLine($"   Mensaje: {e.Message}");
+                Console.WriteLine($"   StackTrace: {e.StackTrace}");
             }
+
+            Console.WriteLine($"★ === FIN DIAGNÓSTICO GetSalidasGral ===");
             return false;
-        }
+        }        
 
         public async Task<bool> GetSalidas(int sucursalId)
         {
             string res = "";
             Dictionary<string, string> date = new Dictionary<string, string>();
             date["fecha_de_actualizacion"] = salidas_lastupdate;
+
+            if (string.IsNullOrEmpty(salidas_lastupdate))
+            {
+                salidas_lastupdate = "1900-01-01 00:00:00";
+                Console.WriteLine($"★ Inicializando salidas_lastupdate por primera vez: {salidas_lastupdate}");
+            }
 
             try
             {
