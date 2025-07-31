@@ -508,18 +508,7 @@ namespace InventarioCasaCeja
             vercatalago.setData(tablacatalogo, mapamedidas, mapacategorias);
             vercatalago.Show();
             vercatalago.Focus();
-        }
-
-        private void proveedores_Click(object sender, EventArgs e)
-        {
-            if (verproveedores.IsDisposed)
-            {
-                verproveedores = new Visor(8, webDM);
-                verproveedores.setData(tablaproveedores);
-            }
-            verproveedores.Show();
-            verproveedores.Focus();
-        }
+        }       
        
         void getConfig()
         {
@@ -642,7 +631,7 @@ namespace InventarioCasaCeja
             base.Dispose(disposing);            
         }
 
-        private void historialDeEntradasYSalidasToolStripMenuItem_Click(object sender, EventArgs e)
+        private void HistEntradasSalidas_Click(object sender, EventArgs e)
         {
             HistEntradasSalidas hes = new HistEntradasSalidas(idsucursal);
             hes.ShowDialog();
