@@ -809,11 +809,14 @@ namespace InventarioCasaCeja
             command.CommandText = "DELETE FROM salidas";
             command.ExecuteScalar();
         }
+
+        // ★ MÉTODO getCategorias PERSONALIZADO
         public DataTable getCategorias()
         {
             DataTable dt = new DataTable();
             SQLiteCommand command = connection.CreateCommand();
-            command.CommandText = "SELECT * FROM categorias WHERE activo = 1 ORDER BY nombre";
+            // ★ CAMBIO: Solo seleccionar ID y NOMBRE, cambiar header a "CATEGORIA"
+            command.CommandText = "SELECT id AS ID, nombre AS CATEGORIA FROM categorias WHERE activo = 1 ORDER BY nombre";
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dt);
 
@@ -821,13 +824,41 @@ namespace InventarioCasaCeja
             return dt;
         }
 
-        
+        // ★ MÉTODO getCategorias con búsqueda PERSONALIZADO
         public DataTable getCategorias(string arg)
         {
             DataTable dt = new DataTable();
             SQLiteCommand command = connection.CreateCommand();
+            // ★ CAMBIO: Solo seleccionar ID y NOMBRE, cambiar header a "CATEGORIA"
             command.CommandText = "SELECT id AS ID, nombre AS CATEGORIA FROM categorias WHERE activo=1 AND nombre LIKE @setNombre";
-            command.Parameters.AddWithValue("setNombre", "%"+arg+"%");
+            command.Parameters.AddWithValue("setNombre", "%" + arg + "%");
+            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
+            adapter.Fill(dt);
+            return dt;
+        }
+
+        // ★ MÉTODO getMedidas PERSONALIZADO
+        public DataTable getMedidas()
+        {
+            DataTable dt = new DataTable();
+            SQLiteCommand command = connection.CreateCommand();
+            // ★ CAMBIO: Solo seleccionar ID y NOMBRE, cambiar header a "MEDIDA"
+            command.CommandText = "SELECT id AS ID, nombre AS MEDIDA FROM medidas WHERE activo = 1 ORDER BY nombre";
+            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
+            adapter.Fill(dt);
+
+            Console.WriteLine($"★ getMedidas devuelve {dt.Rows.Count} registros");
+            return dt;
+        }
+
+        // ★ MÉTODO getMedidas con búsqueda PERSONALIZADO
+        public DataTable getMedidas(string arg)
+        {
+            DataTable dt = new DataTable();
+            SQLiteCommand command = connection.CreateCommand();
+            // ★ CAMBIO: Solo seleccionar ID y NOMBRE, cambiar header a "MEDIDA"
+            command.CommandText = "SELECT id AS ID, nombre AS MEDIDA FROM medidas WHERE activo=1 AND nombre LIKE @setNombre";
+            command.Parameters.AddWithValue("setNombre", "%" + arg + "%");
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dt);
             return dt;
@@ -880,28 +911,7 @@ namespace InventarioCasaCeja
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dt);
             return dt;
-        }     
-        public DataTable getMedidas()
-        {
-            DataTable dt = new DataTable();
-            SQLiteCommand command = connection.CreateCommand();
-            command.CommandText = "SELECT * FROM medidas WHERE activo = 1 ORDER BY nombre";
-            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
-            adapter.Fill(dt);
-
-            Console.WriteLine($"★ getMedidas devuelve {dt.Rows.Count} registros");
-            return dt;
-        }
-        public DataTable getMedidas(string arg)
-        {
-            DataTable dt = new DataTable();
-            SQLiteCommand command = connection.CreateCommand();
-            command.CommandText = "SELECT id AS ID, nombre AS MEDIDA FROM medidas WHERE activo=1 AND nombre LIKE @setNombre";
-            command.Parameters.AddWithValue("setNombre", "%" + arg + "%");
-            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
-            adapter.Fill(dt);
-            return dt;
-        }
+        }            
 
         public DataTable getUsuarios()
         {
@@ -1085,6 +1095,7 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
             return dtSalidas;
         }
 
+        // ★ MÉTODO getProductoEntradaInfo PERSONALIZADO
         public DataTable getProductoEntradaInfo(int entradaId)
         {
             Console.WriteLine($"★ Buscando productos para entrada ID: {entradaId}");
@@ -1092,19 +1103,16 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
             DataTable dtProductoEntrada = new DataTable();
             using (SQLiteCommand command = connection.CreateCommand())
             {
+                // ★ CAMBIO: Solo seleccionar las columnas específicas en el orden requerido
                 command.CommandText = @"
             SELECT 
-                pe.entrada_id AS 'ENTRADA ID',
-                pe.producto_id AS 'PRODUCTO ID',
-                pe.cantidad AS 'CANTIDAD',
-                p.codigo AS 'CÓDIGO',
-                p.nombre AS 'NOMBRE',
-                c.nombre AS 'CATEGORÍA',
-                p.presentacion AS 'PRESENTACIÓN',
-                pe.costo AS 'COSTO'
+                pe.id AS ID,
+                p.codigo AS CODIGO,
+                p.nombre AS NOMBRE,
+                pe.cantidad AS CANTIDAD,
+                pe.costo AS COSTO
             FROM producto_entrada pe
             LEFT JOIN productos p ON pe.producto_id = p.id
-            LEFT JOIN categorias c ON p.categoria_id = c.id
             WHERE pe.entrada_id = @entradaId
             ORDER BY pe.id";
 
@@ -1124,7 +1132,7 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
                 Console.WriteLine($"★ Detalles de productos encontrados:");
                 foreach (DataRow row in dtProductoEntrada.Rows)
                 {
-                    Console.WriteLine($"   - ProductoID: {row["PRODUCTO ID"]}, Nombre: {row["NOMBRE"]}, Cantidad: {row["CANTIDAD"]}, Costo: {row["COSTO"]}");
+                    Console.WriteLine($"   - ID: {row["ID"]}, Código: {row["CODIGO"]}, Nombre: {row["NOMBRE"]}, Cantidad: {row["CANTIDAD"]}, Costo: {row["COSTO"]}");
                 }
             }
             else
@@ -1336,30 +1344,57 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
                 command.ExecuteNonQuery();
             }
         }
+        // ★ MÉTODO saveEntradaProductos CORREGIDO en LocaldataManager.cs
         public void saveEntradaProductos(List<EntradaProducto> entradaProductos)
         {
             Console.WriteLine($"★ Guardando {entradaProductos.Count} productos de entrada...");
 
             foreach (EntradaProducto entradaProducto in entradaProductos)
             {
-                SQLiteCommand command = connection.CreateCommand();
-                command.CommandText = @"INSERT OR REPLACE INTO producto_entrada 
-            (entrada_id, producto_id, codigo, cantidad, costo, estado, detalles, created_at, updated_at) 
-            VALUES(@setEntradaId, @setProductoId, @setCodigo, @setCantidad, @setCosto, @setEstado, @setDetalles, @setCreatedAt, @setUpdatedAt)";
+                // ★ CAMBIO PRINCIPAL: Verificar si el registro ya existe
+                bool existeRegistro = false;
 
-                command.Parameters.AddWithValue("setEntradaId", entradaProducto.entrada_id);
-                command.Parameters.AddWithValue("setProductoId", entradaProducto.producto_id);
-                command.Parameters.AddWithValue("setCodigo", 1); // Valor por defecto
-                command.Parameters.AddWithValue("setCantidad", entradaProducto.cantidad);
-                command.Parameters.AddWithValue("setCosto", entradaProducto.costo);
-                command.Parameters.AddWithValue("setEstado", 1); // Valor por defecto
-                command.Parameters.AddWithValue("setDetalles", "Enviado"); // Valor por defecto
-                command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                using (SQLiteCommand checkCommand = connection.CreateCommand())
+                {
+                    checkCommand.CommandText = @"
+                SELECT COUNT(*) FROM producto_entrada 
+                WHERE entrada_id = @entrada_id AND producto_id = @producto_id";
 
-                command.ExecuteNonQuery();
+                    checkCommand.Parameters.AddWithValue("@entrada_id", entradaProducto.entrada_id);
+                    checkCommand.Parameters.AddWithValue("@producto_id", entradaProducto.producto_id);
 
-                Console.WriteLine($"★ Guardado producto entrada: EntradaID={entradaProducto.entrada_id}, ProductoID={entradaProducto.producto_id}, Cantidad={entradaProducto.cantidad}, Costo={entradaProducto.costo}");
+                    int count = Convert.ToInt32(checkCommand.ExecuteScalar());
+                    existeRegistro = count > 0;
+                }
+
+                if (existeRegistro)
+                {
+                    Console.WriteLine($"★ Producto ya existe - EntradaID={entradaProducto.entrada_id}, ProductoID={entradaProducto.producto_id} - SALTANDO");
+                    continue; // Saltar si ya existe
+                }
+
+                // ★ Solo insertar si NO existe
+                using (SQLiteCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                INSERT INTO producto_entrada 
+                (entrada_id, producto_id, codigo, cantidad, costo, estado, detalles, created_at, updated_at) 
+                VALUES(@setEntradaId, @setProductoId, @setCodigo, @setCantidad, @setCosto, @setEstado, @setDetalles, @setCreatedAt, @setUpdatedAt)";
+
+                    command.Parameters.AddWithValue("setEntradaId", entradaProducto.entrada_id);
+                    command.Parameters.AddWithValue("setProductoId", entradaProducto.producto_id);
+                    command.Parameters.AddWithValue("setCodigo", 1); // Valor por defecto
+                    command.Parameters.AddWithValue("setCantidad", entradaProducto.cantidad);
+                    command.Parameters.AddWithValue("setCosto", entradaProducto.costo);
+                    command.Parameters.AddWithValue("setEstado", 1); // Valor por defecto
+                    command.Parameters.AddWithValue("setDetalles", "Enviado"); // Valor por defecto
+                    command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                    command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
+                    command.ExecuteNonQuery();
+
+                    Console.WriteLine($"★ NUEVO producto entrada guardado: EntradaID={entradaProducto.entrada_id}, ProductoID={entradaProducto.producto_id}, Cantidad={entradaProducto.cantidad}, Costo={entradaProducto.costo}");
+                }
             }
 
             Console.WriteLine($"★ Finalizado guardado de productos de entrada");

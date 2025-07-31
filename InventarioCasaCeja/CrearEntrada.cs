@@ -34,14 +34,75 @@ namespace InventarioCasaCeja
             tabla.DataSource = tablasource;
             this.sucursal = idsucursal;
             mostrarSucursal();
+            ConfigurarColumnasTabla();
         }
 
         private void CrearEntrada_Load(object sender, EventArgs e)
         {
             txtcodigo.Focus();
         }
+      
 
-        private void mostrarSucursal()
+    // ★ AGREGAR este método nuevo para configurar las columnas
+    private void ConfigurarColumnasTabla()
+    {
+        // Limpiar columnas auto-generadas
+        tabla.AutoGenerateColumns = false;
+        tabla.Columns.Clear();
+
+        // ★ Columna 1: ID
+        DataGridViewTextBoxColumn colId = new DataGridViewTextBoxColumn();
+        colId.DataPropertyName = "id";
+        colId.HeaderText = "ID";
+        colId.Name = "ID";
+        colId.Width = 50;
+        colId.ReadOnly = true;
+        tabla.Columns.Add(colId);
+
+        // ★ Columna 2: CODIGO
+        DataGridViewTextBoxColumn colCodigo = new DataGridViewTextBoxColumn();
+        colCodigo.DataPropertyName = "codigo";
+        colCodigo.HeaderText = "CODIGO";
+        colCodigo.Name = "CODIGO";
+        colCodigo.Width = 100;
+        colCodigo.ReadOnly = true;
+        tabla.Columns.Add(colCodigo);
+
+        // ★ Columna 3: NOMBRE
+        DataGridViewTextBoxColumn colNombre = new DataGridViewTextBoxColumn();
+        colNombre.DataPropertyName = "nombre";
+        colNombre.HeaderText = "NOMBRE";
+        colNombre.Name = "NOMBRE";
+        colNombre.Width = 300;
+        colNombre.ReadOnly = true;
+        tabla.Columns.Add(colNombre);
+
+        // ★ Columna 4: CANTIDAD (editable)
+        DataGridViewTextBoxColumn colCantidad = new DataGridViewTextBoxColumn();
+        colCantidad.DataPropertyName = "cantidad";
+        colCantidad.HeaderText = "CANTIDAD";
+        colCantidad.Name = "CANTIDAD";
+        colCantidad.Width = 80;
+        colCantidad.ReadOnly = false; // Esta es editable
+        tabla.Columns.Add(colCantidad);
+
+        // ★ Columna 5: COSTO (editable)
+        DataGridViewTextBoxColumn colCosto = new DataGridViewTextBoxColumn();
+        colCosto.DataPropertyName = "costo";
+        colCosto.HeaderText = "COSTO";
+        colCosto.Name = "COSTO";
+        colCosto.Width = 100;
+        colCosto.ReadOnly = false; // Esta es editable
+        colCosto.DefaultCellStyle.Format = "C2"; // Formato de moneda
+        tabla.Columns.Add(colCosto);
+
+        // ★ Configuraciones adicionales
+        tabla.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        tabla.MultiSelect = false;
+        tabla.AllowUserToAddRows = false;
+        tabla.AllowUserToDeleteRows = false;
+    }
+    private void mostrarSucursal()
         {
             Sucursal sucursaltxt = localDM.getSucursal(sucursal);
             if (sucursaltxt != null)

@@ -311,22 +311,7 @@ namespace InventarioCasaCeja
             hoja.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
         }
         // Método para configurar la hoja de detalles (establece encabezados base)
-        private void ConfigurarHojaDetalles(ExcelWorksheet hoja)
-        {
-            // Este método se utiliza para inicializar la hoja;        
-            string[] encabezados = { "ID", "ID PRODUCTO", "NOMBRE", "CATEGORÍA", "PRECIO UNITARIO", "CANTIDAD", "TOTAL" };
-            for (int i = 0; i < encabezados.Length; i++)
-            {
-                var celda = hoja.Cells[1, i + 1];
-                celda.Value = encabezados[i];
-                celda.Style.Font.Bold = true;
-                celda.Style.Font.Size = 12;
-                celda.Style.Font.Color.SetColor(Color.Black);
-                celda.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                celda.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-                celda.Style.Border.BorderAround(ExcelBorderStyle.Thin);
-            }
-        }
+      
         // Método para llenar la hoja de detalles de Salidas
         private void LlenarDetallesSalidas(ExcelWorksheet hoja, DataTable salidas)
         {
@@ -404,13 +389,15 @@ namespace InventarioCasaCeja
             hoja.Cells[hoja.Dimension.Address].AutoFitColumns();
             hoja.View.FreezePanes(2, 1);
         }
-        // Método para llenar la hoja de detalles de Entradas.
+        
+        // ★ MÉTODO LlenarDetallesEntradas CORREGIDO
         private void LlenarDetallesEntradas(ExcelWorksheet hoja, DataTable entradas)
         {
             int filaActual = 2;
             int ultimoIdEntrada = -1;
-            
-            string[] encabezados = { "ENTRADA ID", "PRODUCTO ID", "CÓDIGO", "NOMBRE", "CATEGORÍA", "PRESENTACIÓN", "CANTIDAD" };
+
+            // ★ CAMBIO: Ajustar encabezados a las columnas disponibles
+            string[] encabezados = { "ENTRADA ID", "ID", "CÓDIGO", "NOMBRE", "CANTIDAD", "COSTO" };
             for (int i = 0; i < encabezados.Length; i++)
             {
                 var celda = hoja.Cells[1, i + 1];
@@ -439,15 +426,16 @@ namespace InventarioCasaCeja
                 {
                     var colorFondo = Color.White;
 
-                    hoja.Cells[filaActual, 1].Value = producto["ENTRADA ID"];
-                    hoja.Cells[filaActual, 2].Value = producto["PRODUCTO ID"];
-                    hoja.Cells[filaActual, 3].Value = producto["CÓDIGO"];
-                    hoja.Cells[filaActual, 4].Value = producto["NOMBRE"];
-                    hoja.Cells[filaActual, 5].Value = producto["CATEGORÍA"];
-                    hoja.Cells[filaActual, 6].Value = producto["PRESENTACIÓN"];
-                    hoja.Cells[filaActual, 7].Value = producto["CANTIDAD"];
+                    // ★ CAMBIO: Usar las columnas que SÍ existen
+                    hoja.Cells[filaActual, 1].Value = entradaId;           // ENTRADA ID (manual)
+                    hoja.Cells[filaActual, 2].Value = producto["ID"];      // ID del producto_entrada
+                    hoja.Cells[filaActual, 3].Value = producto["CODIGO"];  // CODIGO
+                    hoja.Cells[filaActual, 4].Value = producto["NOMBRE"];  // NOMBRE
+                    hoja.Cells[filaActual, 5].Value = producto["CANTIDAD"]; // CANTIDAD
+                    hoja.Cells[filaActual, 6].Value = producto["COSTO"];   // COSTO
 
-                    for (int col = 1; col <= 7; col++)
+                    // ★ CAMBIO: Ajustar el loop para 6 columnas en lugar de 7
+                    for (int col = 1; col <= 6; col++)
                     {
                         var celda = hoja.Cells[filaActual, col];
                         celda.Style.Fill.PatternType = ExcelFillStyle.Solid;
@@ -461,17 +449,62 @@ namespace InventarioCasaCeja
                 ultimoIdEntrada = entradaId;
             }
 
+            // ★ CAMBIO: Aplicar formato de moneda a la columna COSTO (columna 6)
+            hoja.Cells["F2:F" + (filaActual - 1)].Style.Numberformat.Format = "$#,##0.00";
+
+            // ★ CAMBIO: Aplicar formato de número a la columna CANTIDAD (columna 5)
+            hoja.Cells["E2:E" + (filaActual - 1)].Style.Numberformat.Format = "0";
+
             hoja.Cells[hoja.Dimension.Address].AutoFitColumns();
             hoja.View.FreezePanes(2, 1);
 
             if (filaActual > 2)
             {
-                var rangoTabla = hoja.Cells["A1:G" + (filaActual - 1)];
+                // ★ CAMBIO: Ajustar el rango de la tabla para 6 columnas (A1:F)
+                var rangoTabla = hoja.Cells["A1:F" + (filaActual - 1)];
                 var tabla = hoja.Tables.Add(rangoTabla, "DetalleEntradas");
                 tabla.TableStyle = TableStyles.Light11;
                 tabla.ShowHeader = true;
                 tabla.ShowTotal = false;
                 tabla.ShowFirstColumn = false;
+            }
+        }
+
+        // ★ OPCIONAL: También corregir el método ConfigurarHojaDetalles para que sea más específico
+        private void ConfigurarHojaDetalles(ExcelWorksheet hoja)
+        {
+            // Determinar qué tipo de hoja es por el nombre
+            if (hoja.Name.Contains("Entrada"))
+            {
+                // Para entradas: ENTRADA ID, ID, CÓDIGO, NOMBRE, CANTIDAD, COSTO
+                string[] encabezados = { "ENTRADA ID", "ID", "CÓDIGO", "NOMBRE", "CANTIDAD", "COSTO" };
+                for (int i = 0; i < encabezados.Length; i++)
+                {
+                    var celda = hoja.Cells[1, i + 1];
+                    celda.Value = encabezados[i];
+                    celda.Style.Font.Bold = true;
+                    celda.Style.Font.Size = 12;
+                    celda.Style.Font.Color.SetColor(Color.Black);
+                    celda.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    celda.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                    celda.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                }
+            }
+            else
+            {
+                // Para salidas: mantener el formato original
+                string[] encabezados = { "ID", "ID PRODUCTO", "NOMBRE", "CATEGORÍA", "PRECIO UNITARIO", "CANTIDAD", "TOTAL" };
+                for (int i = 0; i < encabezados.Length; i++)
+                {
+                    var celda = hoja.Cells[1, i + 1];
+                    celda.Value = encabezados[i];
+                    celda.Style.Font.Bold = true;
+                    celda.Style.Font.Size = 12;
+                    celda.Style.Font.Color.SetColor(Color.Black);
+                    celda.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    celda.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                    celda.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                }
             }
         }
 
