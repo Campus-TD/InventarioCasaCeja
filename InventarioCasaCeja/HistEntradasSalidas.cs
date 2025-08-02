@@ -22,6 +22,10 @@ namespace InventarioCasaCeja
         int idSucursal;
         DataTable tablaEntradas = new DataTable();
         DataTable tablaSalidas = new DataTable();
+        // ⭐ NUEVAS VARIABLES PARA FILTRO DE FECHAS
+        private DateTime? fechaInicio = null;
+        private DateTime? fechaFin = null;
+        private bool usarFiltroFecha = false;
 
         public HistEntradasSalidas(int idSucursal)
         {
@@ -32,160 +36,453 @@ namespace InventarioCasaCeja
             BoxTipo.SelectedIndex = 0;
             this.idSucursal = idSucursal;
             CargarEntradasEnDataGrid();
-        }
+        }       
 
-        private void CargarEntradasEnDataGrid()
-        {
-            rowCount = localDM.getEntradasCountPorSucursal(idSucursal);
-            calculateMaxPages(rowCount);
-            tablaEntradas = localDM.getEntradasPorSucursal(idSucursal, offset, rowsPerPage);
-            tablaEntradas.DefaultView.Sort = "id DESC";
-            tablaEntradasySalidas.DataSource = tablaEntradas;
-            tablaEntradasySalidas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
-
-            // Cambiar el tamaño de la fuente de los encabezados de las columnas
-            tablaEntradasySalidas.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 18, FontStyle.Bold);
-        }
-        private void CargarSalidasEnDataGrid()
-        {
-            rowCount = localDM.getSalidasCountPorSucursal(idSucursal);
-            calculateMaxPages(rowCount);
-            tablaSalidas = localDM.getSalidasPorSucursal(idSucursal, offset, rowsPerPage);
-            tablaSalidas.DefaultView.Sort = "id DESC";
-            tablaEntradasySalidas.DataSource = tablaSalidas;
-            tablaEntradasySalidas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
-
-            // Cambiar el tamaño de la fuente de los encabezados de las columnas
-            tablaEntradasySalidas.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 18, FontStyle.Bold);
-        }
+        // ⭐ MÉTODO ACTUALIZADO PARA GENERAR EXCEL CON FILTRO DE FECHAS
         private void BcrearExcel_Click(object sender, EventArgs e)
         {
-            int opc = BoxTipo.SelectedIndex;
-            GenerarExcel(opc);
+            // Mostrar formulario de selección de fechas
+            using (SelectorFechasHist formFechas = new SelectorFechasHist())
+            {
+                if (formFechas.ShowDialog() == DialogResult.OK && formFechas.FechasSeleccionadas)
+                {
+                    int opc = BoxTipo.SelectedIndex;
+                    DateTime fechaInicio = formFechas.FechaInicio;
+                    DateTime fechaFin = formFechas.FechaFin;
+
+                    GenerarExcelConFecha(opc, fechaInicio, fechaFin);
+                }
+            }
         }
 
-        // Método anterior para generar un archivo Excel con la información de las entradas y salidas
-        /*         
-        private void GenerarExcel2(int opc)
+        // ⭐ NUEVO MÉTODO PARA GENERAR EXCEL CON RANGO DE FECHAS
+        public void GenerarExcelConFecha(int opc, DateTime fechaInicio, DateTime fechaFin)
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-            DataTable EntradasTable = localDM.getEntradasPorSucursal(idSucursal);
-            DataTable SalidasTable = localDM.getSalidasPorSucursal(idSucursal);
-            DateTime localDate = DateTime.Now;
-            string fecha = localDate.ToString("dd-MM-yyyy");
 
+            // Obtener datos filtrados por fecha
+            DataTable EntradasTable = localDM.getEntradasPorSucursalPorFecha(idSucursal, fechaInicio, fechaFin);
+            DataTable SalidasTable = localDM.getSalidasPorSucursalPorFecha(idSucursal, fechaInicio, fechaFin);
+
+            string fechaInicioStr = fechaInicio.ToString("dd-MM-yyyy");
+            string fechaFinStr = fechaFin.ToString("dd-MM-yyyy");
+            string rangoFechas = $"{fechaInicioStr}_al_{fechaFinStr}";
+
+            // Validaciones para el documento
             if (EntradasTable.Rows.Count == 0 && opc == 0)
             {
-                MessageBox.Show("No hay Entradas de Productos disponibles para la sucursal actual.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"No hay Entradas de Productos disponibles para la sucursal actual en el período del {fechaInicioStr} al {fechaFinStr}.",
+                                  "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             else if (SalidasTable.Rows.Count == 0 && opc == 1)
             {
-                MessageBox.Show("No hay Salidas de Productos disponibles para la sucursal actual.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"No hay Salidas de Productos disponibles para la sucursal actual en el período del {fechaInicioStr} al {fechaFinStr}.",
+                                  "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             else if (EntradasTable.Rows.Count == 0 && SalidasTable.Rows.Count == 0 && opc == 2)
             {
-                MessageBox.Show("No hay informacion disponibles para la sucursal actual.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"No hay información disponible para la sucursal actual en el período del {fechaInicioStr} al {fechaFinStr}.",
+                                  "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Especificar la carpeta y el nombre del archivo
-            string carpeta = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "CasaCejaDocs");
-            string nombre = "";
-            if (opc == 0)
-            {
-                nombre = "ListaEntradas ";
-            }
-            else if (opc == 1)
-            {
-                nombre = "ListaSalidas ";
-            }
-            string nombreArchivo = nombre + fecha + ".xlsx";
-            string rutaArchivo = Path.Combine(carpeta, nombreArchivo);
+            // Configuración de archivo
+            string carpetaPrincipal = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "CasaCejaDocs");
+            string subcarpeta = Path.Combine(carpetaPrincipal, "Inventario");
+            string nombre;
 
-            // Verificar si la carpeta existe, si no, crearla
-            if (!Directory.Exists(carpeta))
+            switch (opc)
             {
-                Directory.CreateDirectory(carpeta);
+                case 0:
+                    nombre = "ListaEntradas_";
+                    break;
+                case 1:
+                    nombre = "ListaSalidas_";
+                    break;
+                default:
+                    nombre = "MovimientosCompletos_";
+                    break;
             }
 
-            // Verificar si el archivo ya existe
+            string nombreArchivo = nombre + rangoFechas + ".xlsx";
+            string rutaArchivo = Path.Combine(subcarpeta, nombreArchivo);
+
+            // Se crean las carpetas si no existen
+            if (!Directory.Exists(carpetaPrincipal))
+                Directory.CreateDirectory(carpetaPrincipal);
+
+            if (!Directory.Exists(subcarpeta))
+                Directory.CreateDirectory(subcarpeta);
+
             if (File.Exists(rutaArchivo))
             {
-                DialogResult dialogResult = MessageBox.Show("El archivo ya existe. ¿Deseas sobrescribirlo?", "Archivo Existente", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                if (dialogResult == DialogResult.No)
-                {
+                var respuesta = MessageBox.Show("El archivo ya existe. ¿Deseas sobrescribirlo?",
+                                          "Archivo Existente", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (respuesta == DialogResult.No)
                     return;
-                }
             }
 
-            // Generar el archivo Excel
             try
             {
                 using (ExcelPackage paquete = new ExcelPackage())
                 {
+                    // Hoja general de Entradas y hoja de detalle de Entradas
                     if (opc == 0 || opc == 2)
                     {
-                        // Crear la hoja para las entradas
-                        ExcelWorksheet hojaEntradas = paquete.Workbook.Worksheets.Add("ListadoEntradas " + fecha);
+                        ExcelWorksheet hojaEntradas = paquete.Workbook.Worksheets.Add("Entradas");
+                        CargarDatosEnHojaConFecha(hojaEntradas, EntradasTable, fechaInicio, fechaFin, "ENTRADAS");
 
-                        // Agregar los encabezados de las columnas
-                        for (int i = 0; i < EntradasTable.Columns.Count; i++)
-                        {
-                            hojaEntradas.Cells[1, i + 1].Value = EntradasTable.Columns[i].ColumnName;
-                            hojaEntradas.Cells[1, i + 1].Style.Font.Bold = true;
-                            hojaEntradas.Cells[1, i + 1].Style.Font.Size = 14;
-                        }
-
-                        // Agregar los datos de las filas
-                        for (int fila = 0; fila < EntradasTable.Rows.Count; fila++)
-                        {
-                            for (int col = 0; col < EntradasTable.Columns.Count; col++)
-                            {
-                                hojaEntradas.Cells[fila + 2, col + 1].Value = EntradasTable.Rows[fila][col].ToString();
-                            }
-                        }
+                        ExcelWorksheet hojaDetalleEntradas = paquete.Workbook.Worksheets.Add("DetalleEntradas");
+                        ConfigurarHojaDetalles(hojaDetalleEntradas);
+                        LlenarDetallesEntradasConFecha(hojaDetalleEntradas, EntradasTable);
                     }
 
+                    // Hojas de Salidas y Detalles
                     if (opc == 1 || opc == 2)
                     {
-                        // Crear la hoja para las salidas
-                        ExcelWorksheet hojaSalidas = paquete.Workbook.Worksheets.Add("ListadoSalidas " + fecha);
+                        ExcelWorksheet hojaSalidas = paquete.Workbook.Worksheets.Add("Salidas");
+                        CargarDatosEnHojaConFecha(hojaSalidas, SalidasTable, fechaInicio, fechaFin, "SALIDAS");
 
-                        // Agregar los encabezados de las columnas
-                        for (int i = 0; i < SalidasTable.Columns.Count; i++)
-                        {
-                            hojaSalidas.Cells[1, i + 1].Value = SalidasTable.Columns[i].ColumnName;
-                            hojaSalidas.Cells[1, i + 1].Style.Font.Bold = true;
-                            hojaSalidas.Cells[1, i + 1].Style.Font.Size = 14;
-                        }
-
-                        // Agregar los datos de las filas
-                        for (int fila = 0; fila < SalidasTable.Rows.Count; fila++)
-                        {
-                            for (int col = 0; col < SalidasTable.Columns.Count; col++)
-                            {
-                                hojaSalidas.Cells[fila + 2, col + 1].Value = SalidasTable.Rows[fila][col].ToString();
-                            }
-                        }
+                        ExcelWorksheet hojaDetalles = paquete.Workbook.Worksheets.Add("DetalleSalidas");
+                        ConfigurarHojaDetalles(hojaDetalles);
+                        LlenarDetallesSalidasConFecha(hojaDetalles, SalidasTable);
                     }
 
-                    // Guardar el archivo en la ruta especificada
-                    FileInfo archivo = new FileInfo(rutaArchivo);
-                    paquete.SaveAs(archivo);
+                    paquete.SaveAs(new FileInfo(rutaArchivo));
 
-                    // Mostrar mensaje de éxito si se ha creado correctamente
-                    MessageBox.Show(nombre + fecha + ".xlsx" + " se generó correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    string mensaje = $"{nombreArchivo} generado correctamente\n\n" +
+                                   $"Período: {fechaInicioStr} al {fechaFinStr}\n" +
+                                   $"Ubicación: {subcarpeta}";
+
+                    MessageBox.Show(mensaje, "✅ Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ocurrió un error al generar el archivo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al generar el archivo: {ex.Message}",
+                              "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        */
 
+        // ⭐ MÉTODO ACTUALIZADO PARA CARGAR DATOS CON INFORMACIÓN DE FECHA
+        private void CargarDatosEnHojaConFecha(ExcelWorksheet hoja, DataTable tabla, DateTime fechaInicio, DateTime fechaFin, string tipoReporte)
+        {
+            // Agregar título con rango de fechas
+            hoja.Cells[1, 1].Value = $"REPORTE DE {tipoReporte} - CASA CEJA";
+            hoja.Cells[1, 1, 1, tabla.Columns.Count].Merge = true;
+            hoja.Cells[1, 1].Style.Font.Bold = true;
+            hoja.Cells[1, 1].Style.Font.Size = 16;
+            hoja.Cells[1, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            hoja.Cells[1, 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            hoja.Cells[1, 1].Style.Fill.BackgroundColor.SetColor(Color.LightBlue);
+
+            // Agregar información del período
+            string fechaInicioStr = fechaInicio.ToString("dd/MM/yyyy");
+            string fechaFinStr = fechaFin.ToString("dd/MM/yyyy");
+            hoja.Cells[2, 1].Value = $"Período: {fechaInicioStr} al {fechaFinStr}";
+            hoja.Cells[2, 1, 2, tabla.Columns.Count].Merge = true;
+            hoja.Cells[2, 1].Style.Font.Bold = true;
+            hoja.Cells[2, 1].Style.Font.Size = 12;
+            hoja.Cells[2, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+            // Agregar fecha de generación
+            hoja.Cells[3, 1].Value = $"Generado: {DateTime.Now:dd/MM/yyyy HH:mm}";
+            hoja.Cells[3, 1, 3, tabla.Columns.Count].Merge = true;
+            hoja.Cells[3, 1].Style.Font.Size = 10;
+            hoja.Cells[3, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            hoja.Cells[3, 1].Style.Font.Color.SetColor(Color.Gray);
+
+            // Encabezados de tabla (fila 5)
+            for (int i = 0; i < tabla.Columns.Count; i++)
+            {
+                var celda = hoja.Cells[5, i + 1];
+                celda.Value = tabla.Columns[i].ColumnName;
+                celda.Style.Font.Bold = true;
+                celda.Style.Font.Size = 12;
+                celda.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                celda.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                celda.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+            }
+
+            // Datos de la tabla (desde fila 6)
+            for (int fila = 0; fila < tabla.Rows.Count; fila++)
+            {
+                for (int col = 0; col < tabla.Columns.Count; col++)
+                {
+                    var celda = hoja.Cells[fila + 6, col + 1];
+                    celda.Value = tabla.Rows[fila][col];
+                    celda.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+
+                    // Formatear fechas
+                    if (tabla.Columns[col].ColumnName.ToUpper().Contains("FECHA"))
+                    {
+                        celda.Style.Numberformat.Format = "dd/mm/yyyy";
+                    }
+                    // Formatear montos
+                    else if (tabla.Columns[col].ColumnName.ToUpper().Contains("TOTAL"))
+                    {
+                        celda.Style.Numberformat.Format = "$#,##0.00";
+                    }
+                }
+            }
+
+            // Agregar totales si es necesario
+            if (tabla.Columns.Contains("TOTAL"))
+            {
+                int totalColumn = tabla.Columns["TOTAL"].Ordinal + 1;
+                int lastRow = tabla.Rows.Count + 6;
+
+                hoja.Cells[lastRow, totalColumn - 1].Value = "TOTAL:";
+                hoja.Cells[lastRow, totalColumn - 1].Style.Font.Bold = true;
+                hoja.Cells[lastRow, totalColumn - 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                hoja.Cells[lastRow, totalColumn].Formula = $"=SUM({GetExcelColumnName(totalColumn)}6:{GetExcelColumnName(totalColumn)}{lastRow - 1})";
+                hoja.Cells[lastRow, totalColumn].Style.Font.Bold = true;
+                hoja.Cells[lastRow, totalColumn].Style.Numberformat.Format = "$#,##0.00";
+                hoja.Cells[lastRow, totalColumn].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                hoja.Cells[lastRow, totalColumn].Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+            }
+
+            hoja.Cells[hoja.Dimension.Address].AutoFitColumns();
+            hoja.View.FreezePanes(6, 1); // Congelar hasta la fila de encabezados
+        }
+
+        // ⭐ MÉTODO AUXILIAR PARA OBTENER NOMBRE DE COLUMNA EN EXCEL
+        private string GetExcelColumnName(int columnNumber)
+        {
+            int dividend = columnNumber;
+            string columnName = String.Empty;
+            int modulo;
+
+            while (dividend > 0)
+            {
+                modulo = (dividend - 1) % 26;
+                columnName = Convert.ToChar(65 + modulo).ToString() + columnName;
+                dividend = (int)((dividend - modulo) / 26);
+            }
+
+            return columnName;
+        }
+
+        // ⭐ MÉTODO PARA LLENAR DETALLES DE ENTRADAS CON FECHA
+        private void LlenarDetallesEntradasConFecha(ExcelWorksheet hoja, DataTable entradas)
+        {
+            int filaActual = 2;
+            int ultimoIdEntrada = -1;
+
+            string[] encabezados = { "ENTRADA ID", "ID", "CÓDIGO", "NOMBRE", "CANTIDAD", "COSTO" };
+            for (int i = 0; i < encabezados.Length; i++)
+            {
+                var celda = hoja.Cells[1, i + 1];
+                celda.Value = encabezados[i];
+                celda.Style.Font.Bold = true;
+                celda.Style.Font.Size = 11;
+                celda.Style.Font.Color.SetColor(Color.Black);
+                celda.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                celda.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                celda.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+            }
+
+            foreach (DataRow entrada in entradas.Rows)
+            {
+                int entradaId = Convert.ToInt32(entrada["ID"]);
+                DataTable productos = localDM.getProductoEntradaInfo(entradaId);
+
+                if (productos.Rows.Count == 0) continue;
+
+                if (ultimoIdEntrada != -1 && ultimoIdEntrada != entradaId)
+                {
+                    filaActual++;
+                }
+
+                foreach (DataRow producto in productos.Rows)
+                {
+                    var colorFondo = Color.White;
+
+                    hoja.Cells[filaActual, 1].Value = entradaId;
+                    hoja.Cells[filaActual, 2].Value = producto["ID"];
+                    hoja.Cells[filaActual, 3].Value = producto["CODIGO"];
+                    hoja.Cells[filaActual, 4].Value = producto["NOMBRE"];
+                    hoja.Cells[filaActual, 5].Value = producto["CANTIDAD"];
+                    hoja.Cells[filaActual, 6].Value = producto["COSTO"];
+
+                    for (int col = 1; col <= 6; col++)
+                    {
+                        var celda = hoja.Cells[filaActual, col];
+                        celda.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        celda.Style.Fill.BackgroundColor.SetColor(colorFondo);
+                        celda.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                        celda.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        celda.Style.Font.Color.SetColor(Color.Black);
+                    }
+                    filaActual++;
+                }
+                ultimoIdEntrada = entradaId;
+            }
+
+            hoja.Cells["F2:F" + (filaActual - 1)].Style.Numberformat.Format = "$#,##0.00";
+            hoja.Cells["E2:E" + (filaActual - 1)].Style.Numberformat.Format = "0";
+
+            hoja.Cells[hoja.Dimension.Address].AutoFitColumns();
+            hoja.View.FreezePanes(2, 1);
+
+            if (filaActual > 2)
+            {
+                var rangoTabla = hoja.Cells["A1:F" + (filaActual - 1)];
+                var tabla = hoja.Tables.Add(rangoTabla, "DetalleEntradas");
+                tabla.TableStyle = TableStyles.Light11;
+                tabla.ShowHeader = true;
+                tabla.ShowTotal = false;
+                tabla.ShowFirstColumn = false;
+            }
+        }
+
+        // ⭐ MÉTODO PARA LLENAR DETALLES DE SALIDAS CON FECHA
+        private void LlenarDetallesSalidasConFecha(ExcelWorksheet hoja, DataTable salidas)
+        {
+            int filaActual = 2;
+            int ultimoIdSalida = -1;
+
+            string[] encabezados = { "ID SALIDA", "ID PRODUCTO", "NOMBRE", "CATEGORÍA", "PRECIO UNITARIO", "CANTIDAD", "TOTAL" };
+            for (int i = 0; i < encabezados.Length; i++)
+            {
+                var celda = hoja.Cells[1, i + 1];
+                celda.Value = encabezados[i];
+                celda.Style.Font.Bold = true;
+                celda.Style.Font.Size = 11;
+                celda.Style.Font.Color.SetColor(Color.Black);
+                celda.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                celda.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                celda.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+            }
+
+            foreach (DataRow salida in salidas.Rows)
+            {
+                int idSalida = Convert.ToInt32(salida["ID"]);
+                DataTable productos = localDM.getProductosFromSalida(idSalida);
+
+                if (productos.Rows.Count == 0) continue;
+
+                if (ultimoIdSalida != -1 && ultimoIdSalida != idSalida)
+                {
+                    filaActual++;
+                }
+
+                foreach (DataRow producto in productos.Rows)
+                {
+                    var colorFondo = Color.White;
+
+                    hoja.Cells[filaActual, 1].Value = idSalida;
+                    hoja.Cells[filaActual, 2].Value = producto["ID PRODUCTO"];
+                    hoja.Cells[filaActual, 3].Value = producto["NOMBRE"];
+                    hoja.Cells[filaActual, 4].Value = producto["CATEGORÍA"];
+                    hoja.Cells[filaActual, 5].Value = producto["PRECIO"];
+                    hoja.Cells[filaActual, 6].Value = producto["CANTIDAD"];
+                    hoja.Cells[filaActual, 7].Value = Convert.ToDecimal(producto["PRECIO"]) * Convert.ToInt32(producto["CANTIDAD"]);
+
+                    for (int col = 1; col <= 7; col++)
+                    {
+                        var celda = hoja.Cells[filaActual, col];
+                        celda.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        celda.Style.Fill.BackgroundColor.SetColor(colorFondo);
+                        celda.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                        celda.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        celda.Style.Font.Color.SetColor(Color.Black);
+                    }
+
+                    filaActual++;
+                }
+
+                ultimoIdSalida = idSalida;
+            }
+
+            hoja.Cells["E2:E" + (filaActual - 1)].Style.Numberformat.Format = "$#,##0.00";
+            hoja.Cells["G2:G" + (filaActual - 1)].Style.Numberformat.Format = "$#,##0.00";
+            hoja.Cells["F2:F" + (filaActual - 1)].Style.Numberformat.Format = "0";
+
+            if (filaActual > 2)
+            {
+                var rangoTabla = hoja.Cells["A1:G" + (filaActual - 1)];
+                var tabla = hoja.Tables.Add(rangoTabla, "DetalleSalidas");
+                tabla.TableStyle = TableStyles.Light11;
+                tabla.ShowHeader = true;
+                tabla.ShowTotal = false;
+                tabla.ShowFirstColumn = false;
+            }
+
+            hoja.Cells[hoja.Dimension.Address].AutoFitColumns();
+            hoja.View.FreezePanes(2, 1);
+        }
+
+        // ⭐ MÉTODO OPCIONAL: AÑADIR FILTRO DE FECHA TAMBIÉN A LA VISTA (no solo Excel)
+        private void ActivarFiltroFecha(DateTime fechaInicio, DateTime fechaFin)
+        {
+            this.fechaInicio = fechaInicio;
+            this.fechaFin = fechaFin;
+            this.usarFiltroFecha = true;
+
+            // Resetear paginación
+            currentPage = 1;
+            offset = 0;
+
+            // Recargar datos
+            if (BoxTipo.SelectedIndex == 0)
+            {
+                CargarEntradasEnDataGrid();
+            }
+            else
+            {
+                CargarSalidasEnDataGrid();
+            }
+        }
+
+        // ⭐ MÉTODOS ACTUALIZADOS PARA SOPORTAR FILTRO DE FECHA EN LA VISTA
+        private void CargarEntradasEnDataGrid()
+        {
+            if (usarFiltroFecha && fechaInicio.HasValue && fechaFin.HasValue)
+            {
+                rowCount = localDM.getEntradasCountPorSucursalPorFecha(idSucursal, fechaInicio.Value, fechaFin.Value);
+                calculateMaxPages(rowCount);
+                tablaEntradas = localDM.getEntradasPorSucursalPorFecha(idSucursal, fechaInicio.Value, fechaFin.Value, offset, rowsPerPage);
+            }
+            else
+            {
+                rowCount = localDM.getEntradasCountPorSucursal(idSucursal);
+                calculateMaxPages(rowCount);
+                tablaEntradas = localDM.getEntradasPorSucursal(idSucursal, offset, rowsPerPage);
+            }
+
+            tablaEntradas.DefaultView.Sort = "id DESC";
+            tablaEntradasySalidas.DataSource = tablaEntradas;
+            tablaEntradasySalidas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+            tablaEntradasySalidas.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 18, FontStyle.Bold);
+        }
+
+        private void CargarSalidasEnDataGrid()
+        {
+            if (usarFiltroFecha && fechaInicio.HasValue && fechaFin.HasValue)
+            {
+                rowCount = localDM.getSalidasCountPorSucursalPorFecha(idSucursal, fechaInicio.Value, fechaFin.Value);
+                calculateMaxPages(rowCount);
+                tablaSalidas = localDM.getSalidasPorSucursalPorFecha(idSucursal, fechaInicio.Value, fechaFin.Value, offset, rowsPerPage);
+            }
+            else
+            {
+                rowCount = localDM.getSalidasCountPorSucursal(idSucursal);
+                calculateMaxPages(rowCount);
+                tablaSalidas = localDM.getSalidasPorSucursal(idSucursal, offset, rowsPerPage);
+            }
+
+            tablaSalidas.DefaultView.Sort = "id DESC";
+            tablaEntradasySalidas.DataSource = tablaSalidas;
+            tablaEntradasySalidas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+            tablaEntradasySalidas.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 18, FontStyle.Bold);
+        }
+
+        // Metodo incial creado por mi :ccc
+        // Método para generar un archivo Excel con la información de las entradas y salidas
         public void GenerarExcel(int opc)
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
@@ -289,7 +586,7 @@ namespace InventarioCasaCeja
         }
             // Método para cargar datos generales en una hoja
             private void CargarDatosEnHoja(ExcelWorksheet hoja, DataTable tabla)
-        {
+            {
             // Encabezados
             for (int i = 0; i < tabla.Columns.Count; i++)
             {
@@ -309,8 +606,7 @@ namespace InventarioCasaCeja
 
             hoja.Cells[hoja.Dimension.Address].AutoFitColumns();
             hoja.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-        }
-        // Método para configurar la hoja de detalles (establece encabezados base)
+        }       
       
         // Método para llenar la hoja de detalles de Salidas
         private void LlenarDetallesSalidas(ExcelWorksheet hoja, DataTable salidas)
@@ -567,7 +863,6 @@ namespace InventarioCasaCeja
             }
         }
 
-
         private void tablaEntradasySalidas_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -592,7 +887,6 @@ namespace InventarioCasaCeja
                 return;
             }
         }
-
 
         private void BoxTipo_SelectedIndexChanged(object sender, EventArgs e)
         {

@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System;
 using System.Windows.Forms;
 using System.Diagnostics;
+using LiteDB;
 
 namespace InventarioCasaCeja
 {
@@ -2228,6 +2229,188 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
             {
                 command.Parameters.AddWithValue("@id_sucursal_origen", sucursalId);
                 count = Convert.ToInt32(command.ExecuteScalar());
+            }
+            return count;
+        }
+
+
+
+
+        // ⭐ MÉTODOS ACTUALIZADOS PARA LocaldataManager.cs
+        // Agregar estos métodos a tu clase LocaldataManager       
+        public DataTable getEntradasPorSucursalPorFecha(int sucursalId, DateTime fechaInicio, DateTime fechaFin)
+        {
+            DataTable dtEntradas = new DataTable();
+            SQLiteCommand command = connection.CreateCommand();
+            command.CommandText = @"
+        SELECT entradas.id AS ID,
+               entradas.folio_factura AS 'FOLIO FACTURA',
+               entradas.total_factura AS 'TOTAL FACTURA',
+               usuarios.nombre AS 'USUARIO',
+               sucursales.razon_social AS 'SUCURSAL',
+               proveedores.nombre AS 'PROVEEDOR',
+               entradas.fecha_factura AS 'FECHA FACTURA' 
+        FROM entradas
+        JOIN usuarios ON entradas.usuario_id = usuarios.id
+        JOIN sucursales ON entradas.sucursal_id = sucursales.id
+        JOIN proveedores ON entradas.proveedor_id = proveedores.id
+        WHERE sucursales.id = @sucursalId
+        AND DATE(entradas.fecha_factura) BETWEEN @fechaInicio AND @fechaFin
+        ORDER BY entradas.fecha_factura DESC";
+
+            command.Parameters.AddWithValue("@sucursalId", sucursalId);
+            command.Parameters.AddWithValue("@fechaInicio", fechaInicio.ToString("yyyy-MM-dd"));
+            command.Parameters.AddWithValue("@fechaFin", fechaFin.ToString("yyyy-MM-dd"));
+
+            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
+            adapter.Fill(dtEntradas);
+            return dtEntradas;
+        }        
+        /// Obtiene las salidas por sucursal en un rango de fechas específico      
+        public DataTable getSalidasPorSucursalPorFecha(int idSucursalOrigen, DateTime fechaInicio, DateTime fechaFin)
+        {
+            DataTable dtSalidas = new DataTable();
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = @"
+            SELECT salidas.id AS ID,
+            origen.razon_social AS 'SUCURSAL ORIGEN',
+            destino.razon_social AS 'SUCURSAL DESTINO',
+            salidas.folio AS 'FOLIO',
+            salidas.fecha_salida AS 'FECHA SALIDA',
+            usuarios.nombre AS 'USUARIO',
+            salidas.total_importe AS 'TOTAL IMPORTE'
+            FROM salidas
+            JOIN usuarios ON salidas.usuario_id = usuarios.id
+            JOIN sucursales AS origen ON salidas.id_sucursal_origen = origen.id
+            JOIN sucursales AS destino ON salidas.id_sucursal_destino = destino.id
+            WHERE salidas.id_sucursal_origen = @setIdSucursalOrigen
+            AND DATE(salidas.fecha_salida) BETWEEN @fechaInicio AND @fechaFin
+            ORDER BY salidas.fecha_salida DESC";
+
+                command.Parameters.AddWithValue("@setIdSucursalOrigen", idSucursalOrigen);
+                command.Parameters.AddWithValue("@fechaInicio", fechaInicio.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@fechaFin", fechaFin.ToString("yyyy-MM-dd"));
+
+                using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(command))
+                {
+                    adapter.Fill(dtSalidas);
+                }
+            }
+            return dtSalidas;
+        }        
+        /// Obtiene las entradas por sucursal con paginación y filtro de fecha        
+        public DataTable getEntradasPorSucursalPorFecha(int sucursalId, DateTime fechaInicio, DateTime fechaFin, int offset, int rowsPerPage)
+        {
+            DataTable dtEntradas = new DataTable();
+            SQLiteCommand command = connection.CreateCommand();
+            command.CommandText = @"
+        SELECT entradas.id AS ID,
+               entradas.folio_factura AS 'FOLIO FACTURA',
+               entradas.total_factura AS 'TOTAL FACTURA',
+               usuarios.nombre AS 'USUARIO',
+               sucursales.razon_social AS 'SUCURSAL',
+               proveedores.nombre AS 'PROVEEDOR',
+               entradas.fecha_factura AS 'FECHA FACTURA' 
+        FROM entradas
+        JOIN usuarios ON entradas.usuario_id = usuarios.id
+        JOIN sucursales ON entradas.sucursal_id = sucursales.id
+        JOIN proveedores ON entradas.proveedor_id = proveedores.id
+        WHERE sucursales.id = @sucursalId
+        AND DATE(entradas.fecha_factura) BETWEEN @fechaInicio AND @fechaFin
+        ORDER BY entradas.fecha_factura DESC
+        LIMIT @setRowsPerPage OFFSET @setOffset";
+
+            command.Parameters.AddWithValue("@sucursalId", sucursalId);
+            command.Parameters.AddWithValue("@fechaInicio", fechaInicio.ToString("yyyy-MM-dd"));
+            command.Parameters.AddWithValue("@fechaFin", fechaFin.ToString("yyyy-MM-dd"));
+            command.Parameters.AddWithValue("@setRowsPerPage", rowsPerPage);
+            command.Parameters.AddWithValue("@setOffset", offset);
+
+            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
+            adapter.Fill(dtEntradas);
+            return dtEntradas;
+        }        
+        /// Obtiene las salidas por sucursal con paginación y filtro de fecha        
+        public DataTable getSalidasPorSucursalPorFecha(int idSucursalOrigen, DateTime fechaInicio, DateTime fechaFin, int offset, int rowsPerPage)
+        {
+            DataTable dtSalidas = new DataTable();
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = @"
+            SELECT salidas.id AS ID,
+            origen.razon_social AS 'SUCURSAL ORIGEN',
+            destino.razon_social AS 'SUCURSAL DESTINO',
+            salidas.folio AS 'FOLIO',
+            salidas.fecha_salida AS 'FECHA SALIDA',
+            usuarios.nombre AS 'USUARIO',
+            salidas.total_importe AS 'TOTAL IMPORTE'
+            FROM salidas
+            JOIN usuarios ON salidas.usuario_id = usuarios.id
+            JOIN sucursales AS origen ON salidas.id_sucursal_origen = origen.id
+            JOIN sucursales AS destino ON salidas.id_sucursal_destino = destino.id
+            WHERE salidas.id_sucursal_origen = @setIdSucursalOrigen
+            AND DATE(salidas.fecha_salida) BETWEEN @fechaInicio AND @fechaFin
+            ORDER BY salidas.fecha_salida DESC
+            LIMIT @setRowsPerPage OFFSET @setOffset";
+
+                command.Parameters.AddWithValue("@setIdSucursalOrigen", idSucursalOrigen);
+                command.Parameters.AddWithValue("@fechaInicio", fechaInicio.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@fechaFin", fechaFin.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@setRowsPerPage", rowsPerPage);
+                command.Parameters.AddWithValue("@setOffset", offset);
+
+                using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(command))
+                {
+                    adapter.Fill(dtSalidas);
+                }
+            }
+            return dtSalidas;
+        }        
+        /// Obtiene el conteo de entradas por sucursal en un rango de fechas        
+        public int getEntradasCountPorSucursalPorFecha(int sucursalId, DateTime fechaInicio, DateTime fechaFin)
+        {
+            int count = 0;
+            SQLiteCommand command = connection.CreateCommand();
+            command.CommandText = @"
+        SELECT COUNT(*) 
+        FROM entradas
+        JOIN sucursales ON entradas.sucursal_id = sucursales.id
+        WHERE sucursales.id = @sucursalId
+        AND DATE(entradas.fecha_factura) BETWEEN @fechaInicio AND @fechaFin";
+
+            command.Parameters.AddWithValue("@sucursalId", sucursalId);
+            command.Parameters.AddWithValue("@fechaInicio", fechaInicio.ToString("yyyy-MM-dd"));
+            command.Parameters.AddWithValue("@fechaFin", fechaFin.ToString("yyyy-MM-dd"));
+
+            object result = command.ExecuteScalar();
+            if (result != null && result != DBNull.Value)
+            {
+                count = Convert.ToInt32(result);
+            }
+            return count;
+        }        
+        /// Obtiene el conteo de salidas por sucursal en un rango de fechas        
+        public int getSalidasCountPorSucursalPorFecha(int idSucursalOrigen, DateTime fechaInicio, DateTime fechaFin)
+        {
+            int count = 0;
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = @"
+            SELECT COUNT(*) 
+            FROM salidas
+            WHERE salidas.id_sucursal_origen = @setIdSucursalOrigen
+            AND DATE(salidas.fecha_salida) BETWEEN @fechaInicio AND @fechaFin";
+
+                command.Parameters.AddWithValue("@setIdSucursalOrigen", idSucursalOrigen);
+                command.Parameters.AddWithValue("@fechaInicio", fechaInicio.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@fechaFin", fechaFin.ToString("yyyy-MM-dd"));
+
+                object result = command.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    count = Convert.ToInt32(result);
+                }
             }
             return count;
         }
