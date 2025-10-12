@@ -142,7 +142,7 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel5, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel6, 0, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(2, 2);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 61.40351F));
@@ -161,7 +161,7 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel5.Controls.Add(this.quitarProdButton, 0, 0);
             this.tableLayoutPanel5.Controls.Add(this.finish, 1, 0);
             this.tableLayoutPanel5.Location = new System.Drawing.Point(2, 116);
-            this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(2);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.RowCount = 1;
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -201,7 +201,7 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel6.ColumnCount = 3;
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.94479F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.05521F));
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 525F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 527F));
             this.tableLayoutPanel6.Controls.Add(this.label3, 2, 0);
             this.tableLayoutPanel6.Controls.Add(this.txtSucOrig, 2, 1);
             this.tableLayoutPanel6.Controls.Add(this.label1, 1, 0);
@@ -209,7 +209,7 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel6.Controls.Add(this.txtcodigo, 0, 1);
             this.tableLayoutPanel6.Controls.Add(this.tableLayoutPanel7, 0, 0);
             this.tableLayoutPanel6.Location = new System.Drawing.Point(2, 2);
-            this.tableLayoutPanel6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tableLayoutPanel6.Margin = new System.Windows.Forms.Padding(2);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.RowCount = 3;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 37.7193F));
@@ -222,7 +222,7 @@ namespace InventarioCasaCeja
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
-            this.label3.Location = new System.Drawing.Point(592, 0);
+            this.label3.Location = new System.Drawing.Point(590, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(199, 30);
             this.label3.TabIndex = 30;
@@ -236,17 +236,17 @@ namespace InventarioCasaCeja
             this.txtSucOrig.BackColor = System.Drawing.SystemColors.Window;
             this.txtSucOrig.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.txtSucOrig.Enabled = false;
-            this.txtSucOrig.Location = new System.Drawing.Point(592, 38);
+            this.txtSucOrig.Location = new System.Drawing.Point(590, 38);
             this.txtSucOrig.Name = "txtSucOrig";
             this.txtSucOrig.ShortcutsEnabled = false;
-            this.txtSucOrig.Size = new System.Drawing.Size(520, 50);
+            this.txtSucOrig.Size = new System.Drawing.Size(522, 50);
             this.txtSucOrig.TabIndex = 28;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(309, 0);
+            this.label1.Location = new System.Drawing.Point(308, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(143, 30);
             this.label1.TabIndex = 13;
@@ -257,9 +257,9 @@ namespace InventarioCasaCeja
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(309, 38);
+            this.button1.Location = new System.Drawing.Point(308, 38);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(277, 53);
+            this.button1.Size = new System.Drawing.Size(276, 53);
             this.button1.TabIndex = 14;
             this.button1.Text = "SELECCIONAR IMAGEN (F5)";
             this.button1.UseVisualStyleBackColor = true;
@@ -273,7 +273,7 @@ namespace InventarioCasaCeja
             this.txtcodigo.Location = new System.Drawing.Point(3, 38);
             this.txtcodigo.MaxLength = 255;
             this.txtcodigo.Name = "txtcodigo";
-            this.txtcodigo.Size = new System.Drawing.Size(300, 50);
+            this.txtcodigo.Size = new System.Drawing.Size(299, 50);
             this.txtcodigo.TabIndex = 0;
             this.txtcodigo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtcodigo_KeyDown);
             // 
@@ -288,19 +288,19 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel7.Controls.Add(this.label2, 1, 0);
             this.tableLayoutPanel7.Controls.Add(this.label4, 0, 0);
             this.tableLayoutPanel7.Location = new System.Drawing.Point(2, 2);
-            this.tableLayoutPanel7.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tableLayoutPanel7.Margin = new System.Windows.Forms.Padding(2);
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
             this.tableLayoutPanel7.RowCount = 1;
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel7.Size = new System.Drawing.Size(302, 31);
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(301, 31);
             this.tableLayoutPanel7.TabIndex = 29;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold);
-            this.label2.Location = new System.Drawing.Point(163, 0);
+            this.label2.Location = new System.Drawing.Point(162, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(131, 31);
             this.label2.TabIndex = 11;
@@ -321,7 +321,7 @@ namespace InventarioCasaCeja
             this.exit_button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.exit_button.Font = new System.Drawing.Font("Segoe UI Semibold", 20F, System.Drawing.FontStyle.Bold);
             this.exit_button.Location = new System.Drawing.Point(935, 0);
-            this.exit_button.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.exit_button.Margin = new System.Windows.Forms.Padding(2);
             this.exit_button.Name = "exit_button";
             this.exit_button.Size = new System.Drawing.Size(194, 41);
             this.exit_button.TabIndex = 21;

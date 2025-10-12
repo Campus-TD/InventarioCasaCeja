@@ -34,8 +34,8 @@ namespace InventarioCasaCeja
             // 3. Tablas que dependen de las básicas
             {"clientes", "CREATE TABLE 'clientes' ('id' INTEGER, 'nombre' TEXT, 'rfc' TEXT, 'calle' TEXT, 'no_exterior' TEXT, 'no_interior' TEXT, 'cp' TEXT, 'colonia' TEXT, 'ciudad' TEXT, 'telefono' TEXT, 'correo' TEXT, 'activo' INTEGER, 'created_at' TEXT, 'updated_at' TEXT, PRIMARY KEY('id'))"},
             {"clientes_temporal", "CREATE TABLE 'clientes_temporal' ('id' INTEGER, 'nombre' TEXT, 'rfc' TEXT, 'calle' TEXT, 'no_exterior' TEXT, 'no_interior' TEXT, 'cp' TEXT, 'colonia' TEXT, 'ciudad' TEXT, 'telefono' TEXT, 'correo' TEXT, PRIMARY KEY('id' AUTOINCREMENT))"},
-            {"entradas", "CREATE TABLE 'entradas' ('id' INTEGER NOT NULL, 'fecha_factura' TEXT, 'total_factura' REAL, 'folio_factura' TEXT, 'usuario_id' INTEGER, 'sucursal_id' INTEGER, 'proveedor_id' INTEGER, 'cancelacion' INTEGER, 'estado' INTEGER, 'detalles' TEXT, 'created_at' TEXT, 'updated_at' TEXT, PRIMARY KEY('id' AUTOINCREMENT))"},
-        
+            {"entradas", "CREATE TABLE 'entradas' ('id' INTEGER NOT NULL, 'fecha_factura' TEXT, 'total_factura' REAL, 'folio_factura' TEXT, 'usuario_id' INTEGER, 'sucursal_id' INTEGER, 'proveedor_id' INTEGER, 'cancelacion' INTEGER, 'estado' INTEGER, 'detalles' TEXT, 'created_at' TEXT, 'updated_at' TEXT, 'comentarios' TEXT DEFAULT NULL, PRIMARY KEY('id' AUTOINCREMENT))"},
+            
             // 4. Tablas de transacciones principales
             {"ventas", "CREATE TABLE 'ventas' ('id' INTEGER NOT NULL, 'total' REAL, 'descuento' REAL, 'folio' TEXT, 'folio_corte' TEXT, 'fecha_venta' TEXT, 'metodo_pago' TEXT, 'tipo' INTEGER, 'sucursal_id' INTEGER, 'usuario_id' INTEGER, 'cancelacion' TEXT, 'estado' INTEGER, 'detalles' TEXT, FOREIGN KEY('usuario_id') REFERENCES 'usuarios'('id'), FOREIGN KEY('sucursal_id') REFERENCES 'sucursales'('id'), PRIMARY KEY('id' AUTOINCREMENT))"},
             {"apartados", "CREATE TABLE 'apartados' ('id' INTEGER, 'productos' TEXT, 'total' REAL, 'total_pagado' REAL, 'fecha_apartado' TEXT, 'folio_corte' TEXT, 'fecha_entrega' TEXT, 'estado' INTEGER, 'cliente_creditos_id' INTEGER, 'id_cajero_registro' INTEGER, 'id_cejero_entrega' INTEGER, 'sucursal_id' INTEGER, 'observaciones' TEXT, 'created_at' TEXT, 'updated_at' TEXT, FOREIGN KEY('id_cajero_registro') REFERENCES 'usuarios'('id'), FOREIGN KEY('id_cejero_entrega') REFERENCES 'usuarios'('id'), PRIMARY KEY('id' AUTOINCREMENT))"},
@@ -1019,21 +1019,20 @@ SELECT entradas.id AS ID,
        usuarios.nombre AS 'USUARIO',
        sucursales.razon_social AS 'SUCURSAL',
        proveedores.nombre AS 'PROVEEDOR',
-       entradas.fecha_factura AS 'FECHA FACTURA' 
+       entradas.fecha_factura AS 'FECHA FACTURA',
+       entradas.comentarios AS 'COMENTARIOS'
 FROM entradas
 JOIN usuarios ON entradas.usuario_id = usuarios.id
 JOIN sucursales ON entradas.sucursal_id = sucursales.id
 JOIN proveedores ON entradas.proveedor_id = proveedores.id
 WHERE sucursales.id = @sucursalId
 ORDER BY entradas.id DESC";
-
             command.Parameters.AddWithValue("@sucursalId", sucursalId);
-
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dtEntradas);
-
             return dtEntradas;
         }
+
         public DataTable getSalidasPorSucursal(int idSucursalOrigen)
         {
             DataTable dtSalidas = new DataTable();
@@ -1309,29 +1308,30 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
             {
                 SQLiteCommand command = connection.CreateCommand();
                 command.CommandText = @"
-            INSERT OR REPLACE INTO entradas (
-                id,
-                folio_factura,
-                total_factura,
-                fecha_factura,
-                usuario_id,
-                sucursal_id,
-                proveedor_id,
-                created_at,
-                updated_at
-            )
-            VALUES(
-                @setId,
-                @setFolioFactura,
-                @setTotalFactura,
-                @setFechaFactura,
-                @setUsuarioId,
-                @setSucursalId,
-                @setProveedorId,
-                @setCreatedAt,
-                @setUpdatedAt
-            )";
-
+    INSERT OR REPLACE INTO entradas (
+        id,
+        folio_factura,
+        total_factura,
+        fecha_factura,
+        usuario_id,
+        sucursal_id,
+        proveedor_id,
+        comentarios,
+        created_at,
+        updated_at
+    )
+    VALUES(
+        @setId,
+        @setFolioFactura,
+        @setTotalFactura,
+        @setFechaFactura,
+        @setUsuarioId,
+        @setSucursalId,
+        @setProveedorId,
+        @setComentarios,
+        @setCreatedAt,
+        @setUpdatedAt
+    )";
                 command.Parameters.AddWithValue("setId", entrada.id);
                 command.Parameters.AddWithValue("setFolioFactura", entrada.folio_factura);
                 command.Parameters.AddWithValue("setTotalFactura", entrada.total_factura);
@@ -1339,9 +1339,9 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
                 command.Parameters.AddWithValue("setUsuarioId", entrada.usuario_id);
                 command.Parameters.AddWithValue("setSucursalId", entrada.sucursal_id);
                 command.Parameters.AddWithValue("setProveedorId", entrada.proveedor_id);
+                command.Parameters.AddWithValue("setComentarios", entrada.comentarios ?? (object)DBNull.Value); // ⭐ NUEVO
                 command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-
                 command.ExecuteNonQuery();
             }
         }
@@ -1900,33 +1900,34 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
         {
             SQLiteCommand command = connection.CreateCommand();
             command.CommandText = @"
-        INSERT INTO entradas (
-            fecha_factura,
-            total_factura,
-            folio_factura,
-            usuario_id,
-            sucursal_id,
-            proveedor_id,
-            cancelacion,
-            estado,
-            detalles,
-            created_at,
-            updated_at
-        )
-        VALUES (
-            @setFecha,
-            @setTotal,
-            @setFolio,
-            @setUsuario,
-            @setSucursal,
-            @setProveedor,
-            @setCancelacion,
-            @setEstado,
-            @setDetalles,
-            @setCreatedAt,
-            @setUpdatedAt
-        )";
-
+INSERT INTO entradas (
+    fecha_factura,
+    total_factura,
+    folio_factura,
+    usuario_id,
+    sucursal_id,
+    proveedor_id,
+    cancelacion,
+    estado,
+    detalles,
+    comentarios,
+    created_at,
+    updated_at
+)
+VALUES (
+    @setFecha,
+    @setTotal,
+    @setFolio,
+    @setUsuario,
+    @setSucursal,
+    @setProveedor,
+    @setCancelacion,
+    @setEstado,
+    @setDetalles,
+    @setComentarios,
+    @setCreatedAt,
+    @setUpdatedAt
+)";
             command.Parameters.AddWithValue("setFecha", entrada["fecha_factura"].ToString());
             command.Parameters.AddWithValue("setTotal", entrada["total_factura"].ToString());
             command.Parameters.AddWithValue("setFolio", entrada["folio_factura"].ToString());
@@ -1936,40 +1937,39 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
             command.Parameters.AddWithValue("setCancelacion", 0);
             command.Parameters.AddWithValue("setEstado", 1);
             command.Parameters.AddWithValue("setDetalles", "Pendiente de envío");
+            command.Parameters.AddWithValue("setComentarios", entrada.ContainsKey("comentarios") && entrada["comentarios"] != null ? entrada["comentarios"] : DBNull.Value);
             command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             command.ExecuteScalar();
-
             command.CommandText = "select last_insert_rowid()";
             Int64 LastRowID64 = (Int64)command.ExecuteScalar();
             int id = (int)LastRowID64;
-
             foreach (ProductoEntrada p in productos)
             {
                 command.CommandText = @"
-            INSERT INTO producto_entrada (
-                entrada_id,
-                producto_id,
-                codigo,
-                cantidad,
-                costo,
-                estado,
-                detalles,
-                created_at,
-                updated_at
-            )
-            VALUES (
-                @setEntrada,
-                @setProducto,
-                @setCodigo,
-                @setCantidad,
-                @setCosto,
-                @setEstado,
-                @setDetalles,
-                @setCreatedAt,
-                @setUpdatedAt
-            )";
-                command.Parameters.Clear(); 
+    INSERT INTO producto_entrada (
+        entrada_id,
+        producto_id,
+        codigo,
+        cantidad,
+        costo,
+        estado,
+        detalles,
+        created_at,
+        updated_at
+    )
+    VALUES (
+        @setEntrada,
+        @setProducto,
+        @setCodigo,
+        @setCantidad,
+        @setCosto,
+        @setEstado,
+        @setDetalles,
+        @setCreatedAt,
+        @setUpdatedAt
+    )";
+                command.Parameters.Clear();
                 command.Parameters.AddWithValue("setEntrada", id);
                 command.Parameters.AddWithValue("setProducto", p.id);
                 command.Parameters.AddWithValue("setCodigo", p.codigo);
@@ -2184,28 +2184,26 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
             DataTable dtEntradas = new DataTable();
             SQLiteCommand command = connection.CreateCommand();
             command.CommandText = @"
-        SELECT entradas.id AS ID,
-               entradas.folio_factura AS 'FOLIO FACTURA',
-               entradas.total_factura AS 'TOTAL FACTURA',
-               usuarios.nombre AS 'USUARIO',
-               sucursales.razon_social AS 'SUCURSAL',
-               proveedores.nombre AS 'PROVEEDOR',
-               entradas.fecha_factura AS 'FECHA FACTURA' 
-        FROM entradas
-        JOIN usuarios ON entradas.usuario_id = usuarios.id
-        JOIN sucursales ON entradas.sucursal_id = sucursales.id
-        JOIN proveedores ON entradas.proveedor_id = proveedores.id
-        WHERE sucursales.id = @sucursalId
-        ORDER BY entradas.id DESC
-        LIMIT @rowsPerPage OFFSET @offset";
-
+SELECT entradas.id AS ID,
+       entradas.folio_factura AS 'FOLIO FACTURA',
+       entradas.total_factura AS 'TOTAL FACTURA',
+       usuarios.nombre AS 'USUARIO',
+       sucursales.razon_social AS 'SUCURSAL',
+       proveedores.nombre AS 'PROVEEDOR',
+       entradas.fecha_factura AS 'FECHA FACTURA',
+       entradas.comentarios AS 'COMENTARIOS'
+FROM entradas
+JOIN usuarios ON entradas.usuario_id = usuarios.id
+JOIN sucursales ON entradas.sucursal_id = sucursales.id
+JOIN proveedores ON entradas.proveedor_id = proveedores.id
+WHERE sucursales.id = @sucursalId
+ORDER BY entradas.id DESC
+LIMIT @rowsPerPage OFFSET @offset";
             command.Parameters.AddWithValue("@sucursalId", sucursalId);
             command.Parameters.AddWithValue("@rowsPerPage", rowsPerPage);
             command.Parameters.AddWithValue("@offset", offset);
-
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dtEntradas);
-
             return dtEntradas;
         }
 
@@ -2233,39 +2231,34 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
             return count;
         }
 
-
-
-
-        // ⭐ MÉTODOS ACTUALIZADOS PARA LocaldataManager.cs
-        // Agregar estos métodos a tu clase LocaldataManager       
         public DataTable getEntradasPorSucursalPorFecha(int sucursalId, DateTime fechaInicio, DateTime fechaFin)
         {
             DataTable dtEntradas = new DataTable();
             SQLiteCommand command = connection.CreateCommand();
             command.CommandText = @"
-        SELECT entradas.id AS ID,
-               entradas.folio_factura AS 'FOLIO FACTURA',
-               entradas.total_factura AS 'TOTAL FACTURA',
-               usuarios.nombre AS 'USUARIO',
-               sucursales.razon_social AS 'SUCURSAL',
-               proveedores.nombre AS 'PROVEEDOR',
-               entradas.fecha_factura AS 'FECHA FACTURA' 
-        FROM entradas
-        JOIN usuarios ON entradas.usuario_id = usuarios.id
-        JOIN sucursales ON entradas.sucursal_id = sucursales.id
-        JOIN proveedores ON entradas.proveedor_id = proveedores.id
-        WHERE sucursales.id = @sucursalId
-        AND DATE(entradas.fecha_factura) BETWEEN @fechaInicio AND @fechaFin
-        ORDER BY entradas.fecha_factura DESC";
-
+SELECT entradas.id AS ID,
+       entradas.folio_factura AS 'FOLIO FACTURA',
+       entradas.total_factura AS 'TOTAL FACTURA',
+       usuarios.nombre AS 'USUARIO',
+       sucursales.razon_social AS 'SUCURSAL',
+       proveedores.nombre AS 'PROVEEDOR',
+       entradas.fecha_factura AS 'FECHA FACTURA',
+       entradas.comentarios AS 'COMENTARIOS'
+FROM entradas
+JOIN usuarios ON entradas.usuario_id = usuarios.id
+JOIN sucursales ON entradas.sucursal_id = sucursales.id
+JOIN proveedores ON entradas.proveedor_id = proveedores.id
+WHERE sucursales.id = @sucursalId
+AND DATE(entradas.fecha_factura) BETWEEN @fechaInicio AND @fechaFin
+ORDER BY entradas.fecha_factura DESC";
             command.Parameters.AddWithValue("@sucursalId", sucursalId);
             command.Parameters.AddWithValue("@fechaInicio", fechaInicio.ToString("yyyy-MM-dd"));
             command.Parameters.AddWithValue("@fechaFin", fechaFin.ToString("yyyy-MM-dd"));
-
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dtEntradas);
             return dtEntradas;
-        }        
+        }
+
         /// Obtiene las salidas por sucursal en un rango de fechas específico      
         public DataTable getSalidasPorSucursalPorFecha(int idSucursalOrigen, DateTime fechaInicio, DateTime fechaFin)
         {
@@ -2415,5 +2408,15 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
             return count;
         }
 
+        // ⭐ NUEVO MÉTODO: Obtener solo el comentario de una entrada
+        public string getComentarioEntrada(int entradaId)
+        {
+            SQLiteCommand command = connection.CreateCommand();
+            command.CommandText = "SELECT comentarios FROM entradas WHERE id = @entradaId";
+            command.Parameters.AddWithValue("@entradaId", entradaId);
+
+            object result = command.ExecuteScalar();
+            return result != null && result != DBNull.Value ? result.ToString() : string.Empty;
+        }
     }
 }

@@ -34,7 +34,7 @@ namespace InventarioCasaCeja
             tipo.AddRange(range);
             BoxTipo.DataSource = tipo;
             BoxTipo.SelectedIndex = 0;
-            this.idSucursal = idSucursal;
+            this.idSucursal = idSucursal;            
             CargarEntradasEnDataGrid();
         }       
 
@@ -886,6 +886,62 @@ namespace InventarioCasaCeja
                 BoxTipo.Focus();
                 return;
             }
+        }
+
+        private void TablaEntradasySalidas_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            // Solo aplicar formato a la columna COMENTARIOS cuando estamos en Entradas
+            if (type == 0 && tablaEntradasySalidas.Columns[e.ColumnIndex].Name == "COMENTARIOS")
+            {
+                if (e.Value != null && !string.IsNullOrWhiteSpace(e.Value.ToString()))
+                {
+                    // Mostrar "📝 VER" si hay comentario
+                    e.Value = "📝 VER";
+                    e.CellStyle.ForeColor = Color.Blue;
+                    e.CellStyle.Font = new Font(e.CellStyle.Font, FontStyle.Bold);
+                    e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    e.FormattingApplied = true;
+                }
+                else
+                {
+                    // Mostrar "-" si no hay comentario
+                    e.Value = "-";
+                    e.CellStyle.ForeColor = Color.Gray;
+                    e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    e.FormattingApplied = true;
+                }
+            }
+        }
+
+        // ⭐ NUEVO MÉTODO: Manejar clic en la celda de comentarios
+        private void TablaEntradasySalidas_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Verificar que no sea el header y que estemos en Entradas
+            if (e.RowIndex < 0 || type != 0) return;
+
+            // Verificar si se hizo clic en la columna COMENTARIOS
+            if (tablaEntradasySalidas.Columns[e.ColumnIndex].Name == "COMENTARIOS")
+            {
+                // Obtener el comentario completo de la base de datos
+                int entradaId = Convert.ToInt32(tablaEntradasySalidas.Rows[e.RowIndex].Cells["ID"].Value);
+                string comentario = ObtenerComentarioEntrada(entradaId);
+
+                if (!string.IsNullOrWhiteSpace(comentario))
+                {
+                    // Mostrar el comentario en un MessageBox
+                    MessageBox.Show(comentario, "Comentario de la Entrada", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Esta entrada no tiene comentarios.", "Sin Comentarios", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        // ⭐ NUEVO MÉTODO: Obtener el comentario completo de una entrada
+        private string ObtenerComentarioEntrada(int entradaId)
+        {
+            return localDM.getComentarioEntrada(entradaId);
         }
 
         private void BoxTipo_SelectedIndexChanged(object sender, EventArgs e)

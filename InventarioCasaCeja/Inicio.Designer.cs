@@ -34,6 +34,7 @@ namespace InventarioCasaCeja
             this.opcionesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configuraciónToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sincronizarBaseDeDatosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.abrirCarpetaDocumentosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -170,7 +171,8 @@ namespace InventarioCasaCeja
             // 
             this.opcionesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.configuraciónToolStripMenuItem,
-            this.sincronizarBaseDeDatosToolStripMenuItem});
+            this.sincronizarBaseDeDatosToolStripMenuItem,
+            this.abrirCarpetaDocumentosToolStripMenuItem});
             this.opcionesToolStripMenuItem.Name = "opcionesToolStripMenuItem";
             this.opcionesToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
             this.opcionesToolStripMenuItem.Text = "Opciones";
@@ -178,16 +180,23 @@ namespace InventarioCasaCeja
             // configuraciónToolStripMenuItem
             // 
             this.configuraciónToolStripMenuItem.Name = "configuraciónToolStripMenuItem";
-            this.configuraciónToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.configuraciónToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.configuraciónToolStripMenuItem.Text = "Configuración";
             this.configuraciónToolStripMenuItem.Click += new System.EventHandler(this.configuraciónToolStripMenuItem_Click);
             // 
             // sincronizarBaseDeDatosToolStripMenuItem
             // 
             this.sincronizarBaseDeDatosToolStripMenuItem.Name = "sincronizarBaseDeDatosToolStripMenuItem";
-            this.sincronizarBaseDeDatosToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.sincronizarBaseDeDatosToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.sincronizarBaseDeDatosToolStripMenuItem.Text = "Sincronizar base de datos";
             this.sincronizarBaseDeDatosToolStripMenuItem.Click += new System.EventHandler(this.sincronizarBaseDeDatosToolStripMenuItem_Click);
+            // 
+            // abrirCarpetaDocumentosToolStripMenuItem
+            // 
+            this.abrirCarpetaDocumentosToolStripMenuItem.Name = "abrirCarpetaDocumentosToolStripMenuItem";
+            this.abrirCarpetaDocumentosToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.abrirCarpetaDocumentosToolStripMenuItem.Text = "Abrir Carpeta Documentos";
+            this.abrirCarpetaDocumentosToolStripMenuItem.Click += new System.EventHandler(this.abrirCarpetaDocumentosToolStripMenuItem_Click);
             // 
             // Inicio
             // 
@@ -226,6 +235,7 @@ namespace InventarioCasaCeja
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ToolStripMenuItem sincronizarBaseDeDatosToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem abrirCarpetaDocumentosToolStripMenuItem;
     }
 }
 

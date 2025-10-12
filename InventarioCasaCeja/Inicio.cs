@@ -636,5 +636,22 @@ namespace InventarioCasaCeja
             HistEntradasSalidas hes = new HistEntradasSalidas(idsucursal);
             hes.ShowDialog();
         }
+
+        private void abrirCarpetaDocumentosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Configuración de carpetas
+            string carpetaPrincipal = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "CasaCejaDocs");            
+
+            // Verificar si las carpetas existen
+            if (!Directory.Exists(carpetaPrincipal))
+            {
+                MessageBox.Show("La carpeta 'CasaCejaDocs' no existe. Esta carpeta se genera automáticamente al realizar una operación.",
+                                "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }           
+
+            // Abrir la carpeta QrSalidas
+            System.Diagnostics.Process.Start("explorer.exe", carpetaPrincipal);
+        }
     }
 }
