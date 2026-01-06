@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SQLite;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,14 +35,75 @@ namespace InventarioCasaCeja
             tabla.DataSource = tablasource;
             this.sucursal = idsucursal;
             mostrarSucursal();
+            ConfigurarColumnasTabla();
         }
 
         private void CrearEntrada_Load(object sender, EventArgs e)
         {
             txtcodigo.Focus();
         }
+      
 
-        private void mostrarSucursal()
+    // ★ AGREGAR este método nuevo para configurar las columnas
+    private void ConfigurarColumnasTabla()
+    {
+        // Limpiar columnas auto-generadas
+        tabla.AutoGenerateColumns = false;
+        tabla.Columns.Clear();
+
+        // ★ Columna 1: ID
+        DataGridViewTextBoxColumn colId = new DataGridViewTextBoxColumn();
+        colId.DataPropertyName = "id";
+        colId.HeaderText = "ID";
+        colId.Name = "ID";
+        colId.Width = 50;
+        colId.ReadOnly = true;
+        tabla.Columns.Add(colId);
+
+        // ★ Columna 2: CODIGO
+        DataGridViewTextBoxColumn colCodigo = new DataGridViewTextBoxColumn();
+        colCodigo.DataPropertyName = "codigo";
+        colCodigo.HeaderText = "CODIGO";
+        colCodigo.Name = "CODIGO";
+        colCodigo.Width = 100;
+        colCodigo.ReadOnly = true;
+        tabla.Columns.Add(colCodigo);
+
+        // ★ Columna 3: NOMBRE
+        DataGridViewTextBoxColumn colNombre = new DataGridViewTextBoxColumn();
+        colNombre.DataPropertyName = "nombre";
+        colNombre.HeaderText = "NOMBRE";
+        colNombre.Name = "NOMBRE";
+        colNombre.Width = 300;
+        colNombre.ReadOnly = true;
+        tabla.Columns.Add(colNombre);
+
+        // ★ Columna 4: CANTIDAD (editable)
+        DataGridViewTextBoxColumn colCantidad = new DataGridViewTextBoxColumn();
+        colCantidad.DataPropertyName = "cantidad";
+        colCantidad.HeaderText = "CANTIDAD";
+        colCantidad.Name = "CANTIDAD";
+        colCantidad.Width = 80;
+        colCantidad.ReadOnly = false; // Esta es editable
+        tabla.Columns.Add(colCantidad);
+
+        // ★ Columna 5: COSTO (editable)
+        DataGridViewTextBoxColumn colCosto = new DataGridViewTextBoxColumn();
+        colCosto.DataPropertyName = "costo";
+        colCosto.HeaderText = "COSTO";
+        colCosto.Name = "COSTO";
+        colCosto.Width = 100;
+        colCosto.ReadOnly = false; // Esta es editable
+        colCosto.DefaultCellStyle.Format = "C2"; // Formato de moneda
+        tabla.Columns.Add(colCosto);
+
+        // ★ Configuraciones adicionales
+        tabla.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        tabla.MultiSelect = false;
+        tabla.AllowUserToAddRows = false;
+        tabla.AllowUserToDeleteRows = false;
+    }
+    private void mostrarSucursal()
         {
             Sucursal sucursaltxt = localDM.getSucursal(sucursal);
             if (sucursaltxt != null)
@@ -188,8 +250,28 @@ namespace InventarioCasaCeja
 
         private void SeleccionarImagen(object sender, EventArgs e)
         {
+            // Configuración de carpetas
+            string carpetaPrincipal = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "CasaCejaDocs");
+            string subcarpeta = Path.Combine(carpetaPrincipal, "QrSalidas");
+
+            // Verificar si las carpetas existen
+            if (!Directory.Exists(carpetaPrincipal))
+            {
+                MessageBox.Show("La carpeta 'CasaCejaDocs' no existe. Esta carpeta se genera automáticamente al realizar una operación.",
+                                "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (!Directory.Exists(subcarpeta))
+            {
+                MessageBox.Show("La carpeta 'QrSalidas' no existe. Esta carpeta se creará automáticamente al generar una salida.",
+                                "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Archivos de imagen|*.jpg;*.jpeg;*.png;*.gif;*.bmp";
+            openFileDialog.InitialDirectory = subcarpeta; // Establece la ruta inicial
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
@@ -236,9 +318,8 @@ namespace InventarioCasaCeja
                                     productos.Add(new ProductoEntrada
                                     {
                                         id = Convert.ToInt32(idProducto),
-                                        codigo = productoDetallado.codigo, // Agregar código del producto
-                                        nombre = productoDetallado.nombre, // Agregar nombre del producto
-                                                                           // Agrega otros campos según la estructura de ProductoEntrada.
+                                        codigo = productoDetallado.codigo,
+                                        nombre = productoDetallado.nombre,
                                         cantidad = cantidad,
                                         costo = Convert.ToDouble(precio),
                                     });
@@ -246,11 +327,9 @@ namespace InventarioCasaCeja
                             }
 
                             // Refresca el DataGridView con la nueva información.
-                            tablasource.DataSource = null; // Establecer a null antes de volver a asignar la lista.
+                            tablasource.DataSource = null;
                             tablasource.DataSource = productos;
                             tabla.DataSource = tablasource;
-
-                            // Esto debería ser suficiente para forzar una actualización.
                             tabla.Refresh();
 
                             // Si hay productos duplicados, muestra un MessageBox con los nombres de los productos

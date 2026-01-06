@@ -29,7 +29,7 @@ namespace InventarioCasaCeja
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tabla = new System.Windows.Forms.DataGridView();
@@ -112,8 +112,8 @@ namespace InventarioCasaCeja
             this.tabla.Name = "tabla";
             this.tabla.RowHeadersVisible = false;
             this.tabla.RowHeadersWidth = 51;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI Semibold", 18F);
-            this.tabla.RowsDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI Semibold", 18F);
+            this.tabla.RowsDefaultCellStyle = dataGridViewCellStyle1;
             this.tabla.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.tabla.Size = new System.Drawing.Size(1130, 278);
             this.tabla.StandardTab = true;
@@ -129,10 +129,10 @@ namespace InventarioCasaCeja
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel2.ColumnCount = 4;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45.38745F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 54.61255F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 423F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 436F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 53.25581F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 46.74419F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 297F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 300F));
             this.tableLayoutPanel2.Controls.Add(this.txtcodigo, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel5, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.quitarProdButton, 3, 1);
@@ -157,7 +157,7 @@ namespace InventarioCasaCeja
             this.txtcodigo.Location = new System.Drawing.Point(3, 35);
             this.txtcodigo.MaxLength = 255;
             this.txtcodigo.Name = "txtcodigo";
-            this.txtcodigo.Size = new System.Drawing.Size(117, 47);
+            this.txtcodigo.Size = new System.Drawing.Size(277, 47);
             this.txtcodigo.TabIndex = 0;
             this.txtcodigo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtcodigo_KeyDown);
             // 
@@ -177,7 +177,7 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel5.RowCount = 1;
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel5.Size = new System.Drawing.Size(119, 28);
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(279, 28);
             this.tableLayoutPanel5.TabIndex = 18;
             // 
             // label2
@@ -185,9 +185,9 @@ namespace InventarioCasaCeja
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 14F, System.Drawing.FontStyle.Bold);
-            this.label2.Location = new System.Drawing.Point(69, 0);
+            this.label2.Location = new System.Drawing.Point(164, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(47, 28);
+            this.label2.Size = new System.Drawing.Size(112, 28);
             this.label2.TabIndex = 17;
             this.label2.Text = "CATALOGO (F2)";
             // 
@@ -197,7 +197,7 @@ namespace InventarioCasaCeja
             this.label4.Font = new System.Drawing.Font("Segoe UI Semibold", 14F, System.Drawing.FontStyle.Bold);
             this.label4.Location = new System.Drawing.Point(3, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(52, 28);
+            this.label4.Size = new System.Drawing.Size(132, 28);
             this.label4.TabIndex = 10;
             this.label4.Text = "CÓD. BARRAS  (F1)";
             // 
@@ -206,11 +206,11 @@ namespace InventarioCasaCeja
             this.quitarProdButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.quitarProdButton.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold);
-            this.quitarProdButton.Location = new System.Drawing.Point(697, 35);
+            this.quitarProdButton.Location = new System.Drawing.Point(832, 35);
             this.quitarProdButton.Name = "quitarProdButton";
-            this.quitarProdButton.Size = new System.Drawing.Size(430, 50);
+            this.quitarProdButton.Size = new System.Drawing.Size(295, 50);
             this.quitarProdButton.TabIndex = 16;
-            this.quitarProdButton.Text = "QUITAR PRODUCTO (SUPR)";
+            this.quitarProdButton.Text = "QUITAR (SUPR)";
             this.quitarProdButton.UseVisualStyleBackColor = true;
             this.quitarProdButton.Click += new System.EventHandler(this.quitarProdButton_Click);
             // 
@@ -219,9 +219,9 @@ namespace InventarioCasaCeja
             this.finish.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.finish.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold);
-            this.finish.Location = new System.Drawing.Point(274, 35);
+            this.finish.Location = new System.Drawing.Point(535, 35);
             this.finish.Name = "finish";
-            this.finish.Size = new System.Drawing.Size(417, 50);
+            this.finish.Size = new System.Drawing.Size(291, 50);
             this.finish.TabIndex = 4;
             this.finish.Text = "COMPLETAR SALIDA (F6)";
             this.finish.UseVisualStyleBackColor = true;
@@ -232,9 +232,9 @@ namespace InventarioCasaCeja
             this.Bpvendedor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Bpvendedor.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold);
-            this.Bpvendedor.Location = new System.Drawing.Point(126, 35);
+            this.Bpvendedor.Location = new System.Drawing.Point(286, 35);
             this.Bpvendedor.Name = "Bpvendedor";
-            this.Bpvendedor.Size = new System.Drawing.Size(142, 50);
+            this.Bpvendedor.Size = new System.Drawing.Size(243, 50);
             this.Bpvendedor.TabIndex = 19;
             this.Bpvendedor.Text = "P. Vendedor (F3)";
             this.Bpvendedor.UseVisualStyleBackColor = true;
@@ -278,7 +278,7 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 67.38281F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 32.61719F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 387F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 367F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 368F));
             this.tableLayoutPanel4.Controls.Add(this.label3, 1, 0);
             this.tableLayoutPanel4.Controls.Add(this.txtfolio, 0, 1);
             this.tableLayoutPanel4.Controls.Add(this.label5, 0, 0);
@@ -303,7 +303,7 @@ namespace InventarioCasaCeja
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Segoe UI Semibold", 14F, System.Drawing.FontStyle.Bold);
-            this.label3.Location = new System.Drawing.Point(259, 3);
+            this.label3.Location = new System.Drawing.Point(258, 3);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(71, 25);
             this.label3.TabIndex = 24;
@@ -320,7 +320,7 @@ namespace InventarioCasaCeja
             this.txtfolio.Location = new System.Drawing.Point(6, 31);
             this.txtfolio.MaxLength = 255;
             this.txtfolio.Name = "txtfolio";
-            this.txtfolio.Size = new System.Drawing.Size(247, 43);
+            this.txtfolio.Size = new System.Drawing.Size(246, 43);
             this.txtfolio.TabIndex = 0;
             // 
             // label5
@@ -341,7 +341,7 @@ namespace InventarioCasaCeja
             this.txtfecha.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.txtfecha.Enabled = false;
             this.txtfecha.Font = new System.Drawing.Font("Segoe UI Semibold", 20F, System.Drawing.FontStyle.Bold);
-            this.txtfecha.Location = new System.Drawing.Point(259, 31);
+            this.txtfecha.Location = new System.Drawing.Point(258, 31);
             this.txtfecha.Name = "txtfecha";
             this.txtfecha.ShortcutsEnabled = false;
             this.txtfecha.Size = new System.Drawing.Size(116, 43);
@@ -351,7 +351,7 @@ namespace InventarioCasaCeja
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Segoe UI Semibold", 14F, System.Drawing.FontStyle.Bold);
-            this.label6.Location = new System.Drawing.Point(381, 3);
+            this.label6.Location = new System.Drawing.Point(380, 3);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(226, 25);
             this.label6.TabIndex = 12;
@@ -365,7 +365,7 @@ namespace InventarioCasaCeja
             this.boxsucursales.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.boxsucursales.Font = new System.Drawing.Font("Segoe UI Semibold", 20F, System.Drawing.FontStyle.Bold);
             this.boxsucursales.FormattingEnabled = true;
-            this.boxsucursales.Location = new System.Drawing.Point(381, 31);
+            this.boxsucursales.Location = new System.Drawing.Point(380, 31);
             this.boxsucursales.Name = "boxsucursales";
             this.boxsucursales.Size = new System.Drawing.Size(381, 45);
             this.boxsucursales.TabIndex = 25;
@@ -375,7 +375,7 @@ namespace InventarioCasaCeja
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI Semibold", 14F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(768, 3);
+            this.label1.Location = new System.Drawing.Point(767, 3);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(208, 25);
             this.label1.TabIndex = 26;
@@ -390,10 +390,10 @@ namespace InventarioCasaCeja
             this.txtSucOrig.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.txtSucOrig.Enabled = false;
             this.txtSucOrig.Font = new System.Drawing.Font("Segoe UI Semibold", 20F, System.Drawing.FontStyle.Bold);
-            this.txtSucOrig.Location = new System.Drawing.Point(768, 31);
+            this.txtSucOrig.Location = new System.Drawing.Point(767, 31);
             this.txtSucOrig.Name = "txtSucOrig";
             this.txtSucOrig.ShortcutsEnabled = false;
-            this.txtSucOrig.Size = new System.Drawing.Size(362, 43);
+            this.txtSucOrig.Size = new System.Drawing.Size(363, 43);
             this.txtSucOrig.TabIndex = 27;
             // 
             // tableLayoutPanel1

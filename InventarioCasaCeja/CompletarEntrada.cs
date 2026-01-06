@@ -53,6 +53,8 @@ namespace InventarioCasaCeja
                     entrada["usuario_id"] = webDM.activeUser.id.ToString();
                     entrada["sucursal_id"] = sucursal;
                     entrada["proveedor_id"] = proveedores[comboproveedores.SelectedItem.ToString()];
+                    // *** AGREGAR COMENTARIOS ***
+                    entrada["comentarios"] = string.IsNullOrWhiteSpace(ComentariosRichTxt.Text) ? null : ComentariosRichTxt.Text;
                     int id = webDM.localDM.registrarEntrada(entrada, productos);
                     enviarEntrada(id, entrada);
                 }
@@ -69,6 +71,7 @@ namespace InventarioCasaCeja
             }
             else MessageBox.Show("No se pudo conectar con el servidor, favor de intentar más tarde", "Advertencia");
         }
+
         private void numericInput_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) &&

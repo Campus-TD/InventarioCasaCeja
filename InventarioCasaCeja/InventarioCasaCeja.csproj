@@ -321,6 +321,12 @@
     <Compile Include="Salidas.Designer.cs">
       <DependentUpon>Salidas.cs</DependentUpon>
     </Compile>
+    <Compile Include="SelectorFechasHist.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SelectorFechasHist.Designer.cs">
+      <DependentUpon>SelectorFechasHist.cs</DependentUpon>
+    </Compile>
     <Compile Include="Sucursal.cs" />
     <Compile Include="UserLogin.cs">
       <SubType>Form</SubType>

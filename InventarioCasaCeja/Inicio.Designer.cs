@@ -26,15 +26,15 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.medidas = new System.Windows.Forms.Button();
             this.categorias = new System.Windows.Forms.Button();
-            this.proveedores = new System.Windows.Forms.Button();
             this.catalogo = new System.Windows.Forms.Button();
+            this.medidas = new System.Windows.Forms.Button();
+            this.HistEntradasySalidas = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.opcionesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configuraciónToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.historialDeEntradasYSalidasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sincronizarBaseDeDatosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.abrirCarpetaDocumentosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -67,7 +67,7 @@ namespace InventarioCasaCeja
             this.tableLayoutPanel1.Controls.Add(this.categorias, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.catalogo, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.medidas, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.proveedores, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.HistEntradasySalidas, 1, 2);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(6, 49);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
@@ -103,19 +103,6 @@ namespace InventarioCasaCeja
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // medidas
-            // 
-            this.medidas.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.medidas.Location = new System.Drawing.Point(418, 143);
-            this.medidas.Name = "medidas";
-            this.medidas.Size = new System.Drawing.Size(410, 134);
-            this.medidas.TabIndex = 6;
-            this.medidas.Text = "MEDIDAS";
-            this.medidas.UseVisualStyleBackColor = true;
-            this.medidas.Click += new System.EventHandler(this.medidas_Click);
-            // 
             // categorias
             // 
             this.categorias.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -129,20 +116,6 @@ namespace InventarioCasaCeja
             this.categorias.UseVisualStyleBackColor = true;
             this.categorias.Click += new System.EventHandler(this.categorias_Click);
             // 
-            // proveedores
-            // 
-            this.proveedores.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.proveedores.Location = new System.Drawing.Point(418, 283);
-            this.proveedores.Name = "proveedores";
-            this.proveedores.Size = new System.Drawing.Size(410, 135);
-            this.proveedores.TabIndex = 4;
-            this.proveedores.Text = "PROVEEDORES";
-            this.proveedores.UseVisualStyleBackColor = true;
-            this.proveedores.Visible = false;
-            this.proveedores.Click += new System.EventHandler(this.proveedores_Click);
-            // 
             // catalogo
             // 
             this.catalogo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -155,6 +128,32 @@ namespace InventarioCasaCeja
             this.catalogo.Text = "CATALOGO";
             this.catalogo.UseVisualStyleBackColor = true;
             this.catalogo.Click += new System.EventHandler(this.catalogo_Click);
+            // 
+            // medidas
+            // 
+            this.medidas.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.medidas.Location = new System.Drawing.Point(418, 143);
+            this.medidas.Name = "medidas";
+            this.medidas.Size = new System.Drawing.Size(410, 134);
+            this.medidas.TabIndex = 6;
+            this.medidas.Text = "MEDIDAS";
+            this.medidas.UseVisualStyleBackColor = true;
+            this.medidas.Click += new System.EventHandler(this.medidas_Click);
+            // 
+            // HistEntradasySalidas
+            // 
+            this.HistEntradasySalidas.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.HistEntradasySalidas.Location = new System.Drawing.Point(418, 283);
+            this.HistEntradasySalidas.Name = "HistEntradasySalidas";
+            this.HistEntradasySalidas.Size = new System.Drawing.Size(410, 135);
+            this.HistEntradasySalidas.TabIndex = 4;
+            this.HistEntradasySalidas.Text = "HIST. ENTRADAS Y SALIDAS";
+            this.HistEntradasySalidas.UseVisualStyleBackColor = true;
+            this.HistEntradasySalidas.Click += new System.EventHandler(this.HistEntradasSalidas_Click);
             // 
             // menuStrip1
             // 
@@ -172,8 +171,8 @@ namespace InventarioCasaCeja
             // 
             this.opcionesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.configuraciónToolStripMenuItem,
-            this.historialDeEntradasYSalidasToolStripMenuItem,
-            this.sincronizarBaseDeDatosToolStripMenuItem});
+            this.sincronizarBaseDeDatosToolStripMenuItem,
+            this.abrirCarpetaDocumentosToolStripMenuItem});
             this.opcionesToolStripMenuItem.Name = "opcionesToolStripMenuItem";
             this.opcionesToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
             this.opcionesToolStripMenuItem.Text = "Opciones";
@@ -181,23 +180,23 @@ namespace InventarioCasaCeja
             // configuraciónToolStripMenuItem
             // 
             this.configuraciónToolStripMenuItem.Name = "configuraciónToolStripMenuItem";
-            this.configuraciónToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.configuraciónToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.configuraciónToolStripMenuItem.Text = "Configuración";
             this.configuraciónToolStripMenuItem.Click += new System.EventHandler(this.configuraciónToolStripMenuItem_Click);
-            // 
-            // historialDeEntradasYSalidasToolStripMenuItem
-            // 
-            this.historialDeEntradasYSalidasToolStripMenuItem.Name = "historialDeEntradasYSalidasToolStripMenuItem";
-            this.historialDeEntradasYSalidasToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
-            this.historialDeEntradasYSalidasToolStripMenuItem.Text = "Historial de Entradas y Salidas";
-            this.historialDeEntradasYSalidasToolStripMenuItem.Click += new System.EventHandler(this.historialDeEntradasYSalidasToolStripMenuItem_Click);
             // 
             // sincronizarBaseDeDatosToolStripMenuItem
             // 
             this.sincronizarBaseDeDatosToolStripMenuItem.Name = "sincronizarBaseDeDatosToolStripMenuItem";
-            this.sincronizarBaseDeDatosToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.sincronizarBaseDeDatosToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.sincronizarBaseDeDatosToolStripMenuItem.Text = "Sincronizar base de datos";
             this.sincronizarBaseDeDatosToolStripMenuItem.Click += new System.EventHandler(this.sincronizarBaseDeDatosToolStripMenuItem_Click);
+            // 
+            // abrirCarpetaDocumentosToolStripMenuItem
+            // 
+            this.abrirCarpetaDocumentosToolStripMenuItem.Name = "abrirCarpetaDocumentosToolStripMenuItem";
+            this.abrirCarpetaDocumentosToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.abrirCarpetaDocumentosToolStripMenuItem.Text = "Abrir Carpeta Documentos";
+            this.abrirCarpetaDocumentosToolStripMenuItem.Click += new System.EventHandler(this.abrirCarpetaDocumentosToolStripMenuItem_Click);
             // 
             // Inicio
             // 
@@ -227,7 +226,7 @@ namespace InventarioCasaCeja
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button medidas;
         private System.Windows.Forms.Button categorias;
-        private System.Windows.Forms.Button proveedores;
+        private System.Windows.Forms.Button HistEntradasySalidas;
         private System.Windows.Forms.Button catalogo;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.MenuStrip menuStrip1;
@@ -236,7 +235,7 @@ namespace InventarioCasaCeja
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ToolStripMenuItem sincronizarBaseDeDatosToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem historialDeEntradasYSalidasToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem abrirCarpetaDocumentosToolStripMenuItem;
     }
 }
 

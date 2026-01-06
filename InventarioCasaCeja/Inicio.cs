@@ -61,32 +61,34 @@ namespace InventarioCasaCeja
             try
             {
                 getConfig();
-                int idsucursalParaEyS;
-                int sucursalIdSettingParaEyS = Settings.Default.sucursalid; // Obtener el valor int directamente
 
-                if (sucursalIdSettingParaEyS == 0) // Cambiar 0 al valor predeterminado correcto si es diferente
-                {
-                    idsucursalParaEyS = 1; // Usar sucursal 1 si es la primera vez
-                }
-                else
-                {
-                    idsucursalParaEyS = sucursalIdSettingParaEyS; // Usar la configurada
-                }
+                // ★ NUEVA LÓGICA: Sincronizar sucursales PRIMERO y obtener la primera disponible
+                int idsucursalParaEyS = await ObtenerSucursalParaInventario(lw);
+
+                Console.WriteLine($"★ Usando sucursal para entradas/salidas: {idsucursalParaEyS}");
+
                 // Lógica para bases precargadas
                 if (localDM.IsCatalogPreloaded)
                 {
-                    Debug.WriteLine("Base de datos precargada detectada. Sincronizando datos esenciales primero...");
+                    Console.WriteLine("Base de datos precargada detectada. Sincronizando datos esenciales primero...");
 
                     // 1. Sincronizar datos básicos
                     lw.setData(10, "Sincronizando datos básicos...");
                     await webDM.GetSucursales();
                     await webDM.GetUsuarios();
 
-                    // 2. Actualizar catálogo con cambios recientes
+                    // 2. AGREGAR: Sincronizar categorías y medidas (CRÍTICO)
+                    lw.setData(20, "Sincronizando categorías...");
+                    await webDM.GetCategorias();
+
+                    lw.setData(25, "Sincronizando medidas...");
+                    await webDM.GetMedidas();
+
+                    // 3. Actualizar catálogo con cambios recientes
                     lw.setData(30, "Actualizando catálogo...");
                     await webDM.GetProductos();
 
-                    // 3. Sincronizar datos específicos de inventario
+                    // 4. Sincronizar datos específicos de inventario
                     lw.setData(50, "Sincronizando proveedores...");
                     await webDM.GetProveedores();
 
@@ -107,28 +109,25 @@ namespace InventarioCasaCeja
                     // Flujo completo para instalación nueva
                     if (await webDM.GetProductos())
                     {
-                        lw.setData(10, "Sincronizando datos básicos...");
-                        await webDM.GetSucursales();
-
-                        lw.setData(30, "Obteniendo unidades de medida...");
+                        lw.setData(20, "Obteniendo unidades de medida...");
                         await webDM.GetMedidas();
 
-                        lw.setData(50, "Cargando categorías...");
+                        lw.setData(30, "Cargando categorías...");
                         await webDM.GetCategorias();
 
-                        lw.setData(70, "Sincronizando usuarios...");
+                        lw.setData(50, "Sincronizando usuarios...");
                         await webDM.GetUsuarios();
 
-                        lw.setData(80, "Actualizando proveedores...");
+                        lw.setData(60, "Actualizando proveedores...");
                         await webDM.GetProveedores();
 
-                        lw.setData(90, "Cargando entradas...");
+                        lw.setData(70, "Cargando entradas...");
                         await webDM.GetEntradas(idsucursalParaEyS);
 
-                        lw.setData(95, "Relacionando productos con entradas...");
+                        lw.setData(80, "Relacionando productos con entradas...");
                         await webDM.GetEntradaProducto();
 
-                        lw.setData(100, "Sincronizando movimientos...");
+                        lw.setData(90, "Sincronizando movimientos...");
                         await webDM.GetSalidas(idsucursalParaEyS);
                         await webDM.GetSalidasGral(idsucursalParaEyS);
                     }
@@ -141,16 +140,158 @@ namespace InventarioCasaCeja
             }
             finally
             {
-                lw.Dispose();
+                lw.Close();
                 this.Enabled = true;
-                this.Focus();
+
+                Console.WriteLine("★ === DIAGNÓSTICO POST-LOADDATA ===");
+
+                // Verificar datos en base de datos
+                try
+                {
+                    var countCategorias = localDM.getTableRowCount("categorias");
+                    var countMedidas = localDM.getTableRowCount("medidas");
+                    var countProductos = localDM.getTableRowCount("productos");
+
+                    Console.WriteLine($"★ Registros en BD - Categorías: {countCategorias}, Medidas: {countMedidas}, Productos: {countProductos}");
+
+                    // Probar cargar datos directamente
+                    var testCategorias = localDM.getCategorias();
+                    var testMedidas = localDM.getMedidas();
+                    var testProductos = localDM.getProductos("0");
+
+                    Console.WriteLine($"★ Test getData - Categorías: {testCategorias.Rows.Count}, Medidas: {testMedidas.Rows.Count}, Productos: {testProductos.Rows.Count}");
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"★ Error en diagnóstico: {ex.Message}");
+                }
+
+                Console.WriteLine("★ === FIN DIAGNÓSTICO ===");
+
+                // Llamar refreshData para inicializar todo
+                refreshData(0);
             }
+        }
 
-            refreshData(0);
+        // ====================================================================
+        // AGREGAR NUEVO MÉTODO: ObtenerSucursalParaInventario
+        // ====================================================================
 
-            if (usuarioActivo == null)
+        private async Task<int> ObtenerSucursalParaInventario(LoadWindow lw)
+        {
+            try
             {
-                pedirUsuario();
+                lw.setData(10, "Sincronizando sucursales...");
+
+                // 1. Sincronizar sucursales desde el servidor
+                bool sucursalesOk = await webDM.GetSucursales();
+
+                if (!sucursalesOk)
+                {
+                    Console.WriteLine("★ WARNING: No se pudieron sincronizar las sucursales desde el servidor");
+                    // Fallback: usar configuración por defecto
+                    return Settings.Default.sucursalid > 0 ? Settings.Default.sucursalid : 1;
+                }
+
+                // 2. Obtener sucursales desde la base de datos local (ya sincronizadas)
+                DataTable sucursales = localDM.getSucursales();
+
+                if (sucursales == null || sucursales.Rows.Count == 0)
+                {
+                    Console.WriteLine("★ WARNING: No hay sucursales disponibles en la base de datos local");
+                    return 1; // Fallback
+                }
+
+                Console.WriteLine($"★ Se encontraron {sucursales.Rows.Count} sucursales disponibles:");
+
+                // 3. Mostrar todas las sucursales disponibles
+                foreach (DataRow row in sucursales.Rows)
+                {
+                    int id = Convert.ToInt32(row["id"]);
+                    string razonSocial = row["razon_social"].ToString();
+                    Console.WriteLine($"   - ID: {id}, Nombre: {razonSocial}");
+                }
+
+                // 4. Determinar qué sucursal usar
+                int sucursalSeleccionada;
+
+                // Si ya hay una configuración guardada y existe en las sucursales disponibles
+                int sucursalConfig = Settings.Default.sucursalid;
+                bool existeSucursalConfig = sucursales.AsEnumerable()
+                    .Any(row => Convert.ToInt32(row["id"]) == sucursalConfig);
+
+                if (sucursalConfig > 0 && existeSucursalConfig)
+                {
+                    sucursalSeleccionada = sucursalConfig;
+                    Console.WriteLine($"★ Usando sucursal configurada: {sucursalSeleccionada}");
+                }
+                else
+                {
+                    // Tomar la primera sucursal disponible
+                    sucursalSeleccionada = Convert.ToInt32(sucursales.Rows[0]["id"]);
+                    string nombrePrimera = sucursales.Rows[0]["razon_social"].ToString();
+
+                    Console.WriteLine($"★ Usando primera sucursal disponible: {sucursalSeleccionada} ({nombrePrimera})");
+
+                    // Guardar esta sucursal como configuración por defecto
+                    Settings.Default.sucursalid = sucursalSeleccionada;
+                    Settings.Default.Save();
+
+                    Console.WriteLine($"★ Sucursal {sucursalSeleccionada} guardada como configuración por defecto");
+                }
+
+                // 5. Actualizar variables globales
+                idsucursal = sucursalSeleccionada;
+
+                // 6. Obtener información completa de la sucursal seleccionada
+                sucursalActual = localDM.getSucursal(sucursalSeleccionada);
+                if (sucursalActual != null)
+                {
+                    Console.WriteLine($"★ Sucursal actual: {sucursalActual.razon_social}");
+                }
+
+                return sucursalSeleccionada;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"★ ERROR en ObtenerSucursalParaInventario: {ex.Message}");
+
+                // En caso de error, usar fallback
+                int fallback = Settings.Default.sucursalid > 0 ? Settings.Default.sucursalid : 1;
+                Console.WriteLine($"★ Usando sucursal fallback: {fallback}");
+                return fallback;
+            }
+        }
+        
+        private void VerificarDatosSincronizados()
+        {
+            try
+            {
+                var sucursalActual = idsucursal;
+
+                // Obtener conteos usando los métodos existentes
+                var totalEntradas = localDM.getEntradasCountPorSucursal(sucursalActual);
+                var totalSalidas = localDM.getSalidasCountPorSucursal(sucursalActual);
+
+                Console.WriteLine($"★ VERIFICACIÓN POST-SINCRONIZACIÓN:");
+                Console.WriteLine($"   - Sucursal actual: {sucursalActual}");
+                Console.WriteLine($"   - Entradas sincronizadas: {totalEntradas}");
+                Console.WriteLine($"   - Salidas sincronizadas: {totalSalidas}");
+
+                if (totalEntradas == 0 && totalSalidas == 0)
+                {
+                    Console.WriteLine($"★ INFO: No hay entradas/salidas para sucursal {sucursalActual}");
+                    Console.WriteLine($"★ Esto es normal si es una sucursal nueva o sin movimientos");
+                }
+                else
+                {
+                    Console.WriteLine($"★ SUCCESS: Datos de entradas/salidas sincronizados correctamente");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"★ Error en verificación: {ex.Message}");
             }
         }
         void startFirebase()
@@ -180,11 +321,26 @@ namespace InventarioCasaCeja
                 }
             }
         }
-        private void Form1_Load(object sender, EventArgs e)
+        private async void Form1_Load(object sender, EventArgs e)
         {
-            loadData();
-            //startFirebase();
+            await webDM.GetUsuarios();
+            // ★ RESTAURAR: Pedir login ANTES de cargar datos
+            if (usuarioActivo == null)
+            {
+                pedirUsuario();
+            }
 
+            // Solo cargar datos si hay usuario válido
+            if (usuarioActivo != null)
+            {
+                loadData();
+            }
+            else
+            {
+                // Si no hay usuario, cerrar la aplicación
+                MessageBox.Show("Se requiere un usuario válido para usar el sistema.", "Login Requerido");
+                this.Close();
+            }
         }
         void setUser(Usuario user)
         {
@@ -200,107 +356,160 @@ namespace InventarioCasaCeja
                 this.Close();
             }
         }
-        void refreshData (int type)
+
+        void refreshData(int type)
         {
             switch (type)
             {
-                case 1:
+                case 0: // NUEVO CASO: Inicialización completa después de sincronización
+                    Console.WriteLine($"★ Caso 0: Inicialización completa de datos");
+
+                    // Cargar mapas de índices
+                    mapamedidas = localDM.getIndicesMedidas();
+                    mapacategorias = localDM.getIndicesCategorias();
+
+                    // Cargar datos para las tablas principales
+                    tablacatalogo = localDM.getProductos("0");
+                    tablacategorias = localDM.getCategorias();
+                    tablamedidas = localDM.getMedidas();
+
+                    Console.WriteLine($"★ Datos cargados - Productos: {tablacatalogo.Rows.Count}, Categorías: {tablacategorias.Rows.Count}, Medidas: {tablamedidas.Rows.Count}");
+
+                    // Actualizar visores si están abiertos y activos
+                    if (vercategorias != null && vercategorias.active)
+                    {
+                        vercategorias.setData(tablacategorias);
+                    }
+
+                    if (vermedidas != null && vermedidas.active)
+                    {
+                        vermedidas.setData(tablamedidas);
+                    }
+
+                    if (vercatalago != null && vercatalago.active)
+                    {
+                        vercatalago.setData(tablacatalogo, mapamedidas, mapacategorias);
+                    }
+                    break;
+
+                case 1: // MANTENER código existente
                     mapamedidas = localDM.getIndicesMedidas();
                     tablamedidas = localDM.getMedidas();
                     vermedidas.setData(tablamedidas);
                     vercatalago.setData(tablacatalogo, mapamedidas, mapacategorias);
                     break;
-                case 2:
+
+                case 2: // MANTENER código existente
                     tablacategorias = localDM.getCategorias();
                     vercategorias.setData(tablacategorias);
                     mapacategorias = localDM.getIndicesCategorias();
                     vercatalago.setData(tablacatalogo, mapamedidas, mapacategorias);
                     break;
 
-                case 3:
+                case 3: // MANTENER código existente
                     tablacatalogo = localDM.getProductos("0");
                     vercatalago.setData(tablacatalogo, mapamedidas, mapacategorias);
                     break;
-                //case 4:
-                //    tablasucursales = localDM.getSucursales();
-                //    versucursales.setData(tablasucursales);
-                //    break;
-                //case 5:
-                //    tablaventas = localDM.getVentas();
-                //    verventas.setData(tablaventas);
-                //    break;
-                //case 6:
-                //    tablaoperaciones = localDM.getOperaciones();
-                //    veroperaciones.setData(tablaoperaciones);
-                //    break;
-                //case 7:
-                //    tablausuarios = localDM.getUsuarios();
-                //    verusuarios.setData(tablausuarios);
-                //    break;
-                case 8:
+
+                case 8: // Proveedores
+                    Console.WriteLine("★ Caso 8: Actualizando proveedores");
                     tablaproveedores = localDM.getProveedores();
-                    verproveedores.setData(tablaproveedores);
+
+                    if (verproveedores != null && verproveedores.active)
+                    {
+                        verproveedores.setData(tablaproveedores);
+                        Console.WriteLine($"★ Proveedores actualizados en visor: {tablaproveedores.Rows.Count} registros");
+                    }
                     break;
+
                 default:
-                    mapamedidas = localDM.getIndicesMedidas();
-                    mapacategorias = localDM.getIndicesCategorias();
-                    mapasucucrsales = localDM.getIndicesSucursales();
-                    tablacatalogo = localDM.getProductos("0");
-                    tablacategorias = localDM.getCategorias();
-                    tablamedidas = localDM.getMedidas();
-                    tablaproveedores = localDM.getProveedores();
-                    verproveedores.setData(tablaproveedores);
-                    vercatalago.setData(tablacatalogo, mapamedidas, mapacategorias);
-                    vercategorias.setData(tablacategorias);
-                    vermedidas.setData(tablamedidas);
+                    Console.WriteLine($"★ Caso default: {type} - No hay acción específica definida");
                     break;
 
             }
         }
 
-        private void catalogo_Click(object sender, EventArgs e)
-        {
-            if (vercatalago.IsDisposed)
-            {
-                vercatalago = new Vercatalogo(webDM);
-                vercatalago.setData(tablacatalogo, mapamedidas, mapacategorias);
-            }
-            vercatalago.Show();
-            vercatalago.Focus();
-        }
-
-        private void proveedores_Click(object sender, EventArgs e)
-        {
-            if (verproveedores.IsDisposed)
-            {
-                verproveedores = new Visor(8, webDM);
-                verproveedores.setData(tablaproveedores);
-            }
-            verproveedores.Show();
-            verproveedores.Focus();
-        }
 
         private void categorias_Click(object sender, EventArgs e)
         {
+            Console.WriteLine("★ Abriendo vista de categorías");
+
             if (vercategorias.IsDisposed)
             {
                 vercategorias = new Visor(0, webDM);
-                vercategorias.setData(tablacategorias);
             }
+
+            // ★ ASEGURAR que los datos estén cargados
+            if (tablacategorias == null || tablacategorias.Rows.Count == 0)
+            {
+                Console.WriteLine("★ Cargando categorías porque están vacías");
+                tablacategorias = localDM.getCategorias();
+            }
+
+            Console.WriteLine($"★ Enviando {tablacategorias.Rows.Count} categorías al visor");
+            vercategorias.setData(tablacategorias);
             vercategorias.Show();
             vercategorias.Focus();
         }
 
+        // MODIFICAR medidas_Click en Inicio.cs
         private void medidas_Click(object sender, EventArgs e)
         {
+            Console.WriteLine("★ Abriendo vista de medidas");
+
             if (vermedidas.IsDisposed)
             {
                 vermedidas = new Visor(1, webDM);
-                vermedidas.setData(tablamedidas);
             }
+
+            // ★ ASEGURAR que los datos estén cargados
+            if (tablamedidas == null || tablamedidas.Rows.Count == 0)
+            {
+                Console.WriteLine("★ Cargando medidas porque están vacías");
+                tablamedidas = localDM.getMedidas();
+            }
+
+            Console.WriteLine($"★ Enviando {tablamedidas.Rows.Count} medidas al visor");
+            vermedidas.setData(tablamedidas);
             vermedidas.Show();
             vermedidas.Focus();
         }
+
+        // MODIFICAR catalogo_Click en Inicio.cs
+        private void catalogo_Click(object sender, EventArgs e)
+        {
+            Console.WriteLine("★ Abriendo vista de catálogo");
+
+            if (vercatalago.IsDisposed)
+            {
+                vercatalago = new Vercatalogo(webDM);
+            }
+
+            // ★ ASEGURAR que los datos estén cargados
+            if (tablacatalogo == null || tablacatalogo.Rows.Count == 0)
+            {
+                Console.WriteLine("★ Cargando catálogo porque está vacío");
+                tablacatalogo = localDM.getProductos("0");
+            }
+
+            if (mapamedidas == null)
+            {
+                Console.WriteLine("★ Cargando mapa de medidas");
+                mapamedidas = localDM.getIndicesMedidas();
+            }
+
+            if (mapacategorias == null)
+            {
+                Console.WriteLine("★ Cargando mapa de categorías");
+                mapacategorias = localDM.getIndicesCategorias();
+            }
+
+            Console.WriteLine($"★ Enviando catálogo con {tablacatalogo.Rows.Count} productos al visor");
+            vercatalago.setData(tablacatalogo, mapamedidas, mapacategorias);
+            vercatalago.Show();
+            vercatalago.Focus();
+        }       
+       
         void getConfig()
         {
             Console.WriteLine(webDM.sucursal_id);
@@ -354,6 +563,13 @@ namespace InventarioCasaCeja
                 cd.fontSize = fontSize;
                 cd.mapamedidasinv = new Dictionary<int, string>();
                 cd.mapasucursales = mapasucucrsales;
+
+                if (mapasucucrsales == null)
+                {
+                    mapasucucrsales = localDM.getIndicesSucursales();
+                }
+                cd.mapasucursales = mapasucucrsales;
+
                 foreach (var x in mapamedidas)
                 {
                     cd.mapamedidasinv[x.Value] = x.Key;
@@ -415,10 +631,27 @@ namespace InventarioCasaCeja
             base.Dispose(disposing);            
         }
 
-        private void historialDeEntradasYSalidasToolStripMenuItem_Click(object sender, EventArgs e)
+        private void HistEntradasSalidas_Click(object sender, EventArgs e)
         {
             HistEntradasSalidas hes = new HistEntradasSalidas(idsucursal);
             hes.ShowDialog();
+        }
+
+        private void abrirCarpetaDocumentosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Configuración de carpetas
+            string carpetaPrincipal = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "CasaCejaDocs");            
+
+            // Verificar si las carpetas existen
+            if (!Directory.Exists(carpetaPrincipal))
+            {
+                MessageBox.Show("La carpeta 'CasaCejaDocs' no existe. Esta carpeta se genera automáticamente al realizar una operación.",
+                                "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }           
+
+            // Abrir la carpeta QrSalidas
+            System.Diagnostics.Process.Start("explorer.exe", carpetaPrincipal);
         }
     }
 }

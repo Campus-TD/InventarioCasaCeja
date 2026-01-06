@@ -89,7 +89,7 @@ namespace InventarioCasaCeja
         {
             if (usarPrecioVendedor)
             {
-                Bpvendedor.Text = "P VENDEDOR ACTIVO";
+                Bpvendedor.Text = "P. VENDEDOR ACTIVO";
                 Bpvendedor.BackColor = Color.LightGreen;
                 Bpvendedor.ForeColor = Color.DarkGreen;
                 // Opcional: cambiar color de fondo de la tabla para indicar modo vendedor
@@ -97,7 +97,7 @@ namespace InventarioCasaCeja
             }
             else
             {
-                Bpvendedor.Text = "PRECIO VENDEDOR (F3)";
+                Bpvendedor.Text = "P. VENDEDOR (F3)";
                 Bpvendedor.BackColor = SystemColors.Control;
                 Bpvendedor.ForeColor = SystemColors.ControlText;
                 tabla.BackgroundColor = SystemColors.Window;
@@ -369,9 +369,8 @@ namespace InventarioCasaCeja
         public event ProductoSeleccionadoHandler ProductoSeleccionado;
 
         private void docToPrint_PrintPage(
-    object sender, System.Drawing.Printing.PrintPageEventArgs e)
+     object sender, System.Drawing.Printing.PrintPageEventArgs e)
         {
-
             // Insert code to render the page here.
             // This code will be called when the control is drawn.
 
@@ -383,13 +382,6 @@ namespace InventarioCasaCeja
             string text4 = fecha;
             string text5 = pedido;
             string text6 = tot;
-            //StringFormat format = new StringFormat(StringFormatFlags.NoClip);
-            //format.Alignment = StringAlignment.Center;
-            //System.Drawing.Font printFont =
-            //    new Font(fontName, fontSize, FontStyle.Regular);
-
-            //e.Graphics.DrawString(text1, printFont,
-            //    Brushes.Black, 50, 50);
 
             Font font = new Font(
                "Arial Black",
@@ -432,6 +424,15 @@ namespace InventarioCasaCeja
                FontStyle.Underline | FontStyle.Bold,
                GraphicsUnit.Point);
 
+            Font font7 = new Font(
+               "Arial",
+               8,
+               FontStyle.Bold,
+               GraphicsUnit.Point);
+
+            Pen pen = Pens.Black;
+
+            // ========== PRIMERA HOJA (1/2) ==========
             e.Graphics.DrawString("1/2", font5, solidBrush, new Rectangle(25, 25, 35, 35), alignMiddle);
 
             e.Graphics.DrawString(text1, font, solidBrush, rect, alignCenter);
@@ -439,85 +440,73 @@ namespace InventarioCasaCeja
             e.Graphics.DrawString(text3, font2, solidBrush, new Rectangle(25, 80, rect.Width / 3, 100), alignCenter);
             e.Graphics.DrawString(text4, font2, solidBrush, new Rectangle(rect.Width / 3 + 25, 80, rect.Width / 3, 100), alignCenter);
             e.Graphics.DrawString(text5, font3, solidBrush, new Rectangle(2 * (rect.Width / 3) + 25, 80, rect.Width / 3, 100), alignCenter);
-            Pen pen = Pens.Black;
-            Pen pen2 = Pens.Red;
             e.Graphics.DrawRectangle(pen, rect);
             e.Graphics.DrawLine(pen, rect.X + 5, 70, rect.Width + rect.X - 10, 70);
 
             Rectangle barRect = new Rectangle(2 * (rect.Width / 3) + 30, 107, rect.Width / 3 - 10, 33);
-            Rectangle barRectD = new Rectangle(rect.Width + 2 * (rect.Width / 3) + 55, 107, rect.Width / 3 - 10, 33);
             var barcode = new Barcode(folio, NetBarcode.Type.Code128);
             Image bar = barcode.GetImage();
             e.Graphics.DrawImage(bar, barRect);
-            e.Graphics.DrawImage(bar, barRectD);
 
-            Rectangle rectA = new Rectangle(25, rect.Height + 45, (int)(rect.Width * 0.15), 10);
-            Rectangle rectB = new Rectangle(25 + rectA.Width, rect.Height + 45, (int)(rect.Width * 0.10), 10);
-            Rectangle rectC = new Rectangle(25 + rectA.Width + rectB.Width, rect.Height + 45, (int)(rect.Width * 0.35), 10);
-            Rectangle rectD = new Rectangle(25 + rectA.Width + rectB.Width + rectC.Width, rect.Height + 45, (int)(rect.Width * 0.2), 10);
-            Rectangle rectE = new Rectangle(25 + rectA.Width + rectB.Width + rectC.Width + rectD.Width, rect.Height + 45, (int)(rect.Width * 0.2), 10);
+            // *** ENCABEZADOS DE TABLA - PRIMERA HOJA ***
+            Rectangle rectA = new Rectangle(25, rect.Height + 45, (int)(rect.Width * 0.075), 10);
+            Rectangle rectB = new Rectangle(25 + rectA.Width, rect.Height + 45, (int)(rect.Width * 0.075), 10);
+            Rectangle rectC = new Rectangle(25 + rectA.Width + rectB.Width, rect.Height + 45, (int)(rect.Width * 0.10), 10); // CÓDIGO
+            Rectangle rectD = new Rectangle(25 + rectA.Width + rectB.Width + rectC.Width, rect.Height + 45, (int)(rect.Width * 0.08), 10); // UNIDAD
+            Rectangle rectE = new Rectangle(25 + rectA.Width + rectB.Width + rectC.Width + rectD.Width, rect.Height + 45, (int)(rect.Width * 0.30), 10); // ARTICULO
+            Rectangle rectF = new Rectangle(25 + rectA.Width + rectB.Width + rectC.Width + rectD.Width + rectE.Width, rect.Height + 45, (int)(rect.Width * 0.18), 10); // P.UNIT
+            Rectangle rectG = new Rectangle(25 + rectA.Width + rectB.Width + rectC.Width + rectD.Width + rectE.Width + rectF.Width, rect.Height + 45, (int)(rect.Width * 0.18), 10); // IMPORTE
 
-            e.Graphics.DrawString("CANTIDAD", font4, solidBrush, rectA, alignCenter);
-            e.Graphics.DrawString("UNIDAD", font4, solidBrush, rectB, alignCenter);
-            e.Graphics.DrawString("ARTICULO", font4, solidBrush, rectC, alignCenter);
-            e.Graphics.DrawString("P.UNIT", font4, solidBrush, rectD, alignCenter);
-            e.Graphics.DrawString("IMPORTE", font4, solidBrush, rectE, alignCenter);
-            e.Graphics.DrawString(text6, font6, solidBrush, new Rectangle(330, 800, 200, 20), alignRight);
+            e.Graphics.DrawString("#", font4, solidBrush, rectA, alignCenter);
+            e.Graphics.DrawString("CANTIDAD", font4, solidBrush, rectB, alignCenter);
+            e.Graphics.DrawString("CÓDIGO", font4, solidBrush, rectC, alignCenter);
+            e.Graphics.DrawString("UNIDAD", font4, solidBrush, rectD, alignCenter);
+            e.Graphics.DrawString("ARTICULO", font4, solidBrush, rectE, alignCenter);
+            e.Graphics.DrawString("P.UNIT", font4, solidBrush, rectF, alignCenter);
+            e.Graphics.DrawString("IMPORTE", font4, solidBrush, rectG, alignCenter);
 
-            Rectangle rectA1 = new Rectangle(rect.Width + 50, rect.Height + 45, (int)(rect.Width * 0.15), 10);
-            Rectangle rectB1 = new Rectangle(rect.Width + 50 + rectA.Width, rect.Height + 45, (int)(rect.Width * 0.10), 10);
-            Rectangle rectC1 = new Rectangle(rect.Width + 50 + rectA.Width + rectB.Width, rect.Height + 45, (int)(rect.Width * 0.35), 10);
-            Rectangle rectD1 = new Rectangle(rect.Width + 50 + rectA.Width + rectB.Width + rectC.Width, rect.Height + 45, (int)(rect.Width * 0.2), 10);
-            Rectangle rectE1 = new Rectangle(rect.Width + 50 + rectA.Width + rectB.Width + rectC.Width + rectD.Width, rect.Height + 45, (int)(rect.Width * 0.2), 10);
-            e.Graphics.DrawString("CANTIDAD", font4, solidBrush, rectA1, alignCenter);
-            e.Graphics.DrawString("UNIDAD", font4, solidBrush, rectB1, alignCenter);
-            e.Graphics.DrawString("ARTICULO", font4, solidBrush, rectC1, alignCenter);
-            e.Graphics.DrawString("P.UNIT", font4, solidBrush, rectD1, alignCenter);
-            e.Graphics.DrawString("IMPORTE", font4, solidBrush, rectE1, alignCenter);
-            e.Graphics.DrawString(text6, font6, solidBrush, new Rectangle(rect.Width + 25 + 330, 800, 200, 20), alignRight);
-
+            // *** FILAS DE PRODUCTOS - PRIMERA HOJA ***
             for (int i = 0; i < productosImprimir.Count; i++)
             {
                 Rectangle tabrect1 = new Rectangle(25, rect.Height + 55 + i * 20, (int)(rect.Width * 0.075), 20);
                 Rectangle tabrect2 = new Rectangle(25 + tabrect1.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.075), 20);
-                Rectangle tabrect3 = new Rectangle(25 + rectA.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.10), 20);
-                Rectangle tabrect4 = new Rectangle(25 + rectA.Width + rectB.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.35), 20);
-                Rectangle tabrect5 = new Rectangle(25 + rectA.Width + rectB.Width + rectC.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.2), 20);
-                Rectangle tabrect6 = new Rectangle(25 + rectA.Width + rectB.Width + rectC.Width + rectD.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.2), 20);
+                Rectangle tabrect3 = new Rectangle(25 + tabrect1.Width + tabrect2.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.10), 20); // CÓDIGO
+                Rectangle tabrect4 = new Rectangle(25 + tabrect1.Width + tabrect2.Width + tabrect3.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.08), 20); // UNIDAD
+                Rectangle tabrect5 = new Rectangle(25 + tabrect1.Width + tabrect2.Width + tabrect3.Width + tabrect4.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.30), 20); // ARTICULO
+                Rectangle tabrect6 = new Rectangle(25 + tabrect1.Width + tabrect2.Width + tabrect3.Width + tabrect4.Width + tabrect5.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.18), 20); // P.UNIT
+                Rectangle tabrect7 = new Rectangle(25 + tabrect1.Width + tabrect2.Width + tabrect3.Width + tabrect4.Width + tabrect5.Width + tabrect6.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.18), 20); // IMPORTE
+
                 e.Graphics.DrawRectangle(pen, tabrect1);
                 e.Graphics.DrawRectangle(pen, tabrect2);
                 e.Graphics.DrawRectangle(pen, tabrect3);
                 e.Graphics.DrawRectangle(pen, tabrect4);
                 e.Graphics.DrawRectangle(pen, tabrect5);
                 e.Graphics.DrawRectangle(pen, tabrect6);
+                e.Graphics.DrawRectangle(pen, tabrect7);
+
                 e.Graphics.DrawString((i + 1).ToString(), font5, solidBrush, tabrect1, alignMiddle);
                 e.Graphics.DrawString(productosImprimir[i].cantidad.ToString(), font5, solidBrush, tabrect2, alignMiddle);
-                e.Graphics.DrawString(productosImprimir[i].unidad, font5, solidBrush, tabrect3, alignMiddle);
-                e.Graphics.DrawString(productosImprimir[i].nombre, font5, solidBrush, tabrect4, alignMiddle);
-                e.Graphics.DrawString(productosImprimir[i].precio.ToString("0.00"), font5, solidBrush, tabrect5, alignMiddle);
-                e.Graphics.DrawString((productosImprimir[i].precio * productosImprimir[i].cantidad).ToString("0.00"), font5, solidBrush, tabrect6, alignMiddle);
-
-                Rectangle tabrect2D = new Rectangle(rect.Width + 50 + tabrect1.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.075), 20);
-                Rectangle tabrect1D = new Rectangle(rect.Width + 50, rect.Height + 55 + i * 20, (int)(rect.Width * 0.075), 20);
-                Rectangle tabrect3D = new Rectangle(rect.Width + 50 + rectA.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.10), 20);
-                Rectangle tabrect4D = new Rectangle(rect.Width + 50 + rectA.Width + rectB.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.35), 20);
-                Rectangle tabrect5D = new Rectangle(rect.Width + 50 + rectA.Width + rectB.Width + rectC.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.2), 20);
-                Rectangle tabrect6D = new Rectangle(rect.Width + 50 + rectA.Width + rectB.Width + rectC.Width + rectD.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.2), 20);
-                e.Graphics.DrawRectangle(pen, tabrect1D);
-                e.Graphics.DrawRectangle(pen, tabrect2D);
-                e.Graphics.DrawRectangle(pen, tabrect3D);
-                e.Graphics.DrawRectangle(pen, tabrect4D);
-                e.Graphics.DrawRectangle(pen, tabrect5D);
-                e.Graphics.DrawRectangle(pen, tabrect6D);
-                e.Graphics.DrawString((i + 1).ToString(), font5, solidBrush, tabrect1D, alignMiddle);
-                e.Graphics.DrawString(productosImprimir[i].cantidad.ToString(), font5, solidBrush, tabrect2D, alignMiddle);
-                e.Graphics.DrawString(productosImprimir[i].unidad, font5, solidBrush, tabrect3D, alignMiddle);
-                e.Graphics.DrawString(productosImprimir[i].nombre, font5, solidBrush, tabrect4D, alignMiddle);
-                e.Graphics.DrawString(productosImprimir[i].precio.ToString("0.00"), font5, solidBrush, tabrect5D, alignMiddle);
-                e.Graphics.DrawString((productosImprimir[i].precio * productosImprimir[i].cantidad).ToString("0.00"), font5, solidBrush, tabrect6D, alignMiddle);
+                e.Graphics.DrawString(productosImprimir[i].codigo, font5, solidBrush, tabrect3, alignMiddle); // CÓDIGO
+                e.Graphics.DrawString(productosImprimir[i].unidad, font5, solidBrush, tabrect4, alignMiddle);
+                e.Graphics.DrawString(productosImprimir[i].nombre, font5, solidBrush, tabrect5, alignMiddle);
+                e.Graphics.DrawString(productosImprimir[i].precio.ToString("0.00"), font5, solidBrush, tabrect6, alignMiddle);
+                e.Graphics.DrawString((productosImprimir[i].precio * productosImprimir[i].cantidad).ToString("0.00"), font5, solidBrush, tabrect7, alignMiddle);
             }
 
+            // *** TOTAL AL FINAL DE LA TABLA - PRIMERA HOJA ***
+            int yPosTotal = rect.Height + 55 + productosImprimir.Count * 20 + 10;
+            // Comenzar desde después de UNIDAD para tener todo el espacio necesario
+            int xPosTotal = 25 + (int)(rect.Width * 0.075) + (int)(rect.Width * 0.075) + (int)(rect.Width * 0.10) + (int)(rect.Width * 0.08);
+            // Ancho que abarca ARTICULO + P.UNIT + IMPORTE
+            int anchoTotal = (int)(rect.Width * 0.30) + (int)(rect.Width * 0.18) + (int)(rect.Width * 0.18);
 
+            Rectangle totalRect = new Rectangle(xPosTotal, yPosTotal, anchoTotal, 20);
+            e.Graphics.DrawString(text6, font7, solidBrush, totalRect, alignRight);
+
+            // Total en la parte inferior (mantener el existente)
+            e.Graphics.DrawString(text6, font6, solidBrush, new Rectangle(330, 800, 200, 20), alignRight);
+
+            // ========== SEGUNDA HOJA (2/2) ==========
             e.Graphics.DrawString("2/2", font5, solidBrush, new Rectangle(rect.Width + 50, 25, 35, 35), alignMiddle);
             Rectangle rect2 = new Rectangle(rect.Width + 50, 25, rect.Width, rect.Height);
             e.Graphics.DrawString(text1, font, solidBrush, rect2, alignCenter);
@@ -529,6 +518,66 @@ namespace InventarioCasaCeja
 
             e.Graphics.DrawLine(pen, rect2.X + 5, 70, rect2.Width + rect2.X - 10, 70);
 
+            Rectangle barRectD = new Rectangle(rect.Width + 2 * (rect.Width / 3) + 55, 107, rect.Width / 3 - 10, 33);
+            e.Graphics.DrawImage(bar, barRectD);
+
+            // *** ENCABEZADOS DE TABLA - SEGUNDA HOJA ***
+            Rectangle rectA1 = new Rectangle(rect.Width + 50, rect.Height + 45, (int)(rect.Width * 0.075), 10);
+            Rectangle rectB1 = new Rectangle(rect.Width + 50 + rectA1.Width, rect.Height + 45, (int)(rect.Width * 0.075), 10);
+            Rectangle rectC1 = new Rectangle(rect.Width + 50 + rectA1.Width + rectB1.Width, rect.Height + 45, (int)(rect.Width * 0.10), 10); // CÓDIGO
+            Rectangle rectD1 = new Rectangle(rect.Width + 50 + rectA1.Width + rectB1.Width + rectC1.Width, rect.Height + 45, (int)(rect.Width * 0.08), 10); // UNIDAD
+            Rectangle rectE1 = new Rectangle(rect.Width + 50 + rectA1.Width + rectB1.Width + rectC1.Width + rectD1.Width, rect.Height + 45, (int)(rect.Width * 0.30), 10); // ARTICULO
+            Rectangle rectF1 = new Rectangle(rect.Width + 50 + rectA1.Width + rectB1.Width + rectC1.Width + rectD1.Width + rectE1.Width, rect.Height + 45, (int)(rect.Width * 0.18), 10); // P.UNIT
+            Rectangle rectG1 = new Rectangle(rect.Width + 50 + rectA1.Width + rectB1.Width + rectC1.Width + rectD1.Width + rectE1.Width + rectF1.Width, rect.Height + 45, (int)(rect.Width * 0.18), 10); // IMPORTE
+
+            e.Graphics.DrawString("#", font4, solidBrush, rectA1, alignCenter);
+            e.Graphics.DrawString("CANTIDAD", font4, solidBrush, rectB1, alignCenter);
+            e.Graphics.DrawString("CÓDIGO", font4, solidBrush, rectC1, alignCenter);
+            e.Graphics.DrawString("UNIDAD", font4, solidBrush, rectD1, alignCenter);
+            e.Graphics.DrawString("ARTICULO", font4, solidBrush, rectE1, alignCenter);
+            e.Graphics.DrawString("P.UNIT", font4, solidBrush, rectF1, alignCenter);
+            e.Graphics.DrawString("IMPORTE", font4, solidBrush, rectG1, alignCenter);
+
+            // *** FILAS DE PRODUCTOS - SEGUNDA HOJA ***
+            for (int i = 0; i < productosImprimir.Count; i++)
+            {
+                Rectangle tabrect1D = new Rectangle(rect.Width + 50, rect.Height + 55 + i * 20, (int)(rect.Width * 0.075), 20);
+                Rectangle tabrect2D = new Rectangle(rect.Width + 50 + tabrect1D.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.075), 20);
+                Rectangle tabrect3D = new Rectangle(rect.Width + 50 + tabrect1D.Width + tabrect2D.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.10), 20); // CÓDIGO
+                Rectangle tabrect4D = new Rectangle(rect.Width + 50 + tabrect1D.Width + tabrect2D.Width + tabrect3D.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.08), 20); // UNIDAD
+                Rectangle tabrect5D = new Rectangle(rect.Width + 50 + tabrect1D.Width + tabrect2D.Width + tabrect3D.Width + tabrect4D.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.30), 20); // ARTICULO
+                Rectangle tabrect6D = new Rectangle(rect.Width + 50 + tabrect1D.Width + tabrect2D.Width + tabrect3D.Width + tabrect4D.Width + tabrect5D.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.18), 20); // P.UNIT
+                Rectangle tabrect7D = new Rectangle(rect.Width + 50 + tabrect1D.Width + tabrect2D.Width + tabrect3D.Width + tabrect4D.Width + tabrect5D.Width + tabrect6D.Width, rect.Height + 55 + i * 20, (int)(rect.Width * 0.18), 20); // IMPORTE
+
+                e.Graphics.DrawRectangle(pen, tabrect1D);
+                e.Graphics.DrawRectangle(pen, tabrect2D);
+                e.Graphics.DrawRectangle(pen, tabrect3D);
+                e.Graphics.DrawRectangle(pen, tabrect4D);
+                e.Graphics.DrawRectangle(pen, tabrect5D);
+                e.Graphics.DrawRectangle(pen, tabrect6D);
+                e.Graphics.DrawRectangle(pen, tabrect7D);
+
+                e.Graphics.DrawString((i + 1).ToString(), font5, solidBrush, tabrect1D, alignMiddle);
+                e.Graphics.DrawString(productosImprimir[i].cantidad.ToString(), font5, solidBrush, tabrect2D, alignMiddle);
+                e.Graphics.DrawString(productosImprimir[i].codigo, font5, solidBrush, tabrect3D, alignMiddle); // CÓDIGO
+                e.Graphics.DrawString(productosImprimir[i].unidad, font5, solidBrush, tabrect4D, alignMiddle);
+                e.Graphics.DrawString(productosImprimir[i].nombre, font5, solidBrush, tabrect5D, alignMiddle);
+                e.Graphics.DrawString(productosImprimir[i].precio.ToString("0.00"), font5, solidBrush, tabrect6D, alignMiddle);
+                e.Graphics.DrawString((productosImprimir[i].precio * productosImprimir[i].cantidad).ToString("0.00"), font5, solidBrush, tabrect7D, alignMiddle);
+            }
+
+            // *** TOTAL AL FINAL DE LA TABLA - SEGUNDA HOJA ***
+            int yPosTotal2 = rect.Height + 55 + productosImprimir.Count * 20 + 10;
+            int xPosTotal2 = rect.Width + 50 + (int)(rect.Width * 0.075) + (int)(rect.Width * 0.075) + (int)(rect.Width * 0.10) + (int)(rect.Width * 0.08);
+            int anchoTotal2 = (int)(rect.Width * 0.30) + (int)(rect.Width * 0.18) + (int)(rect.Width * 0.18);
+
+            Rectangle totalRect2 = new Rectangle(xPosTotal2, yPosTotal2, anchoTotal2, 20);
+            e.Graphics.DrawString(text6, font7, solidBrush, totalRect2, alignRight);
+
+            // Total en la parte inferior (mantener el existente)
+            e.Graphics.DrawString(text6, font6, solidBrush, new Rectangle(rect.Width + 25 + 330, 800, 200, 20), alignRight);
+
+            // *** CÓDIGOS QR ***
             // Obtener el ancho y alto del documento
             int documentWidth = e.PageBounds.Width;
             int documentHeight = e.PageBounds.Height;
@@ -544,26 +593,12 @@ namespace InventarioCasaCeja
             // Ajusta esta posición según tus necesidades
             int yPos = documentHeight - qrHeight - margin;
 
-            // Obtén la ruta de la carpeta donde se guardará la imagen
-            string folderPath = Path.Combine(Application.StartupPath, "QRImages");
-
-            // Verifica si la carpeta existe; si no, créala
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-
             //SE ANEXA EL CODIGO QUE GENERA EL PRIMER QR
             string json1 = JsonConvert.SerializeObject(productosEnvio);
             Bitmap qrImage1 = GenerarQR(json1);
 
-            // Nombre del archivo para el código QR, incluyendo el valor de la variable "folio"
-            string qrFileName = $"QR_{folio}.png";
-            string filePath = Path.Combine(folderPath, qrFileName);
-
             Rectangle qrBounds1 = new Rectangle(xPos1, yPos, qrWidth, qrHeight);
             e.Graphics.DrawImage(qrImage1, qrBounds1);
-            qrImage1.Save(filePath, ImageFormat.Png);
 
             // Calcular la posición para el segundo código QR
             int xPos2 = xPos1 + qrWidth + spaceBetweenQRs;
@@ -575,7 +610,6 @@ namespace InventarioCasaCeja
 
             Rectangle qrBounds2 = new Rectangle(xPos2, yPos, qrWidth, qrHeight);
             e.Graphics.DrawImage(qrImage2, qrBounds2);
-
         }
 
         private Bitmap GenerarQR(string texto)
@@ -608,8 +642,8 @@ namespace InventarioCasaCeja
 
         private void finish_Click(object sender, EventArgs e)
         {
-            string destino = boxsucursales.SelectedItem.ToString();
-            if (destino == data.sucursal.razon_social)
+            this.destino = boxsucursales.SelectedItem.ToString(); // Asignar a la variable de clase
+            if (this.destino == data.sucursal.razon_social)
             {
                 MessageBox.Show("No es posible enviar productos a la misma sucursal.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -631,13 +665,11 @@ namespace InventarioCasaCeja
                     {
                         total += producto.cantidad * producto.precio;
                     }
-
-                    DateTime localDate = DateTime.Now;
-                    destino = boxsucursales.SelectedItem.ToString();
+                    DateTime localDate = DateTime.Now;                    
                     Salida salida = new Salida
                     {
                         id_sucursal_origen = data.sucursal.id,
-                        id_sucursal_destino = data.mapasucursales[destino],
+                        id_sucursal_destino = data.mapasucursales[this.destino],
                         folio = folio,
                         fecha_salida = localDate.ToString("yyyy/MM/dd HH:mm:ss"),
                         usuario_id = webDM.activeUser.id,
@@ -648,24 +680,24 @@ namespace InventarioCasaCeja
                     localDM.GuardarSalidaLocal(salida);
                     enviarSalida(salida);
                     cargarTicketCarta(localDate.ToString("HH:mm dd/MM/yyyy"));
-
                     // Mostrar la vista previa
                     previewDialog.ShowDialog();
 
-                    // Configuración de archivo
+                    // Configuración de carpeta principal
                     string carpetaPrincipal = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "CasaCejaDocs");
-                    string subcarpeta = Path.Combine(carpetaPrincipal, "Inventario");
+
+                    // *** GUARDAR PDF EN CARPETA INVENTARIO ***
+                    string subcarpetaPDF = Path.Combine(carpetaPrincipal, "Inventario");
                     string nombrePDF = $"Salida_{folio}.pdf";
-                    string rutaPDF = Path.Combine(subcarpeta, nombrePDF);
+                    string rutaPDF = Path.Combine(subcarpetaPDF, nombrePDF);
 
                     // Crear la carpeta principal y la subcarpeta si no existen
                     if (!Directory.Exists(carpetaPrincipal))
                         Directory.CreateDirectory(carpetaPrincipal);
+                    if (!Directory.Exists(subcarpetaPDF))
+                        Directory.CreateDirectory(subcarpetaPDF);
 
-                    if (!Directory.Exists(subcarpeta))
-                        Directory.CreateDirectory(subcarpeta);
-
-                    // Validar si el archivo ya existe
+                    // Validar si el archivo PDF ya existe
                     if (File.Exists(rutaPDF))
                     {
                         var respuesta = MessageBox.Show("El archivo ya existe. ¿Deseas sobrescribirlo?",
@@ -682,7 +714,28 @@ namespace InventarioCasaCeja
 
                     // Llamar al método para guardar el documento como PDF
                     GuardarComoPDF(rutaPDF);
-                    MessageBox.Show($"{nombrePDF} generado correctamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // *** GUARDAR QR EN CARPETA QrSalidas ***
+                    string subcarpetaQR = Path.Combine(carpetaPrincipal, "QrSalidas");
+                    string nombreQR = $"Qr_Salida_{folio}.png";
+                    string rutaQR = Path.Combine(subcarpetaQR, nombreQR);
+
+                    // Crear la subcarpeta QrSalidas si no existe
+                    if (!Directory.Exists(subcarpetaQR))
+                        Directory.CreateDirectory(subcarpetaQR);
+
+                    // Validar si el archivo QR ya existe y eliminarlo si es necesario
+                    if (File.Exists(rutaQR))
+                    {
+                        File.Delete(rutaQR);
+                    }
+
+                    // Generar y guardar el QR
+                    Bitmap qrCodeImage = GenerarQR(salida.productos);
+                    qrCodeImage.Save(rutaQR, System.Drawing.Imaging.ImageFormat.Png);
+                    qrCodeImage.Dispose(); // Liberar recursos
+
+                    MessageBox.Show($"{nombrePDF} y {nombreQR} generados correctamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     // Limpiar la lista de productos e inicializar el binding nuevamente
                     productosImprimir.Clear();

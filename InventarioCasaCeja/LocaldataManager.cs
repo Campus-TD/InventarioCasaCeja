@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System;
 using System.Windows.Forms;
 using System.Diagnostics;
+using LiteDB;
 
 namespace InventarioCasaCeja
 {
@@ -33,8 +34,8 @@ namespace InventarioCasaCeja
             // 3. Tablas que dependen de las básicas
             {"clientes", "CREATE TABLE 'clientes' ('id' INTEGER, 'nombre' TEXT, 'rfc' TEXT, 'calle' TEXT, 'no_exterior' TEXT, 'no_interior' TEXT, 'cp' TEXT, 'colonia' TEXT, 'ciudad' TEXT, 'telefono' TEXT, 'correo' TEXT, 'activo' INTEGER, 'created_at' TEXT, 'updated_at' TEXT, PRIMARY KEY('id'))"},
             {"clientes_temporal", "CREATE TABLE 'clientes_temporal' ('id' INTEGER, 'nombre' TEXT, 'rfc' TEXT, 'calle' TEXT, 'no_exterior' TEXT, 'no_interior' TEXT, 'cp' TEXT, 'colonia' TEXT, 'ciudad' TEXT, 'telefono' TEXT, 'correo' TEXT, PRIMARY KEY('id' AUTOINCREMENT))"},
-            {"entradas", "CREATE TABLE 'entradas' ('id' INTEGER NOT NULL, 'fecha_factura' TEXT, 'total_factura' REAL, 'folio_factura' TEXT, 'usuario_id' INTEGER, 'sucursal_id' INTEGER, 'proveedor_id' INTEGER, 'cancelacion' INTEGER, 'estado' INTEGER, 'detalles' TEXT, 'created_at' TEXT, 'updated_at' TEXT, PRIMARY KEY('id' AUTOINCREMENT))"},
-        
+            {"entradas", "CREATE TABLE 'entradas' ('id' INTEGER NOT NULL, 'fecha_factura' TEXT, 'total_factura' REAL, 'folio_factura' TEXT, 'usuario_id' INTEGER, 'sucursal_id' INTEGER, 'proveedor_id' INTEGER, 'cancelacion' INTEGER, 'estado' INTEGER, 'detalles' TEXT, 'created_at' TEXT, 'updated_at' TEXT, 'comentarios' TEXT DEFAULT NULL, PRIMARY KEY('id' AUTOINCREMENT))"},
+            
             // 4. Tablas de transacciones principales
             {"ventas", "CREATE TABLE 'ventas' ('id' INTEGER NOT NULL, 'total' REAL, 'descuento' REAL, 'folio' TEXT, 'folio_corte' TEXT, 'fecha_venta' TEXT, 'metodo_pago' TEXT, 'tipo' INTEGER, 'sucursal_id' INTEGER, 'usuario_id' INTEGER, 'cancelacion' TEXT, 'estado' INTEGER, 'detalles' TEXT, FOREIGN KEY('usuario_id') REFERENCES 'usuarios'('id'), FOREIGN KEY('sucursal_id') REFERENCES 'sucursales'('id'), PRIMARY KEY('id' AUTOINCREMENT))"},
             {"apartados", "CREATE TABLE 'apartados' ('id' INTEGER, 'productos' TEXT, 'total' REAL, 'total_pagado' REAL, 'fecha_apartado' TEXT, 'folio_corte' TEXT, 'fecha_entrega' TEXT, 'estado' INTEGER, 'cliente_creditos_id' INTEGER, 'id_cajero_registro' INTEGER, 'id_cejero_entrega' INTEGER, 'sucursal_id' INTEGER, 'observaciones' TEXT, 'created_at' TEXT, 'updated_at' TEXT, FOREIGN KEY('id_cajero_registro') REFERENCES 'usuarios'('id'), FOREIGN KEY('id_cejero_entrega') REFERENCES 'usuarios'('id'), PRIMARY KEY('id' AUTOINCREMENT))"},
@@ -809,21 +810,56 @@ namespace InventarioCasaCeja
             command.CommandText = "DELETE FROM salidas";
             command.ExecuteScalar();
         }
+
+        // ★ MÉTODO getCategorias PERSONALIZADO
         public DataTable getCategorias()
         {
             DataTable dt = new DataTable();
-            string query = "SELECT id AS ID, nombre AS CATEGORIA FROM categorias WHERE activo = 1";
-            SQLiteCommand command = new SQLiteCommand(query, connection);
+            SQLiteCommand command = connection.CreateCommand();
+            // ★ CAMBIO: Solo seleccionar ID y NOMBRE, cambiar header a "CATEGORIA"
+            command.CommandText = "SELECT id AS ID, nombre AS CATEGORIA FROM categorias WHERE activo = 1 ORDER BY nombre";
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dt);
+
+            Console.WriteLine($"★ getCategorias devuelve {dt.Rows.Count} registros");
             return dt;
         }
+
+        // ★ MÉTODO getCategorias con búsqueda PERSONALIZADO
         public DataTable getCategorias(string arg)
         {
             DataTable dt = new DataTable();
             SQLiteCommand command = connection.CreateCommand();
+            // ★ CAMBIO: Solo seleccionar ID y NOMBRE, cambiar header a "CATEGORIA"
             command.CommandText = "SELECT id AS ID, nombre AS CATEGORIA FROM categorias WHERE activo=1 AND nombre LIKE @setNombre";
-            command.Parameters.AddWithValue("setNombre", "%"+arg+"%");
+            command.Parameters.AddWithValue("setNombre", "%" + arg + "%");
+            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
+            adapter.Fill(dt);
+            return dt;
+        }
+
+        // ★ MÉTODO getMedidas PERSONALIZADO
+        public DataTable getMedidas()
+        {
+            DataTable dt = new DataTable();
+            SQLiteCommand command = connection.CreateCommand();
+            // ★ CAMBIO: Solo seleccionar ID y NOMBRE, cambiar header a "MEDIDA"
+            command.CommandText = "SELECT id AS ID, nombre AS MEDIDA FROM medidas WHERE activo = 1 ORDER BY nombre";
+            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
+            adapter.Fill(dt);
+
+            Console.WriteLine($"★ getMedidas devuelve {dt.Rows.Count} registros");
+            return dt;
+        }
+
+        // ★ MÉTODO getMedidas con búsqueda PERSONALIZADO
+        public DataTable getMedidas(string arg)
+        {
+            DataTable dt = new DataTable();
+            SQLiteCommand command = connection.CreateCommand();
+            // ★ CAMBIO: Solo seleccionar ID y NOMBRE, cambiar header a "MEDIDA"
+            command.CommandText = "SELECT id AS ID, nombre AS MEDIDA FROM medidas WHERE activo=1 AND nombre LIKE @setNombre";
+            command.Parameters.AddWithValue("setNombre", "%" + arg + "%");
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dt);
             return dt;
@@ -876,26 +912,7 @@ namespace InventarioCasaCeja
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dt);
             return dt;
-        }
-        public DataTable getMedidas()
-        {
-            DataTable dt = new DataTable();
-            SQLiteCommand command = connection.CreateCommand();
-            command.CommandText = "SELECT id AS ID, nombre AS MEDIDA FROM medidas WHERE activo=1";
-            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
-            adapter.Fill(dt);
-            return dt;
-        }
-        public DataTable getMedidas(string arg)
-        {
-            DataTable dt = new DataTable();
-            SQLiteCommand command = connection.CreateCommand();
-            command.CommandText = "SELECT id AS ID, nombre AS MEDIDA FROM medidas WHERE activo=1 AND nombre LIKE @setNombre";
-            command.Parameters.AddWithValue("setNombre", "%" + arg + "%");
-            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
-            adapter.Fill(dt);
-            return dt;
-        }
+        }            
 
         public DataTable getUsuarios()
         {
@@ -990,6 +1007,7 @@ namespace InventarioCasaCeja
 
             return dtEntradas;
         }
+
         public DataTable getEntradasPorSucursal(int sucursalId)
         {
             DataTable dtEntradas = new DataTable();
@@ -1001,21 +1019,20 @@ SELECT entradas.id AS ID,
        usuarios.nombre AS 'USUARIO',
        sucursales.razon_social AS 'SUCURSAL',
        proveedores.nombre AS 'PROVEEDOR',
-       entradas.fecha_factura AS 'FECHA FACTURA' 
+       entradas.fecha_factura AS 'FECHA FACTURA',
+       entradas.comentarios AS 'COMENTARIOS'
 FROM entradas
 JOIN usuarios ON entradas.usuario_id = usuarios.id
 JOIN sucursales ON entradas.sucursal_id = sucursales.id
 JOIN proveedores ON entradas.proveedor_id = proveedores.id
 WHERE sucursales.id = @sucursalId
 ORDER BY entradas.id DESC";
-
             command.Parameters.AddWithValue("@sucursalId", sucursalId);
-
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dtEntradas);
-
             return dtEntradas;
         }
+
         public DataTable getSalidasPorSucursal(int idSucursalOrigen)
         {
             DataTable dtSalidas = new DataTable();
@@ -1078,28 +1095,26 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
             return dtSalidas;
         }
 
+        // ★ MÉTODO getProductoEntradaInfo PERSONALIZADO
         public DataTable getProductoEntradaInfo(int entradaId)
         {
+            Console.WriteLine($"★ Buscando productos para entrada ID: {entradaId}");
+
             DataTable dtProductoEntrada = new DataTable();
             using (SQLiteCommand command = connection.CreateCommand())
             {
+                // ★ CAMBIO: Solo seleccionar las columnas específicas en el orden requerido
                 command.CommandText = @"
-                SELECT 
-                    producto_entrada.entrada_id AS 'ENTRADA ID',
-                    producto_entrada.producto_id AS 'PRODUCTO ID',
-                    producto_entrada.cantidad AS 'CANTIDAD',
-                    productos.codigo AS 'CÓDIGO',
-                    productos.nombre AS 'NOMBRE',
-                    categorias.nombre AS 'CATEGORÍA',
-                    productos.presentacion AS 'PRESENTACIÓN'
-                FROM 
-                    producto_entrada
-                JOIN 
-                    productos ON producto_entrada.producto_id = productos.id
-                JOIN 
-                    categorias ON productos.categoria_id = categorias.id
-                WHERE 
-                    producto_entrada.entrada_id = @entradaId";
+            SELECT 
+                pe.id AS ID,
+                p.codigo AS CODIGO,
+                p.nombre AS NOMBRE,
+                pe.cantidad AS CANTIDAD,
+                pe.costo AS COSTO
+            FROM producto_entrada pe
+            LEFT JOIN productos p ON pe.producto_id = p.id
+            WHERE pe.entrada_id = @entradaId
+            ORDER BY pe.id";
 
                 command.Parameters.AddWithValue("@entradaId", entradaId);
 
@@ -1108,85 +1123,184 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
                     adapter.Fill(dtProductoEntrada);
                 }
             }
-            return dtProductoEntrada;
-        }
-        public DataTable getProductosFromSalida(int salidaId)
-        {          
-            DataTable dtProductos = new DataTable();
-            dtProductos.Columns.Add("ID PRODUCTO", typeof(int));
-            dtProductos.Columns.Add("NOMBRE", typeof(string));
-            dtProductos.Columns.Add("CATEGORÍA", typeof(string));
-            dtProductos.Columns.Add("PRECIO", typeof(decimal));
-            dtProductos.Columns.Add("CANTIDAD", typeof(int));
 
-            using (SQLiteCommand command = connection.CreateCommand())
+            Console.WriteLine($"★ Productos encontrados para entrada {entradaId}: {dtProductoEntrada.Rows.Count}");
+
+            // Diagnóstico detallado
+            if (dtProductoEntrada.Rows.Count > 0)
             {
-                command.CommandText = "SELECT productos FROM salidas WHERE id = @salidaId";
-                //command.CommandText = "SELECT productos FROM salidas_temporal WHERE id = @salidaId";
-                command.Parameters.AddWithValue("@salidaId", salidaId);
-
-                using (SQLiteDataReader reader = command.ExecuteReader())
+                Console.WriteLine($"★ Detalles de productos encontrados:");
+                foreach (DataRow row in dtProductoEntrada.Rows)
                 {
-                    if (reader.Read())
+                    Console.WriteLine($"   - ID: {row["ID"]}, Código: {row["CODIGO"]}, Nombre: {row["NOMBRE"]}, Cantidad: {row["CANTIDAD"]}, Costo: {row["COSTO"]}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"★ ❌ No se encontraron productos para entrada {entradaId}");
+
+                // Verificar si existen registros en producto_entrada
+                using (SQLiteCommand countCommand = connection.CreateCommand())
+                {
+                    countCommand.CommandText = "SELECT COUNT(*) FROM producto_entrada";
+                    var totalCount = countCommand.ExecuteScalar();
+                    Console.WriteLine($"★ Total registros en producto_entrada: {totalCount}");
+
+                    if (Convert.ToInt32(totalCount) > 0)
                     {
-                        string productosJson = reader.GetString(0);
-
-                        var productos = JsonConvert.DeserializeObject<List<dynamic>>(productosJson);
-
-                        foreach (var producto in productos)
+                        countCommand.CommandText = "SELECT DISTINCT entrada_id FROM producto_entrada ORDER BY entrada_id";
+                        using (SQLiteDataReader reader = countCommand.ExecuteReader())
                         {
-                            string nombreProducto = "";
-                            string categoriaProducto = "";
-
-                            using (SQLiteCommand productCommand = connection.CreateCommand())
+                            Console.WriteLine($"★ IDs de entrada disponibles:");
+                            while (reader.Read())
                             {
-                                productCommand.CommandText = @"
-                        SELECT productos.nombre, categorias.nombre 
-                        FROM productos 
-                        JOIN categorias ON productos.categoria_id = categorias.id 
-                        WHERE productos.id = @productoId";
-                                productCommand.Parameters.AddWithValue("@productoId", (int)producto.idproducto);
-
-                                using (SQLiteDataReader productReader = productCommand.ExecuteReader())
-                                {
-                                    if (productReader.Read())
-                                    {
-                                        nombreProducto = productReader.GetString(0);
-                                        categoriaProducto = productReader.GetString(1);
-                                    }
-                                }
+                                Console.WriteLine($"   - Entrada ID: {reader.GetInt32(0)}");
                             }
-                            DataRow row = dtProductos.NewRow();
-                            row["ID PRODUCTO"] = (int)producto.idproducto;
-                            row["NOMBRE"] = nombreProducto;
-                            row["CATEGORÍA"] = categoriaProducto;
-                            row["PRECIO"] = (decimal)producto.precio;
-                            row["CANTIDAD"] = (int)producto.cantidad;
-                            dtProductos.Rows.Add(row);
                         }
                     }
                 }
             }
 
+            return dtProductoEntrada;
+        }
+        public DataTable getProductosFromSalida(int salidaId)
+        {
+            DataTable dtProductos = new DataTable();
+
+            // Definir columnas
+            dtProductos.Columns.Add("ID PRODUCTO", typeof(int));
+            dtProductos.Columns.Add("NOMBRE", typeof(string));
+            dtProductos.Columns.Add("CATEGORÍA", typeof(string));
+            dtProductos.Columns.Add("PRECIO", typeof(double));
+            dtProductos.Columns.Add("CANTIDAD", typeof(int));
+
+            try
+            {
+                using (SQLiteCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        SELECT productos 
+                        FROM salidas 
+                        WHERE id = @salidaId";
+
+                    command.Parameters.AddWithValue("@salidaId", salidaId);
+
+                    using (SQLiteDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            int productosIdx = reader.GetOrdinal("productos");
+                            string productosJson = reader.IsDBNull(productosIdx) ? "" : reader.GetString(productosIdx);
+                            Console.WriteLine($"★ JSON de productos para salida {salidaId}: {productosJson}");
+
+                            if (!string.IsNullOrEmpty(productosJson))
+                            {
+                                try
+                                {
+                                    // Deserializar JSON
+                                    var productos = JsonConvert.DeserializeObject<List<dynamic>>(productosJson);
+
+                                    foreach (var producto in productos)
+                                    {
+                                        try
+                                        {
+                                            int idProducto = Convert.ToInt32(producto.idproducto);
+                                            double precio = Convert.ToDouble(producto.precio);
+                                            int cantidad = Convert.ToInt32(producto.cantidad);
+
+                                            // Obtener información del producto
+                                            string nombre = "";
+                                            string categoria = "";
+
+                                            using (SQLiteCommand prodCommand = connection.CreateCommand())
+                                            {
+                                                prodCommand.CommandText = @"
+                                                    SELECT p.nombre, c.nombre as categoria
+                                                    FROM productos p
+                                                    LEFT JOIN categorias c ON p.categoria_id = c.id
+                                                    WHERE p.id = @idProducto";
+
+                                                prodCommand.Parameters.AddWithValue("@idProducto", idProducto);
+
+                                                using (SQLiteDataReader prodReader = prodCommand.ExecuteReader())
+                                                {
+                                                    if (prodReader.Read())
+                                                    {
+                                                        int nombreIdx = prodReader.GetOrdinal("nombre");
+                                                        int categoriaIdx = prodReader.GetOrdinal("categoria");
+
+                                                        nombre = prodReader.IsDBNull(nombreIdx) ? "Producto no encontrado" : prodReader.GetString(nombreIdx);
+                                                        categoria = prodReader.IsDBNull(categoriaIdx) ? "Sin categoría" : prodReader.GetString(categoriaIdx);
+                                                    }
+                                                    else
+                                                    {
+                                                        nombre = $"Producto ID {idProducto} (No encontrado)";
+                                                        categoria = "Sin categoría";
+                                                    }
+                                                }
+                                            }
+
+                                            // Agregar fila a la tabla
+                                            DataRow row = dtProductos.NewRow();
+                                            row["ID PRODUCTO"] = idProducto;
+                                            row["NOMBRE"] = nombre;
+                                            row["CATEGORÍA"] = categoria;
+                                            row["PRECIO"] = precio;
+                                            row["CANTIDAD"] = cantidad;
+                                            dtProductos.Rows.Add(row);
+
+                                            Console.WriteLine($"★ Producto procesado: ID={idProducto}, Nombre={nombre}, Precio={precio}, Cantidad={cantidad}");
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Console.WriteLine($"★ Error procesando producto individual: {ex.Message}");
+                                        }
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"★ Error deserializando JSON de productos: {ex.Message}");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"★ Error en getProductosFromSalida: {ex.Message}");
+            }
+
+            Console.WriteLine($"★ Productos encontrados para salida {salidaId}: {dtProductos.Rows.Count}");
             return dtProductos;
         }
 
 
-        public void saveEntradaProductos(List<EntradaProducto> entradaProductos)
+        public void saveProductosEntrada(List<ProductoEntrada> productos)
         {
-            foreach (EntradaProducto entradaProducto in entradaProductos)
+            foreach (ProductoEntrada producto in productos)
             {
                 SQLiteCommand command = connection.CreateCommand();
-                command.CommandText = "INSERT OR REPLACE INTO producto_entrada (entrada_id, producto_id, codigo, cantidad, costo, estado, detalles) " +
-                                      "VALUES(@setEntradaId, @setProductoId, 1, @setCantidad, @setCosto, 1, 'Enviado')";
-                command.Parameters.AddWithValue("setEntradaId", entradaProducto.entrada_id);
-                command.Parameters.AddWithValue("setProductoId", entradaProducto.producto_id);
-                command.Parameters.AddWithValue("setCantidad", entradaProducto.cantidad);
-                command.Parameters.AddWithValue("setCosto", entradaProducto.costo);
+                command.CommandText = @"INSERT OR REPLACE INTO producto_entrada 
+            (id, entrada_id, producto_id, codigo, cantidad, costo, estado, detalles, created_at, updated_at) 
+            VALUES(@setId, @setEntradaId, @setProductoId, @setCodigo, @setCantidad, @setCosto, @setEstado, @setDetalles, @setCreatedAt, @setUpdatedAt)";
+
+                command.Parameters.AddWithValue("setId", producto.id);
+                command.Parameters.AddWithValue("setEntradaId", producto.entrada_id);
+                command.Parameters.AddWithValue("setProductoId", producto.producto_id);
+                command.Parameters.AddWithValue("setCodigo", producto.codigo ?? "");
+                command.Parameters.AddWithValue("setCantidad", producto.cantidad);
+                command.Parameters.AddWithValue("setCosto", producto.costo);
+                command.Parameters.AddWithValue("setEstado", producto.estado ?? 1);
+                command.Parameters.AddWithValue("setDetalles", producto.detalles ?? "");
+                command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
                 command.ExecuteNonQuery();
+
+                Console.WriteLine($"★ Guardado producto entrada: ID={producto.id}, EntradaID={producto.entrada_id}, ProductoID={producto.producto_id}, Cantidad={producto.cantidad}");
             }
         }
-
 
         public void saveEntradas(List<Entrada> entradas)
         {
@@ -1194,29 +1308,30 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
             {
                 SQLiteCommand command = connection.CreateCommand();
                 command.CommandText = @"
-            INSERT OR REPLACE INTO entradas (
-                id,
-                folio_factura,
-                total_factura,
-                fecha_factura,
-                usuario_id,
-                sucursal_id,
-                proveedor_id,
-                created_at,
-                updated_at
-            )
-            VALUES(
-                @setId,
-                @setFolioFactura,
-                @setTotalFactura,
-                @setFechaFactura,
-                @setUsuarioId,
-                @setSucursalId,
-                @setProveedorId,
-                @setCreatedAt,
-                @setUpdatedAt
-            )";
-
+    INSERT OR REPLACE INTO entradas (
+        id,
+        folio_factura,
+        total_factura,
+        fecha_factura,
+        usuario_id,
+        sucursal_id,
+        proveedor_id,
+        comentarios,
+        created_at,
+        updated_at
+    )
+    VALUES(
+        @setId,
+        @setFolioFactura,
+        @setTotalFactura,
+        @setFechaFactura,
+        @setUsuarioId,
+        @setSucursalId,
+        @setProveedorId,
+        @setComentarios,
+        @setCreatedAt,
+        @setUpdatedAt
+    )";
                 command.Parameters.AddWithValue("setId", entrada.id);
                 command.Parameters.AddWithValue("setFolioFactura", entrada.folio_factura);
                 command.Parameters.AddWithValue("setTotalFactura", entrada.total_factura);
@@ -1224,13 +1339,67 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
                 command.Parameters.AddWithValue("setUsuarioId", entrada.usuario_id);
                 command.Parameters.AddWithValue("setSucursalId", entrada.sucursal_id);
                 command.Parameters.AddWithValue("setProveedorId", entrada.proveedor_id);
+                command.Parameters.AddWithValue("setComentarios", entrada.comentarios ?? (object)DBNull.Value); // ⭐ NUEVO
                 command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-
                 command.ExecuteNonQuery();
             }
         }
+        // ★ MÉTODO saveEntradaProductos CORREGIDO en LocaldataManager.cs
+        public void saveEntradaProductos(List<EntradaProducto> entradaProductos)
+        {
+            Console.WriteLine($"★ Guardando {entradaProductos.Count} productos de entrada...");
 
+            foreach (EntradaProducto entradaProducto in entradaProductos)
+            {
+                // ★ CAMBIO PRINCIPAL: Verificar si el registro ya existe
+                bool existeRegistro = false;
+
+                using (SQLiteCommand checkCommand = connection.CreateCommand())
+                {
+                    checkCommand.CommandText = @"
+                SELECT COUNT(*) FROM producto_entrada 
+                WHERE entrada_id = @entrada_id AND producto_id = @producto_id";
+
+                    checkCommand.Parameters.AddWithValue("@entrada_id", entradaProducto.entrada_id);
+                    checkCommand.Parameters.AddWithValue("@producto_id", entradaProducto.producto_id);
+
+                    int count = Convert.ToInt32(checkCommand.ExecuteScalar());
+                    existeRegistro = count > 0;
+                }
+
+                if (existeRegistro)
+                {
+                    Console.WriteLine($"★ Producto ya existe - EntradaID={entradaProducto.entrada_id}, ProductoID={entradaProducto.producto_id} - SALTANDO");
+                    continue; // Saltar si ya existe
+                }
+
+                // ★ Solo insertar si NO existe
+                using (SQLiteCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                INSERT INTO producto_entrada 
+                (entrada_id, producto_id, codigo, cantidad, costo, estado, detalles, created_at, updated_at) 
+                VALUES(@setEntradaId, @setProductoId, @setCodigo, @setCantidad, @setCosto, @setEstado, @setDetalles, @setCreatedAt, @setUpdatedAt)";
+
+                    command.Parameters.AddWithValue("setEntradaId", entradaProducto.entrada_id);
+                    command.Parameters.AddWithValue("setProductoId", entradaProducto.producto_id);
+                    command.Parameters.AddWithValue("setCodigo", 1); // Valor por defecto
+                    command.Parameters.AddWithValue("setCantidad", entradaProducto.cantidad);
+                    command.Parameters.AddWithValue("setCosto", entradaProducto.costo);
+                    command.Parameters.AddWithValue("setEstado", 1); // Valor por defecto
+                    command.Parameters.AddWithValue("setDetalles", "Enviado"); // Valor por defecto
+                    command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                    command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
+                    command.ExecuteNonQuery();
+
+                    Console.WriteLine($"★ NUEVO producto entrada guardado: EntradaID={entradaProducto.entrada_id}, ProductoID={entradaProducto.producto_id}, Cantidad={entradaProducto.cantidad}, Costo={entradaProducto.costo}");
+                }
+            }
+
+            Console.WriteLine($"★ Finalizado guardado de productos de entrada");
+        }
         public void saveSalidas(List<Salida> salidas)
         {
             foreach (Salida salida in salidas)
@@ -1731,33 +1900,34 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
         {
             SQLiteCommand command = connection.CreateCommand();
             command.CommandText = @"
-        INSERT INTO entradas (
-            fecha_factura,
-            total_factura,
-            folio_factura,
-            usuario_id,
-            sucursal_id,
-            proveedor_id,
-            cancelacion,
-            estado,
-            detalles,
-            created_at,
-            updated_at
-        )
-        VALUES (
-            @setFecha,
-            @setTotal,
-            @setFolio,
-            @setUsuario,
-            @setSucursal,
-            @setProveedor,
-            @setCancelacion,
-            @setEstado,
-            @setDetalles,
-            @setCreatedAt,
-            @setUpdatedAt
-        )";
-
+INSERT INTO entradas (
+    fecha_factura,
+    total_factura,
+    folio_factura,
+    usuario_id,
+    sucursal_id,
+    proveedor_id,
+    cancelacion,
+    estado,
+    detalles,
+    comentarios,
+    created_at,
+    updated_at
+)
+VALUES (
+    @setFecha,
+    @setTotal,
+    @setFolio,
+    @setUsuario,
+    @setSucursal,
+    @setProveedor,
+    @setCancelacion,
+    @setEstado,
+    @setDetalles,
+    @setComentarios,
+    @setCreatedAt,
+    @setUpdatedAt
+)";
             command.Parameters.AddWithValue("setFecha", entrada["fecha_factura"].ToString());
             command.Parameters.AddWithValue("setTotal", entrada["total_factura"].ToString());
             command.Parameters.AddWithValue("setFolio", entrada["folio_factura"].ToString());
@@ -1767,40 +1937,39 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
             command.Parameters.AddWithValue("setCancelacion", 0);
             command.Parameters.AddWithValue("setEstado", 1);
             command.Parameters.AddWithValue("setDetalles", "Pendiente de envío");
+            command.Parameters.AddWithValue("setComentarios", entrada.ContainsKey("comentarios") && entrada["comentarios"] != null ? entrada["comentarios"] : DBNull.Value);
             command.Parameters.AddWithValue("setCreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             command.Parameters.AddWithValue("setUpdatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             command.ExecuteScalar();
-
             command.CommandText = "select last_insert_rowid()";
             Int64 LastRowID64 = (Int64)command.ExecuteScalar();
             int id = (int)LastRowID64;
-
             foreach (ProductoEntrada p in productos)
             {
                 command.CommandText = @"
-            INSERT INTO producto_entrada (
-                entrada_id,
-                producto_id,
-                codigo,
-                cantidad,
-                costo,
-                estado,
-                detalles,
-                created_at,
-                updated_at
-            )
-            VALUES (
-                @setEntrada,
-                @setProducto,
-                @setCodigo,
-                @setCantidad,
-                @setCosto,
-                @setEstado,
-                @setDetalles,
-                @setCreatedAt,
-                @setUpdatedAt
-            )";
-                command.Parameters.Clear(); 
+    INSERT INTO producto_entrada (
+        entrada_id,
+        producto_id,
+        codigo,
+        cantidad,
+        costo,
+        estado,
+        detalles,
+        created_at,
+        updated_at
+    )
+    VALUES (
+        @setEntrada,
+        @setProducto,
+        @setCodigo,
+        @setCantidad,
+        @setCosto,
+        @setEstado,
+        @setDetalles,
+        @setCreatedAt,
+        @setUpdatedAt
+    )";
+                command.Parameters.Clear();
                 command.Parameters.AddWithValue("setEntrada", id);
                 command.Parameters.AddWithValue("setProducto", p.id);
                 command.Parameters.AddWithValue("setCodigo", p.codigo);
@@ -2015,28 +2184,26 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
             DataTable dtEntradas = new DataTable();
             SQLiteCommand command = connection.CreateCommand();
             command.CommandText = @"
-        SELECT entradas.id AS ID,
-               entradas.folio_factura AS 'FOLIO FACTURA',
-               entradas.total_factura AS 'TOTAL FACTURA',
-               usuarios.nombre AS 'USUARIO',
-               sucursales.razon_social AS 'SUCURSAL',
-               proveedores.nombre AS 'PROVEEDOR',
-               entradas.fecha_factura AS 'FECHA FACTURA' 
-        FROM entradas
-        JOIN usuarios ON entradas.usuario_id = usuarios.id
-        JOIN sucursales ON entradas.sucursal_id = sucursales.id
-        JOIN proveedores ON entradas.proveedor_id = proveedores.id
-        WHERE sucursales.id = @sucursalId
-        ORDER BY entradas.id DESC
-        LIMIT @rowsPerPage OFFSET @offset";
-
+SELECT entradas.id AS ID,
+       entradas.folio_factura AS 'FOLIO FACTURA',
+       entradas.total_factura AS 'TOTAL FACTURA',
+       usuarios.nombre AS 'USUARIO',
+       sucursales.razon_social AS 'SUCURSAL',
+       proveedores.nombre AS 'PROVEEDOR',
+       entradas.fecha_factura AS 'FECHA FACTURA',
+       entradas.comentarios AS 'COMENTARIOS'
+FROM entradas
+JOIN usuarios ON entradas.usuario_id = usuarios.id
+JOIN sucursales ON entradas.sucursal_id = sucursales.id
+JOIN proveedores ON entradas.proveedor_id = proveedores.id
+WHERE sucursales.id = @sucursalId
+ORDER BY entradas.id DESC
+LIMIT @rowsPerPage OFFSET @offset";
             command.Parameters.AddWithValue("@sucursalId", sucursalId);
             command.Parameters.AddWithValue("@rowsPerPage", rowsPerPage);
             command.Parameters.AddWithValue("@offset", offset);
-
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             adapter.Fill(dtEntradas);
-
             return dtEntradas;
         }
 
@@ -2064,5 +2231,192 @@ LIMIT @setRowsPerPage OFFSET @setOffset";
             return count;
         }
 
+        public DataTable getEntradasPorSucursalPorFecha(int sucursalId, DateTime fechaInicio, DateTime fechaFin)
+        {
+            DataTable dtEntradas = new DataTable();
+            SQLiteCommand command = connection.CreateCommand();
+            command.CommandText = @"
+SELECT entradas.id AS ID,
+       entradas.folio_factura AS 'FOLIO FACTURA',
+       entradas.total_factura AS 'TOTAL FACTURA',
+       usuarios.nombre AS 'USUARIO',
+       sucursales.razon_social AS 'SUCURSAL',
+       proveedores.nombre AS 'PROVEEDOR',
+       entradas.fecha_factura AS 'FECHA FACTURA',
+       entradas.comentarios AS 'COMENTARIOS'
+FROM entradas
+JOIN usuarios ON entradas.usuario_id = usuarios.id
+JOIN sucursales ON entradas.sucursal_id = sucursales.id
+JOIN proveedores ON entradas.proveedor_id = proveedores.id
+WHERE sucursales.id = @sucursalId
+AND DATE(entradas.fecha_factura) BETWEEN @fechaInicio AND @fechaFin
+ORDER BY entradas.fecha_factura DESC";
+            command.Parameters.AddWithValue("@sucursalId", sucursalId);
+            command.Parameters.AddWithValue("@fechaInicio", fechaInicio.ToString("yyyy-MM-dd"));
+            command.Parameters.AddWithValue("@fechaFin", fechaFin.ToString("yyyy-MM-dd"));
+            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
+            adapter.Fill(dtEntradas);
+            return dtEntradas;
+        }
+
+        /// Obtiene las salidas por sucursal en un rango de fechas específico      
+        public DataTable getSalidasPorSucursalPorFecha(int idSucursalOrigen, DateTime fechaInicio, DateTime fechaFin)
+        {
+            DataTable dtSalidas = new DataTable();
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = @"
+            SELECT salidas.id AS ID,
+            origen.razon_social AS 'SUCURSAL ORIGEN',
+            destino.razon_social AS 'SUCURSAL DESTINO',
+            salidas.folio AS 'FOLIO',
+            salidas.fecha_salida AS 'FECHA SALIDA',
+            usuarios.nombre AS 'USUARIO',
+            salidas.total_importe AS 'TOTAL IMPORTE'
+            FROM salidas
+            JOIN usuarios ON salidas.usuario_id = usuarios.id
+            JOIN sucursales AS origen ON salidas.id_sucursal_origen = origen.id
+            JOIN sucursales AS destino ON salidas.id_sucursal_destino = destino.id
+            WHERE salidas.id_sucursal_origen = @setIdSucursalOrigen
+            AND DATE(salidas.fecha_salida) BETWEEN @fechaInicio AND @fechaFin
+            ORDER BY salidas.fecha_salida DESC";
+
+                command.Parameters.AddWithValue("@setIdSucursalOrigen", idSucursalOrigen);
+                command.Parameters.AddWithValue("@fechaInicio", fechaInicio.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@fechaFin", fechaFin.ToString("yyyy-MM-dd"));
+
+                using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(command))
+                {
+                    adapter.Fill(dtSalidas);
+                }
+            }
+            return dtSalidas;
+        }        
+        /// Obtiene las entradas por sucursal con paginación y filtro de fecha        
+        public DataTable getEntradasPorSucursalPorFecha(int sucursalId, DateTime fechaInicio, DateTime fechaFin, int offset, int rowsPerPage)
+        {
+            DataTable dtEntradas = new DataTable();
+            SQLiteCommand command = connection.CreateCommand();
+            command.CommandText = @"
+        SELECT entradas.id AS ID,
+               entradas.folio_factura AS 'FOLIO FACTURA',
+               entradas.total_factura AS 'TOTAL FACTURA',
+               usuarios.nombre AS 'USUARIO',
+               sucursales.razon_social AS 'SUCURSAL',
+               proveedores.nombre AS 'PROVEEDOR',
+               entradas.fecha_factura AS 'FECHA FACTURA' 
+        FROM entradas
+        JOIN usuarios ON entradas.usuario_id = usuarios.id
+        JOIN sucursales ON entradas.sucursal_id = sucursales.id
+        JOIN proveedores ON entradas.proveedor_id = proveedores.id
+        WHERE sucursales.id = @sucursalId
+        AND DATE(entradas.fecha_factura) BETWEEN @fechaInicio AND @fechaFin
+        ORDER BY entradas.fecha_factura DESC
+        LIMIT @setRowsPerPage OFFSET @setOffset";
+
+            command.Parameters.AddWithValue("@sucursalId", sucursalId);
+            command.Parameters.AddWithValue("@fechaInicio", fechaInicio.ToString("yyyy-MM-dd"));
+            command.Parameters.AddWithValue("@fechaFin", fechaFin.ToString("yyyy-MM-dd"));
+            command.Parameters.AddWithValue("@setRowsPerPage", rowsPerPage);
+            command.Parameters.AddWithValue("@setOffset", offset);
+
+            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
+            adapter.Fill(dtEntradas);
+            return dtEntradas;
+        }        
+        /// Obtiene las salidas por sucursal con paginación y filtro de fecha        
+        public DataTable getSalidasPorSucursalPorFecha(int idSucursalOrigen, DateTime fechaInicio, DateTime fechaFin, int offset, int rowsPerPage)
+        {
+            DataTable dtSalidas = new DataTable();
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = @"
+            SELECT salidas.id AS ID,
+            origen.razon_social AS 'SUCURSAL ORIGEN',
+            destino.razon_social AS 'SUCURSAL DESTINO',
+            salidas.folio AS 'FOLIO',
+            salidas.fecha_salida AS 'FECHA SALIDA',
+            usuarios.nombre AS 'USUARIO',
+            salidas.total_importe AS 'TOTAL IMPORTE'
+            FROM salidas
+            JOIN usuarios ON salidas.usuario_id = usuarios.id
+            JOIN sucursales AS origen ON salidas.id_sucursal_origen = origen.id
+            JOIN sucursales AS destino ON salidas.id_sucursal_destino = destino.id
+            WHERE salidas.id_sucursal_origen = @setIdSucursalOrigen
+            AND DATE(salidas.fecha_salida) BETWEEN @fechaInicio AND @fechaFin
+            ORDER BY salidas.fecha_salida DESC
+            LIMIT @setRowsPerPage OFFSET @setOffset";
+
+                command.Parameters.AddWithValue("@setIdSucursalOrigen", idSucursalOrigen);
+                command.Parameters.AddWithValue("@fechaInicio", fechaInicio.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@fechaFin", fechaFin.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@setRowsPerPage", rowsPerPage);
+                command.Parameters.AddWithValue("@setOffset", offset);
+
+                using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(command))
+                {
+                    adapter.Fill(dtSalidas);
+                }
+            }
+            return dtSalidas;
+        }        
+        /// Obtiene el conteo de entradas por sucursal en un rango de fechas        
+        public int getEntradasCountPorSucursalPorFecha(int sucursalId, DateTime fechaInicio, DateTime fechaFin)
+        {
+            int count = 0;
+            SQLiteCommand command = connection.CreateCommand();
+            command.CommandText = @"
+        SELECT COUNT(*) 
+        FROM entradas
+        JOIN sucursales ON entradas.sucursal_id = sucursales.id
+        WHERE sucursales.id = @sucursalId
+        AND DATE(entradas.fecha_factura) BETWEEN @fechaInicio AND @fechaFin";
+
+            command.Parameters.AddWithValue("@sucursalId", sucursalId);
+            command.Parameters.AddWithValue("@fechaInicio", fechaInicio.ToString("yyyy-MM-dd"));
+            command.Parameters.AddWithValue("@fechaFin", fechaFin.ToString("yyyy-MM-dd"));
+
+            object result = command.ExecuteScalar();
+            if (result != null && result != DBNull.Value)
+            {
+                count = Convert.ToInt32(result);
+            }
+            return count;
+        }        
+        /// Obtiene el conteo de salidas por sucursal en un rango de fechas        
+        public int getSalidasCountPorSucursalPorFecha(int idSucursalOrigen, DateTime fechaInicio, DateTime fechaFin)
+        {
+            int count = 0;
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = @"
+            SELECT COUNT(*) 
+            FROM salidas
+            WHERE salidas.id_sucursal_origen = @setIdSucursalOrigen
+            AND DATE(salidas.fecha_salida) BETWEEN @fechaInicio AND @fechaFin";
+
+                command.Parameters.AddWithValue("@setIdSucursalOrigen", idSucursalOrigen);
+                command.Parameters.AddWithValue("@fechaInicio", fechaInicio.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@fechaFin", fechaFin.ToString("yyyy-MM-dd"));
+
+                object result = command.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    count = Convert.ToInt32(result);
+                }
+            }
+            return count;
+        }
+
+        // ⭐ NUEVO MÉTODO: Obtener solo el comentario de una entrada
+        public string getComentarioEntrada(int entradaId)
+        {
+            SQLiteCommand command = connection.CreateCommand();
+            command.CommandText = "SELECT comentarios FROM entradas WHERE id = @entradaId";
+            command.Parameters.AddWithValue("@entradaId", entradaId);
+
+            object result = command.ExecuteScalar();
+            return result != null && result != DBNull.Value ? result.ToString() : string.Empty;
+        }
     }
 }

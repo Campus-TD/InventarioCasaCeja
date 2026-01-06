@@ -40,13 +40,13 @@
             this.next = new System.Windows.Forms.Button();
             this.pageLabel = new System.Windows.Forms.Label();
             this.prev = new System.Windows.Forms.Button();
+            this.BcrearExcel = new System.Windows.Forms.Button();
             this.clientinfo = new System.Windows.Forms.TableLayoutPanel();
             this.tablaEntradasySalidas = new System.Windows.Forms.DataGridView();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label2 = new System.Windows.Forms.Label();
             this.BoxTipo = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.BcrearExcel = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -112,7 +112,7 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 125F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 48F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 312F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 310F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 311F));
             this.tableLayoutPanel2.Controls.Add(this.BSelRegistro, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.BelimHistorial, 6, 0);
             this.tableLayoutPanel2.Controls.Add(this.next, 4, 0);
@@ -120,7 +120,7 @@
             this.tableLayoutPanel2.Controls.Add(this.prev, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.BcrearExcel, 5, 0);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(2, 530);
-            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(2);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -195,6 +195,19 @@
             this.prev.UseVisualStyleBackColor = true;
             this.prev.Click += new System.EventHandler(this.prev_Click);
             // 
+            // BcrearExcel
+            // 
+            this.BcrearExcel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BcrearExcel.Font = new System.Drawing.Font("Segoe UI Semibold", 20F, System.Drawing.FontStyle.Bold);
+            this.BcrearExcel.Location = new System.Drawing.Point(628, 2);
+            this.BcrearExcel.Margin = new System.Windows.Forms.Padding(2);
+            this.BcrearExcel.Name = "BcrearExcel";
+            this.BcrearExcel.Size = new System.Drawing.Size(284, 54);
+            this.BcrearExcel.TabIndex = 15;
+            this.BcrearExcel.Text = "GENERAR EXCEL (F3)";
+            this.BcrearExcel.UseVisualStyleBackColor = true;
+            this.BcrearExcel.Click += new System.EventHandler(this.BcrearExcel_Click);
+            // 
             // clientinfo
             // 
             this.clientinfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -252,7 +265,7 @@
             this.tablaEntradasySalidas.DefaultCellStyle = dataGridViewCellStyle2;
             this.tablaEntradasySalidas.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tablaEntradasySalidas.Location = new System.Drawing.Point(2, 2);
-            this.tablaEntradasySalidas.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tablaEntradasySalidas.Margin = new System.Windows.Forms.Padding(2);
             this.tablaEntradasySalidas.MultiSelect = false;
             this.tablaEntradasySalidas.Name = "tablaEntradasySalidas";
             this.tablaEntradasySalidas.ReadOnly = true;
@@ -266,6 +279,8 @@
             this.tablaEntradasySalidas.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.tablaEntradasySalidas.Size = new System.Drawing.Size(1219, 530);
             this.tablaEntradasySalidas.TabIndex = 0;
+            this.tablaEntradasySalidas.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.TablaEntradasySalidas_CellClick);
+            this.tablaEntradasySalidas.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.TablaEntradasySalidas_CellFormatting);
             this.tablaEntradasySalidas.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tablaEntradasySalidas_KeyDown);
             // 
             // tableLayoutPanel1
@@ -274,14 +289,14 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.01623F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.98377F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 86F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 87F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 282F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
             this.tableLayoutPanel1.Controls.Add(this.label2, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.BoxTipo, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 1);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(594, 6);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 37.17949F));
@@ -296,7 +311,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 13F, System.Drawing.FontStyle.Bold);
-            this.label2.Location = new System.Drawing.Point(161, 0);
+            this.label2.Location = new System.Drawing.Point(160, 0);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(198, 27);
@@ -311,8 +326,8 @@
             this.BoxTipo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.BoxTipo.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold);
             this.BoxTipo.FormattingEnabled = true;
-            this.BoxTipo.Location = new System.Drawing.Point(161, 29);
-            this.BoxTipo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.BoxTipo.Location = new System.Drawing.Point(160, 29);
+            this.BoxTipo.Margin = new System.Windows.Forms.Padding(2);
             this.BoxTipo.Name = "BoxTipo";
             this.BoxTipo.Size = new System.Drawing.Size(198, 40);
             this.BoxTipo.TabIndex = 2;
@@ -328,23 +343,10 @@
             this.label1.Location = new System.Drawing.Point(2, 27);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(155, 46);
+            this.label1.Size = new System.Drawing.Size(154, 46);
             this.label1.TabIndex = 0;
             this.label1.Text = "FILTRAR POR";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // BcrearExcel
-            // 
-            this.BcrearExcel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BcrearExcel.Font = new System.Drawing.Font("Segoe UI Semibold", 20F, System.Drawing.FontStyle.Bold);
-            this.BcrearExcel.Location = new System.Drawing.Point(628, 2);
-            this.BcrearExcel.Margin = new System.Windows.Forms.Padding(2);
-            this.BcrearExcel.Name = "BcrearExcel";
-            this.BcrearExcel.Size = new System.Drawing.Size(284, 54);
-            this.BcrearExcel.TabIndex = 15;
-            this.BcrearExcel.Text = "GENERAR EXCEL (F3)";
-            this.BcrearExcel.UseVisualStyleBackColor = true;
-            this.BcrearExcel.Click += new System.EventHandler(this.BcrearExcel_Click);
             // 
             // HistEntradasSalidas
             // 
@@ -353,7 +355,7 @@
             this.ClientSize = new System.Drawing.Size(1266, 687);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.groupBox1);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "HistEntradasSalidas";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "HistEntradasSalidas";

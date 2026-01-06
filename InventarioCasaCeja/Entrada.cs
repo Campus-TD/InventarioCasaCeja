@@ -20,5 +20,6 @@ namespace InventarioCasaCeja
         public string cancelacion { get; set; }
         public string created_at { get; set; }
         public string updated_at { get; set; }
+        public string comentarios { get; set; }
     }
 }
